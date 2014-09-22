@@ -5,9 +5,9 @@ ARL Liasons:
     Jason Gregory
 
 Olin Team:
-    Kyle McConnaughay
-    Charles Goddard
-    Heather Boortz
-    Elizabeth Duncan
-    Eric Schneider
+    Kyle McConnaughay,
+    Charles Goddard,
+    Heather Boortz,
+    Elizabeth Duncan,
+    Eric Schneider,
     Kaitlin Gallagher
