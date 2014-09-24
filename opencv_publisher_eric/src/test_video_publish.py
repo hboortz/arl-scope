@@ -16,6 +16,9 @@ class image_converter:
     # self.image_sub = rospy.Subscriber("image_topic",Image,self.callback)
 
     self.cap = cv2.VideoCapture(1)
+    # self.cap.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, 400);
+    # self.cap.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, 400);
+    # self.cap.set(cv2.cv.CV_CAP_PROP_FPS, 60);
 
   # def callback(self,data):
   #   try:
