@@ -17,7 +17,7 @@ class ImageConverter(object):
     self.cap = cv2.VideoCapture(0)
 
 def main(args):
-  ic = image_converter()
+  ic = ImageConverter()
   rospy.init_node('video_publisher', anonymous=True)
 
   rospy.loginfo("Press 'q' to quit WHEN FOCUSED ON CV WINDOW")
