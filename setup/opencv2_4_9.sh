@@ -29,9 +29,10 @@ unzip OpenCV-2.4.9.zip
 cd opencv-2.4.9
 mkdir build
 cd build
-cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=ON -D INSTALL_PYTHON_EXAMPLES=ON -D BUILD_EXAMPLES=ON -D WITH_QT=ON -D WITH_OPENGL=ON ..
+cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local/opencv-2.4.9 -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=ON -D INSTALL_C_EXAMPLES=ON -D INSTALL_PYTHON_EXAMPLES=ON -D BUILD_EXAMPLES=ON -D WITH_QT=ON -D WITH_OPENGL=ON ..
 make -j4
 sudo make install
-sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
+sudo sh -c 'echo "/usr/local/opencv-2.4.9/lib" > /etc/ld.so.conf.d/opencv.conf'
 sudo ldconfig
+sudo cp FindOpenCV.cmake /usr/share/cmake-2.8/Modules/FindOpenCV.cmake	
 echo "OpenCV 2.4.9 ready to be used"
