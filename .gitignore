@@ -26,3 +26,6 @@
 *.exe
 *.out
 *.app
+
+# OpenCV installation
+setup/OpenCV
