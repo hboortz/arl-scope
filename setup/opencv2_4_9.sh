@@ -1,4 +1,5 @@
-#!usr/env/bin bash
+#!/usr/bin/env bash
+
 arch=$(uname -m)
 if [ "$arch" == "i686" -o "$arch" == "i386" -o "$arch" == "i486" -o "$arch" == "i586" ]; then
 flag=1
