@@ -12,7 +12,8 @@ alias sl='sl -e'
 alias rm='rm -i'
 alias cp='cp -iv'
 alias mv='mv -iv'
-PS1=’$:’
+
+export PS1='\[\e[1;96m\]\W\[\e[m\] \[\e[1;92m\]\$\[\e[m\] \[\e[0m\]'  
 
 source /opt/ros/indigo/setup.bash
 source ~/catkin_ws/devel/setup.bash
