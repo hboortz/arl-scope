@@ -12,6 +12,7 @@ alias sl='sl -e'
 alias rm='rm -i'
 alias cp='cp -iv'
 alias mv='mv -iv'
+alias gits='git status -s'
 
 export PS1='\[\e[1;96m\]\W\[\e[m\] \[\e[1;92m\]\$\[\e[m\] \[\e[0m\]'  
 
