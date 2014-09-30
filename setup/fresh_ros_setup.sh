@@ -10,6 +10,7 @@ sudo rosdep init
 rosdep update
 
 sudo apt-get install -y python-rosinstall
+sudo apt-get install -y ros-indigo-mavlink
 sudo apt-get install -y ros-indigo-mavros
 source ~/.bashrc
 
