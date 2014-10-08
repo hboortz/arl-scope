@@ -37,9 +37,9 @@ class FiducialFinder(object):
         matches = self.flann.knnMatch(self.model_descriptors,
                                       data_descriptors, k=2)
 
-        good = [m for m, n in matches if self.lowes_ratio_test(m, n)]
+        good = [m for (m, n) in matches if self.lowes_ratio_test(m, n)]
 
-        if len(good) > 10:
+        if len(good) > 10:  # 10 is arbitrary
             H, mask = self.find_homography(data_keypoints, good)
             self.draw_outline(img, H)
 
@@ -56,12 +56,12 @@ class FiducialFinder(object):
         return cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
 
     def draw_outline(self, img, M):
-        h, w, _ = self.model.shape
-        pts = np.float32([[0, 0], [0, h-1], [w-1, h-1], [w-1, 0]])
-        pts = pts.reshape(-1, 1, 2)
-        dst = cv2.perspectiveTransform(pts, M)
+        h, w, _ = self.model.shape  # discard color band with _
+        corners = np.float32([[0, 0], [0, h-1], [w-1, h-1], [w-1, 0]])
+        corners = corners.reshape(-1, 1, 2)
+        dest = cv2.perspectiveTransform(corners, M)
 
-        cv2.polylines(img, [np.int32(dst)], True, 255, 3)
+        cv2.polylines(img, [np.int32(dest)], True, 255, 3)
 
 
 def get_default_fiducial():
