@@ -68,6 +68,28 @@ if [ ! -f ~/Downloads/cpplint.py ]; then
 fi
 
 
+# Set up APM Mission Planner
+cd ~/Downloads
+wget http://ardupilot.com/wp-content/plugins/download-monitor/download.php?id=111 -O apmplanner2.deb
+sudo dpkg -i apmplanner2.deb
+sudo apt-get -f install
+sudo dpkg -i apmplanner2.deb
+rm -f apmplanner2.deb
+
+
+# Set up GCS Ground Control
+# http://www.qgroundcontrol.org/
+
+if [ ! -d qgroundcontrol ]; then
+    mkdir qgroundcontrol
+fi
+cd ~/Downloads
+if [ ! -f ~/Downloads/QGroundControl-Pixhawk.tar.bz2 ]; then
+    wget http://latestfiasco.com/ftp/QGroundControl-Pixhawk.tar.bz2
+    sudo tar -xf QGroundControl-Pixhawk.tar.bz2 -C /opt/
+fi
+
+
 # Various useful installs
 sudo apt-get install -y clang
 sudo apt-get install -y xclip
@@ -81,8 +103,12 @@ sudo apt-get install -y build-essential
 sudo apt-get install -y automake
 sudo apt-get install -y git
 sudo apt-get install -y git-core
+sudo apt-get install -y python-prettytable
+sudo apt-get install -y libsdl1.2debian
+sudo apt-get install -y libqt5serialport5
 sudo apt-get update
 sudo apt-get upgrade
+
 
 
 # Set up github stuff
@@ -96,3 +122,5 @@ echo "\n SET UP YOUR GIT KEYS ON GITHUB"
 echo "https://help.github.com/articles/generating-ssh-keys"
 
 echo "RUN THE LINE sudo adduser username dialout FOR YOUR USERNAME\n\n"
+
+
