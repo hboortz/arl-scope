@@ -106,6 +106,7 @@ sudo apt-get install -y git-core
 sudo apt-get install -y python-prettytable
 sudo apt-get install -y libsdl1.2debian
 sudo apt-get install -y libqt5serialport5
+sudo apt-get install -y ipython
 sudo apt-get update
 sudo apt-get upgrade
 
