@@ -161,3 +161,6 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+# find_package(rostest)
+# add_rostest(test/test_quadcopter_brain.launch)
+catkin_add_nosetests(test/test_quadcopter_brain.py)

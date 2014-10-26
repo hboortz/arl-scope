@@ -4,9 +4,13 @@
 
 import rospy
 import time
-import tf
+#import tf
 
 import roscopter
+import roscopter.msg
+import roscopter.srv
+from std_srvs.srv import *
+from sensor_msgs.msg import NavSatFix, NavSatStatus, Imu
 
 
 class QuadcopterBrain(object):
@@ -24,9 +28,9 @@ class QuadcopterBrain(object):
         self.waypoint_service = rospy.ServiceProxy(
             'waypoint', roscopter.srv.SendWaypoint
         )
-        self.land_service = rospy.ServiceProxy(
-            'land', Empty
-        )
+        # self.land_service = rospy.ServiceProxy(
+        #     'land', Empty
+        # )
 
     def fly_path(self, waypoint_data):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
@@ -34,10 +38,13 @@ class QuadcopterBrain(object):
         # Execute flight plan
         self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
+        print('Launched')
         for waypoint in waypoints:
             self.waypoint_service(waypoint)
+            print('Sent waypoint')
             time.sleep(15)
-        self.land_service()
+        print('Landing')
+        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
 
     def on_position_update(self, data):
         '''
@@ -55,7 +62,7 @@ def build_waypoint(data):
     waypoint = roscopter.msg.Waypoint()
     waypoint.latitude = gps_to_mavlink(latitude)
     waypoint.longitude = gps_to_mavlink(longitude)
-    waypoint.altitude = altitude
+    waypoint.altitude = int(altitude * 1000)
     waypoint.hold_time = int(hold_time * 1000)  # in ms
     waypoint.waypoint_type = roscopter.msg.Waypoint.TYPE_NAV
     return waypoint
@@ -69,9 +76,10 @@ def gps_to_mavlink(coordinate):
 
 
 if __name__ == '__main__':
-    rospy.init_node("quadcopter_brain")
+    #rospy.init_node("quadcopter_brain")
     carl = QuadcopterBrain()
     carl.fly_path([
         {'latitude': 42.2926834, 'longitude': -71.2628237},
         {'latitude': 42.2925417, 'longitude': -71.2628411}
     ])
+
