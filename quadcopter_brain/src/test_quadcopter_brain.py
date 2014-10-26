@@ -2,7 +2,11 @@ import unittest
 import rostest
 import mock
 
-# from quadcopter_brain import QuadcopterBrain, build_waypoint, gps_to_mavlink
+# import quadcopter_brain
+from quadcopter_brain import QuadcopterBrain, build_waypoint, gps_to_mavlink
+
+
+PKG = 'test_quadcopter_brain'
 
 
 class TestQuadcopterBrain(unittest.TestCase):
@@ -23,7 +27,6 @@ class TestQuadcopterBrain(unittest.TestCase):
 # 		pass
 
 if __name__ == '__main__':
-	PKG = 'test_quadcopter_brain'
 	rostest.rosrun(PKG, 'test_quadcopter_brain', TestQuadcopterBrain)
 	# rostest.rosrun(PKG, 'test_waypoint', TestWaypoint)
 	# rostest.rosrun(PKG, 'test_mavlink_conversions', TestMavlinkConversions)
