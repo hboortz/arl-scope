@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="quadcopter_brain" type="quadcopter_brain.py" name="quadcopter_brain" />
+  <test test-name="test_quadcopter_brain" pkg="quadcopter_brain" type="test_quadcopter_brain.py" />
+</launch>

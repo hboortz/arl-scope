@@ -107,10 +107,11 @@ sudo apt-get install -y python-prettytable
 sudo apt-get install -y libsdl1.2debian
 sudo apt-get install -y libqt5serialport5
 sudo apt-get install -y ipython
+sudo apt-get install -y python-pip
 sudo apt-get update
 sudo apt-get upgrade
 
-
+pip install mock
 
 # Set up github stuff
 # SSH key
