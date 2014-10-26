@@ -10,7 +10,7 @@ class ImageConverter(object):
   def __init__(self):
     self.image_pub = rospy.Publisher("video_topic", Image, queue_size=10)
     self.bridge = CvBridge()
-    self.cap = cv2.VideoCapture(1)
+    self.cap = cv2.VideoCapture(0)
 
   def read_frame(self):
     return_val, frame = self.cap.read()
