@@ -2,22 +2,22 @@ import unittest
 import rostest
 import mock
 
-# import quadcopter_brain
-from quadcopter_brain import QuadcopterBrain, build_waypoint, gps_to_mavlink
+from quadcopter_brain import QuadcopterBrain, gps_to_mavlink
 
 
 class TestQuadcopterBrain(unittest.TestCase):
-    @mock.patch('roscopter.msg')
-    @mock.patch('roscopter.srv')
-    def test_fly_path(self, srv_mock, msg_mock):
-        self.assertTrue(True)
+    @unittest.skip('How to mock services?')
+    def test_fly_path(self):
+        waypoint_data = [
+            {'latitude': 1, 'longitude': 2},
+            {'latitude': 3, 'longitude': 4},
+        ]
+        brain = QuadcopterBrain()
+        
+        brain.fly_path(waypoint_data)
 
-#   def test_on_position_update(self):
-#       pass
-
-# class TestWaypoint(unittest.TestCase):
-#   def test_build_waypoint(self):
-#       pass
+    def test_on_position_update(self):
+        pass
 
 class TestMavlinkConversions(unittest.TestCase):
     def test_gps_to_mavlink(self):
