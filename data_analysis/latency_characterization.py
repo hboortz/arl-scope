@@ -1,6 +1,12 @@
 from matplotlib import pyplot as plt
 import random
 
+# The relevant pictures live on the SCOPE drive in Photos/LightbridgeLatencyTests
+# The pictures at 12:20 and 13:00 are out of line-of-sight
+# The pixelation lasted less than 0.3 seconds at each occurrence
+# The time between different pixelation incidents ranged from 3s to 20s, with an
+# average of approximately 10s. We haven't done a thorough characterization yet.
+
 INITIAL_ERROR = 0.015 # seconds
 
 latencies = [0.45, 0.40, 0.42, 0.38, 0.36, 0.40, 0.36, 0.38, 0.38, 0.38, 0.39, 0.34, 0.39]
