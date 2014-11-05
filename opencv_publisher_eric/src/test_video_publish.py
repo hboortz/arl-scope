@@ -10,14 +10,17 @@ class ImageConverter(object):
   def __init__(self):
     self.image_pub = rospy.Publisher("video_topic", Image, queue_size=10)
     self.bridge = CvBridge()
-    self.cap = cv2.VideoCapture(0)
+    self.cap = cv2.VideoCapture(1)
 
   def read_frame(self):
     return_val, frame = self.cap.read()
+    height=frame.shape[0]
+    width =frame.shape[1]
+    cv2.circle(frame,(width/2,height/2),4,(0,0,255),1)
     cv2.imshow('frame', frame)
     return frame
     
-  def publish_ros_img(self, frame)
+  def publish_ros_img(self, frame):
     try:
       rosimg = self.bridge.cv2_to_imgmsg(frame, "bgr8")
       self.image_pub.publish(rosimg)
