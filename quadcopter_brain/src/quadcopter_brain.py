@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-# 10/22/2014
-# Charles O. Goddard
+# # 10/22/2014
+# # Charles O. Goddard
 
 import rospy
 import time
@@ -28,6 +28,12 @@ class QuadcopterBrain(object):
         self.waypoint_service = rospy.ServiceProxy(
             'waypoint', roscopter.srv.SendWaypoint
         )
+        self.trigger_auto_service = rospy.ServiceProxy(
+            'trigger_auto', Empty
+        )
+        self.adjust_throttle_service = rospy.ServiceProxy(
+            'adjust_throttle', Empty
+        )
         # self.land_service = rospy.ServiceProxy(
         #     'land', Empty
         # )
@@ -37,8 +43,12 @@ class QuadcopterBrain(object):
 
         # Execute flight plan
         self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
+        print('Armed')
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
         print('Launched')
+        self.trigger_auto_service()
+        self.adjust_throttle_service()
+        time.sleep(15)
         for waypoint in waypoints:
             self.waypoint_service(waypoint)
             print('Sent waypoint')
@@ -79,7 +89,6 @@ if __name__ == '__main__':
     #rospy.init_node("quadcopter_brain")
     carl = QuadcopterBrain()
     carl.fly_path([
-        {'latitude': 42.2926834, 'longitude': -71.2628237},
-        {'latitude': 42.2925417, 'longitude': -71.2628411}
+        {'latitude': 42.2927200, 'longitude': -71.2631700},
+        {'latitude': 42.2926600, 'longitude': -71.2630900}
     ])
-

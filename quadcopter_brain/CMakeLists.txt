@@ -163,4 +163,4 @@ include_directories(
 # catkin_add_nosetests(test)
 # find_package(rostest)
 # add_rostest(test/test_quadcopter_brain.launch)
-catkin_add_nosetests(test/test_quadcopter_brain.py)
+catkin_add_nosetests(src/test_quadcopter_brain.py)
