@@ -76,20 +76,6 @@ sudo apt-get -f install
 sudo dpkg -i apmplanner2.deb
 rm -f apmplanner2.deb
 
-
-# Set up GCS Ground Control
-# http://www.qgroundcontrol.org/
-
-if [ ! -d qgroundcontrol ]; then
-    mkdir qgroundcontrol
-fi
-cd ~/Downloads
-if [ ! -f ~/Downloads/QGroundControl-Pixhawk.tar.bz2 ]; then
-    wget http://latestfiasco.com/ftp/QGroundControl-Pixhawk.tar.bz2
-    sudo tar -xf QGroundControl-Pixhawk.tar.bz2 -C /opt/
-fi
-
-
 # Various useful installs
 sudo apt-get install -y clang
 sudo apt-get install -y xclip
