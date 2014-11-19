@@ -111,7 +111,7 @@ sudo apt-get install -y python-pip
 sudo apt-get update
 sudo apt-get upgrade
 
-pip install mock
+sudo pip install mock
 
 # Set up github stuff
 # SSH key
