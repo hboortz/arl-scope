@@ -34,9 +34,13 @@ def main(args):
   try:
     while(True):
       frame = ic.read_frame()
-      ic.publish_ros_img(frame)
-      if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+      if not frame == None:
+        ic.publish_ros_img(frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+          break
+      else:
+        rospy.loginfo('You read an empty image - check your video device')
+
   except KeyboardInterrupt:
     print "Shutting down"
   ic.cap.release()

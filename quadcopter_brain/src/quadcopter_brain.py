@@ -1,10 +1,7 @@
 #!/usr/bin/env python
-# # 10/22/2014
-# # Charles O. Goddard
 
 import rospy
 import time
-#import tf
 
 import roscopter
 import roscopter.msg
@@ -22,21 +19,20 @@ class QuadcopterBrain(object):
                          roscopter.msg.FilteredPosition,
                          self.on_position_update)
 
+        self.clear_waypoints_service = rospy.ServiceProxy(
+            'clear_waypoints', Empty)
         self.command_service = rospy.ServiceProxy(
-            'command', roscopter.srv.APMCommand
-        )
+            'command', roscopter.srv.APMCommand)
         self.waypoint_service = rospy.ServiceProxy(
-            'waypoint', roscopter.srv.SendWaypoint
-        )
+            'waypoint', roscopter.srv.SendWaypoint)
         self.trigger_auto_service = rospy.ServiceProxy(
-            'trigger_auto', Empty
-        )
+            'trigger_auto', Empty)
         self.adjust_throttle_service = rospy.ServiceProxy(
-            'adjust_throttle', Empty
-        )
+            'adjust_throttle', Empty)
         # self.land_service = rospy.ServiceProxy(
         #     'land', Empty
         # )
+        
 
     def fly_path(self, waypoint_data):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
@@ -47,11 +43,11 @@ class QuadcopterBrain(object):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
         print('Launched')
         self.trigger_auto_service()
+        time.sleep(5)
         self.adjust_throttle_service()
-        time.sleep(15)
         for waypoint in waypoints:
             self.waypoint_service(waypoint)
-            print('Sent waypoint')
+            print('Sent waypoint %d, %d' %(waypoint.latitude, waypoint.longitude))
             time.sleep(15)
         print('Landing')
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
@@ -88,7 +84,20 @@ def gps_to_mavlink(coordinate):
 if __name__ == '__main__':
     #rospy.init_node("quadcopter_brain")
     carl = QuadcopterBrain()
+    self.clear_waypoints_service()
     carl.fly_path([
-        {'latitude': 42.2927200, 'longitude': -71.2631700},
-        {'latitude': 42.2926600, 'longitude': -71.2630900}
+        {'latitude': 42.2927926, 'longitude': -71.2630031},
+        {'latitude': 42.2926614, 'longitude': -71.2630018},
+        {'latitude': 42.2928118, 'longitude': -71.2631300}
     ])
+
+#Upper great lawn
+#        {'latitude': 42.2929217, 'longitude': -71.2633305},
+#        {'latitude': 42.2931392, 'longitude': -71.2632456}
+#    ])
+
+# Lower great lawn
+#        {'latitude': 42.2927971, 'longitude' : -71.2630297},
+#        {'latitude': 42.2924562, 'longitude': -71.2630885},
+#        {'latitude': 42.2928173, 'longitude': -71.2631555}
+#    ])

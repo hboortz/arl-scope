@@ -71,16 +71,18 @@ def get_default_fiducial():
 
 
 def main(args):
+    rospy.init_node('video_subscriber', anonymous=True)
     fiducial_img = get_default_fiducial()
     if len(args) >= 1:
         fiducial_img = args[0]
+    rospy.loginfo('Loading fiducial from %s', fiducial_img)
 
     model = cv2.imread(fiducial_img)
     sift = cv2.SIFT()
     kp, des = sift.detectAndCompute(model, None)
 
+    rospy.loginfo('Beginning FiducialFinder. Result on video_annotated topic')
     ff = FiducialFinder(model, kp, des)
-    rospy.init_node('video_subscriber', anonymous=True)
 
     try:
         rospy.spin()

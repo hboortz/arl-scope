@@ -34,5 +34,9 @@ make -j4
 sudo make install
 sudo sh -c 'echo "/usr/local/opencv-2.4.9/lib" > /etc/ld.so.conf.d/opencv.conf'
 sudo ldconfig
+cd ../../
 sudo cp FindOpenCV.cmake /usr/share/cmake-2.8/Modules/FindOpenCV.cmake	
 echo "OpenCV 2.4.9 ready to be used"
+
+echo 'export PYTHONPATH=$PYTHONPATH:/usr/local/opencv-2.4.9/lib/python2.7/dist-packages' >> ~/.bashrc
+
