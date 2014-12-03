@@ -19,6 +19,8 @@ class QuadcopterBrain(object):
                          roscopter.msg.FilteredPosition,
                          self.on_position_update)
 
+        self.clear_waypoints_service = rospy.ServiceProxy(
+            'clear_waypoints', Empty)
         self.command_service = rospy.ServiceProxy(
             'command', roscopter.srv.APMCommand)
         self.waypoint_service = rospy.ServiceProxy(
@@ -30,6 +32,8 @@ class QuadcopterBrain(object):
         # self.land_service = rospy.ServiceProxy(
         #     'land', Empty
         # )
+        self.clear_waypoints_service()
+        
 
     def fly_path(self, waypoint_data):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
@@ -44,7 +48,7 @@ class QuadcopterBrain(object):
         self.adjust_throttle_service()
         for waypoint in waypoints:
             self.waypoint_service(waypoint)
-            print('Sent waypoint %s' %(waypoint))
+            print('Sent waypoint %d, %d' %(waypoint.latitude, waypoint.longitude))
             time.sleep(15)
         print('Landing')
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
@@ -82,7 +86,9 @@ if __name__ == '__main__':
     #rospy.init_node("quadcopter_brain")
     carl = QuadcopterBrain()
     carl.fly_path([
-        {'latitude': 42.2963422, 'longitude': -71.2669714}
+        {'latitude': 42.2927926, 'longitude': -71.2630031},
+        {'latitude': 42.2926614, 'longitude': -71.2630018},
+        {'latitude': 42.2928118, 'longitude': -71.2631300}
     ])
 
 #Upper great lawn
