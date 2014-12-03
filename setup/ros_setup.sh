@@ -12,6 +12,8 @@ rosdep update
 sudo apt-get install -y python-rosinstall
 sudo apt-get install -y ros-indigo-mavlink
 sudo apt-get install -y ros-indigo-mavros
+sudo apt-get install -y ros-indigo-uvc-camera
+sudo apt-get install -y freeglut3-dev
 
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
@@ -19,4 +21,4 @@ catkin_init_workspace
 cd ..
 catkin_make
 
-echo "SET UP SSH KEYS BEFORE RUNNING fresh_post_ros_setup.sh"
+echo "SET UP SSH KEYS BEFORE RUNNING post_ros_setup.sh"
