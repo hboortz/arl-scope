@@ -30,7 +30,7 @@ download_submodules() {
 
 setup_pymavlink() {
 	roscopter_dir
-	cd pymavlink
+	cd mavlink/pymavlink
 	sudo python setup.py install
 }
 
@@ -42,6 +42,7 @@ setup_roscopter_driver() {
 
 catkin_src
 download_roscopter
+roscopter_dir
 download_submodules
 setup_roscopter_driver
 setup_pymavlink
