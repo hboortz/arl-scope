@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-sudo apt-get install ros-indigo-uvc-camera
-sudo apt-get install freeglut3-dev
-
 # Create camera calibration file
 sudo touch /opt/ros/indigo/share/uvc_camera/camera_calibration.yaml
 sudo chown $USER:$USER /opt/ros/indigo/share/uvc_camera/camera_calibration.yaml
