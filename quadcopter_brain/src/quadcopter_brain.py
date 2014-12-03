@@ -2,6 +2,7 @@
 
 import rospy
 import time
+import json
 
 import roscopter
 import roscopter.msg
@@ -39,15 +40,23 @@ class QuadcopterBrain(object):
         print('Armed')
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
         print('Launched')
-        self.trigger_auto_service()
         time.sleep(5)
+        #self.waypoint_service(waypoints[1])
+        #print("sent waypoint")
+        #time.sleep(15)
+        self.trigger_auto_service()
         self.adjust_throttle_service()
         for waypoint in waypoints:
             self.waypoint_service(waypoint)
-            print('Sent waypoint %s' %(waypoint))
+            #self.trigger_auto_service()
+            print('Sent waypoint %s,%s' %(waypoint.latitude, waypoint.longitude))
             time.sleep(15)
-        print('Landing')
+            #TODO write a smart function to determine wait time
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
+        print('Landing')
+
+    #def reached_waypoint(self, waypoint):
+    #    return 
 
     def on_position_update(self, data):
         '''
@@ -78,20 +87,17 @@ def gps_to_mavlink(coordinate):
     return int(coordinate * 1e+7)
 
 
+def open_waypoint_file(filename):
+    f = open(filename)
+    waypoints = json.load(f)
+    return waypoints 
+
+
 if __name__ == '__main__':
     #rospy.init_node("quadcopter_brain")
     carl = QuadcopterBrain()
-    carl.fly_path([
-        {'latitude': 42.2963422, 'longitude': -71.2669714}
-    ])
+    #lower great lawn
+    great_lawn_waypoints = open_waypoint_file(
+        "waypoint_data/great_lawn_waypoints.json")
+    carl.fly_path([great_lawn_waypoints['A'], great_lawn_waypoints['B']])
 
-#Upper great lawn
-#        {'latitude': 42.2929217, 'longitude': -71.2633305},
-#        {'latitude': 42.2931392, 'longitude': -71.2632456}
-#    ])
-
-# Lower great lawn
-#        {'latitude': 42.2927971, 'longitude' : -71.2630297},
-#        {'latitude': 42.2924562, 'longitude': -71.2630885},
-#        {'latitude': 42.2928173, 'longitude': -71.2631555}
-#    ])
