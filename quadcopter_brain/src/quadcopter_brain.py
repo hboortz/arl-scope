@@ -32,7 +32,6 @@ class QuadcopterBrain(object):
         # self.land_service = rospy.ServiceProxy(
         #     'land', Empty
         # )
-        self.clear_waypoints_service()
         
 
     def fly_path(self, waypoint_data):
@@ -85,6 +84,7 @@ def gps_to_mavlink(coordinate):
 if __name__ == '__main__':
     #rospy.init_node("quadcopter_brain")
     carl = QuadcopterBrain()
+    self.clear_waypoints_service()
     carl.fly_path([
         {'latitude': 42.2927926, 'longitude': -71.2630031},
         {'latitude': 42.2926614, 'longitude': -71.2630018},
