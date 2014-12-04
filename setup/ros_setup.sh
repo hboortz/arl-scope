@@ -15,6 +15,10 @@ sudo apt-get install -y ros-indigo-mavros
 sudo apt-get install -y ros-indigo-uvc-camera
 sudo apt-get install -y freeglut3-dev
 
+# Create camera calibration file
+sudo touch /opt/ros/indigo/share/uvc_camera/camera_calibration.yaml
+sudo chown $USER:$USER /opt/ros/indigo/share/uvc_camera/camera_calibration.yaml
+
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
 catkin_init_workspace
