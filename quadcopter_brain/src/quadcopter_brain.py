@@ -84,12 +84,11 @@ def gps_to_mavlink(coordinate):
 if __name__ == '__main__':
     #rospy.init_node("quadcopter_brain")
     carl = QuadcopterBrain()
-    self.clear_waypoints_service()
+    carl.clear_waypoints_service()
     carl.fly_path([
-        {'latitude': 42.2927926, 'longitude': -71.2630031},
-        {'latitude': 42.2926614, 'longitude': -71.2630018},
-        {'latitude': 42.2928118, 'longitude': -71.2631300}
-    ])
+        {'latitude': 42.2918389, 'longitude': -71.2625737},
+        {'latitude': 42.2917346, 'longitude': -71.2624889},
+        {'latitude': 42.2918441, 'longitude': -71.2624461}])
 
 #Upper great lawn
 #        {'latitude': 42.2929217, 'longitude': -71.2633305},
