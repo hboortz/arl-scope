@@ -97,7 +97,13 @@ if __name__ == '__main__':
     #rospy.init_node("quadcopter_brain")
     carl = QuadcopterBrain()
     #lower great lawn
-    great_lawn_waypoints = open_waypoint_file(
-        "waypoint_data/great_lawn_waypoints.json")
-    carl.fly_path([great_lawn_waypoints['A'], great_lawn_waypoints['B']])
+    #great_lawn_waypoints = open_waypoint_file(
+    #    "waypoint_data/great_lawn_waypoints")
+    #carl.fly_path([great_lawn_waypoints['A'], great_lawn_waypoints['B']])
+    carl.fly_path([
+        {'latitude': 42.2918389, 'longitude': -71.2625737},
+        {'latitude': 42.2917346, 'longitude': -71.2624889},
+        {'latitude': 42.2918441, 'longitude': -71.2624461}])
+
+
 
