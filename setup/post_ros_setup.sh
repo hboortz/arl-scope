@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# Create camera calibration file
-sudo touch /opt/ros/indigo/share/uvc_camera/camera_calibration.yaml
-sudo chown $USER:$USER /opt/ros/indigo/share/uvc_camera/camera_calibration.yaml
-
 # Install ARL stuff
 cd ~/catkin_ws/src
 if [ ! -d "arl-scope" ]; then

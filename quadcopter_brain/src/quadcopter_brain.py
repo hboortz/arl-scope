@@ -20,6 +20,8 @@ class QuadcopterBrain(object):
                          roscopter.msg.FilteredPosition,
                          self.on_position_update)
 
+        self.clear_waypoints_service = rospy.ServiceProxy(
+            'clear_waypoints', Empty)
         self.command_service = rospy.ServiceProxy(
             'command', roscopter.srv.APMCommand)
         self.waypoint_service = rospy.ServiceProxy(
@@ -31,6 +33,7 @@ class QuadcopterBrain(object):
         # self.land_service = rospy.ServiceProxy(
         #     'land', Empty
         # )
+        
 
     def fly_path(self, waypoint_data):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
@@ -49,7 +52,7 @@ class QuadcopterBrain(object):
         for waypoint in waypoints:
             self.waypoint_service(waypoint)
             #self.trigger_auto_service()
-            print('Sent waypoint %s,%s' %(waypoint.latitude, waypoint.longitude))
+            print('Sent waypoint %d, %d' %(waypoint.latitude, waypoint.longitude))
             time.sleep(15)
             #TODO write a smart function to determine wait time
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
@@ -97,13 +100,23 @@ if __name__ == '__main__':
     #rospy.init_node("quadcopter_brain")
     carl = QuadcopterBrain()
     #lower great lawn
-    #great_lawn_waypoints = open_waypoint_file(
-    #    "waypoint_data/great_lawn_waypoints")
-    #carl.fly_path([great_lawn_waypoints['A'], great_lawn_waypoints['B']])
+    great_lawn_waypoints = open_waypoint_file(
+       "waypoint_data/great_lawn_waypoints")
+    carl.fly_path([great_lawn_waypoints['A'], great_lawn_waypoints['B']])
+    carl.clear_waypoints_service()
     carl.fly_path([
         {'latitude': 42.2918389, 'longitude': -71.2625737},
         {'latitude': 42.2917346, 'longitude': -71.2624889},
         {'latitude': 42.2918441, 'longitude': -71.2624461}])
 
 
+#Upper great lawn
+#        {'latitude': 42.2929217, 'longitude': -71.2633305},
+#        {'latitude': 42.2931392, 'longitude': -71.2632456}
+#    ])
 
+# Lower great lawn
+#        {'latitude': 42.2927971, 'longitude' : -71.2630297},
+#        {'latitude': 42.2924562, 'longitude': -71.2630885},
+#        {'latitude': 42.2928173, 'longitude': -71.2631555}
+#    ])
