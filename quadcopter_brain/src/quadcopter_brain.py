@@ -44,9 +44,6 @@ class QuadcopterBrain(object):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
         print('Launched')
         time.sleep(5)
-        #self.waypoint_service(waypoints[1])
-        #print("sent waypoint")
-        #time.sleep(15)
         self.trigger_auto_service()
         self.adjust_throttle_service()
         for waypoint in waypoints:
@@ -99,24 +96,11 @@ def open_waypoint_file(filename):
 if __name__ == '__main__':
     #rospy.init_node("quadcopter_brain")
     carl = QuadcopterBrain()
-    #lower great lawn
-    great_lawn_waypoints = open_waypoint_file(
-       "waypoint_data/great_lawn_waypoints")
-    carl.fly_path([great_lawn_waypoints['A'], great_lawn_waypoints['B']])
     carl.clear_waypoints_service()
+    #great_lawn_waypoints = open_waypoint_file(
+    #   "waypoint_data/great_lawn_waypoints.json")
+    #carl.fly_path([great_lawn_waypoints['A'], great_lawn_waypoints['B']])
     carl.fly_path([
         {'latitude': 42.2918389, 'longitude': -71.2625737},
         {'latitude': 42.2917346, 'longitude': -71.2624889},
         {'latitude': 42.2918441, 'longitude': -71.2624461}])
-
-
-#Upper great lawn
-#        {'latitude': 42.2929217, 'longitude': -71.2633305},
-#        {'latitude': 42.2931392, 'longitude': -71.2632456}
-#    ])
-
-# Lower great lawn
-#        {'latitude': 42.2927971, 'longitude' : -71.2630297},
-#        {'latitude': 42.2924562, 'longitude': -71.2630885},
-#        {'latitude': 42.2928173, 'longitude': -71.2631555}
-#    ])
