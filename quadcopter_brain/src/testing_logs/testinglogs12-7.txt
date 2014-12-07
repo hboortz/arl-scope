@@ -1,0 +1,26 @@
+starting from top of mid section of great lawn
+-------------------------------
+1. reading from file A then C, didn't go any significant distance, but no errors
+
+2. waypoint D then F, reached both
+
+3. waypoint D, failed to come to waypoint B
+
+starting from top of top section of great lawn
+-----------------------------------------------------------
+4. went to waypoint C. low battery and we took manual control
+
+5. auto-took off without safety. wildly drifted
+
+from mid-great lawn again
+----------------------
+6.  went to A then B then C!
+
+7. flipped on launch toggled ltr/auto
+
+8. same as 6
+
+9. same as 7
+
+10. went to A then low battery and manual control taken
+
