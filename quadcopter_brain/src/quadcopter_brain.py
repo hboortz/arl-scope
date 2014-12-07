@@ -49,14 +49,14 @@ class QuadcopterBrain(object):
         for waypoint in waypoints:
             self.waypoint_service(waypoint)
             #self.trigger_auto_service()
-            print('Sent waypoint %d, %d' %(waypoint.latitude, waypoint.longitude))
+            print('Sent waypoint %d, %d' %(waypoint.latitude, 
+                                           waypoint.longitude))
             time.sleep(15)
-            #TODO write a smart function to determine wait time
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
         print('Landing')
 
-    #def reached_waypoint(self, waypoint):
-    #    return 
+    def reached_waypoint(self, waypoint):
+        pass
 
     def on_position_update(self, data):
         '''
@@ -97,10 +97,8 @@ if __name__ == '__main__':
     #rospy.init_node("quadcopter_brain")
     carl = QuadcopterBrain()
     carl.clear_waypoints_service()
-    #great_lawn_waypoints = open_waypoint_file(
-    #   "waypoint_data/great_lawn_waypoints.json")
-    #carl.fly_path([great_lawn_waypoints['A'], great_lawn_waypoints['B']])
-    carl.fly_path([
-        {'latitude': 42.2918389, 'longitude': -71.2625737},
-        {'latitude': 42.2917346, 'longitude': -71.2624889},
-        {'latitude': 42.2918441, 'longitude': -71.2624461}])
+    great_lawn_waypoints = open_waypoint_file(
+       "waypoint_data/great_lawn_waypoints.json")
+    carl.fly_path([great_lawn_waypoints['A'], great_lawn_waypoints['B'], 
+                   great_lawn_waypoints['C']])
+
