@@ -13,3 +13,17 @@
 6. visited all wayppoionts, 2nd waypoiint sent twice
 
 7. happiness. good launch, a, b, c visited, landed happy
+
+
+------ Eric is out with Drew to test altitude + hold_time --------
+1. Tried launching the quadcopter and it headed directly towards the dorms. Drew took control and brought it down. The quadcopter took control away from him every time it sent a waypoint
+
+2. Launched fine and took off agressively in the direction of C. Not sure if it was going to C or drifting
+
+3. Launched fine and took off agressively in the direction of C. Not sure if it was going to C or drifting. AFTER DOING THIS I CLEARED THE WAYPOINTS.
+
+4. Launched well, drifted towards MH and hovered over the sidewalk while in Launch. Failed five times to send A, sent B correctly, sent C correctly.
+
+5. Launched successfully and went to the same point as in previous run - over the sidewalk towards the MH. Hovered there. Got a low battery signal, we landed by hand.
+
+6. Repowered from last run.
