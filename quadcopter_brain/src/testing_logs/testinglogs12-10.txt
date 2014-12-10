@@ -1,0 +1,15 @@
+1. a, b, c success!
+
+2. launched toward A, drifted a bit (ior a lot), then went to the waypoints
+
+3. didnt go to a,went to b and c
+
+4. turtled
+
+5. a,b,c all visited, good launch and land. yay!
+
+------added check to see if waypoint sewnt correctly. 
+
+6. visited all wayppoionts, 2nd waypoiint sent twice
+
+7. happiness. good launch, a, b, c visited, landed happy

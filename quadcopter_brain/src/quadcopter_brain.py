@@ -33,11 +33,29 @@ class QuadcopterBrain(object):
         # self.land_service = rospy.ServiceProxy(
         #     'land', Empty
         # )
-        
+
+    def send_waypoint(self, waypoint):
+        successfully_sent_waypoint = False
+        tries = 0
+        while not successfully_sent_waypoint and tries < 5:
+            res = self.waypoint_service(waypoint)
+            tries += 1
+            successfully_sent_waypoint = res.result
+            if successfully_sent_waypoint:
+                print('Sent waypoint %d, %d' % (waypoint.latitude,
+                                                waypoint.longitude))
+                time.sleep(15)
+            else:
+                print("Failed to send waypoint %d, %d" % (waypoint.latitude,
+                                                          waypoint.longitude))
+                time.sleep(0.1)
+                if tries == 4:
+                    print("Tried 5 times and giving up")
+                else:
+                    print("Trying again. Tries: %d" % (tries+1))
 
     def fly_path(self, waypoint_data):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
-
         # Execute flight plan
         self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
         print('Armed')
@@ -47,11 +65,7 @@ class QuadcopterBrain(object):
         self.trigger_auto_service()
         self.adjust_throttle_service()
         for waypoint in waypoints:
-            self.waypoint_service(waypoint)
-            #self.trigger_auto_service()
-            print('Sent waypoint %d, %d' %(waypoint.latitude, 
-                                           waypoint.longitude))
-            time.sleep(15)
+            self.send_waypoint(waypoint)
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
         print('Landing')
 
@@ -90,7 +104,7 @@ def gps_to_mavlink(coordinate):
 def open_waypoint_file(filename):
     f = open(filename)
     waypoints = json.load(f)
-    return waypoints 
+    return waypoints
 
 
 if __name__ == '__main__':
@@ -98,7 +112,6 @@ if __name__ == '__main__':
     carl = QuadcopterBrain()
     carl.clear_waypoints_service()
     great_lawn_waypoints = open_waypoint_file(
-       "waypoint_data/great_lawn_waypoints.json")
-    carl.fly_path([great_lawn_waypoints['A'], great_lawn_waypoints['B'], 
+        "waypoint_data/great_lawn_waypoints.json")
+    carl.fly_path([great_lawn_waypoints['A'], great_lawn_waypoints['B'],
                    great_lawn_waypoints['C']])
-
