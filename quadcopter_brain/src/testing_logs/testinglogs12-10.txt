@@ -27,3 +27,18 @@
 5. Launched successfully and went to the same point as in previous run - over the sidewalk towards the MH. Hovered there. Got a low battery signal, we landed by hand.
 
 6. Repowered from last run. Cleared the waypoints manually. Successfully launched, went to C at 9.0 m, want to B at 6.0m, then failed to go to A at 3.0 m. Potentially a height cutoff on waypoints.
+
+7. Launched successfully and hovered 3-5m away from the launch point. Went to A at 6m, went to B at 5m, failed to go to C at 4m.
+
+-- MAKE THE JSON PATH RELATIVE - rosrun quadcopter fails if not in correct directory
+-- SEARCH FOR THE 5m HARD LIMIT ON HEIGHT
+-- HOLD TIME IS UNSUCCESSFUL BECAUSE WE OVERWRITE IT AT 15s. LOOK INTO SENDING WAYPOINT LISTS
+
+
+8. 9. Tests 8 and 9 successfully went to A at 5m and failed at B at 4.5m and 4.9m, successively. There seems to be a 5m limit on waypoint height.
+
+10. Launched and went to A, the last waypoint. I did NOT clear waypoints in between runs, which seemed to cause this failure. The quadcopter successfully went to A-B-C-D-F-E-G. It turned violently from G to B, possibly because it was turning 180 degrees.
+
+11. Launch failed, slid sideways, tilted down, and crashed
+
+12. DID NOT CLEAR WAYPOINT MANUALLY. Launch went to A (it shouldn't have done this). Quadcopter successfully went C-A-C-A-C-A. It did not do the wild turn that we saw two tests ago.
