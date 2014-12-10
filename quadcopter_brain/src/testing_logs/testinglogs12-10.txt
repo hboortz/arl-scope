@@ -26,4 +26,4 @@
 
 5. Launched successfully and went to the same point as in previous run - over the sidewalk towards the MH. Hovered there. Got a low battery signal, we landed by hand.
 
-6. Repowered from last run.
+6. Repowered from last run. Cleared the waypoints manually. Successfully launched, went to C at 9.0 m, want to B at 6.0m, then failed to go to A at 3.0 m. Potentially a height cutoff on waypoints.
