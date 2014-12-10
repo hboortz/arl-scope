@@ -48,7 +48,7 @@ class QuadcopterBrain(object):
             else:
                 print("Failed to send waypoint %d, %d" % (waypoint.latitude,
                                                           waypoint.longitude))
-                time.sleep(.1)
+                time.sleep(0.1)
                 if tries == 4:
                     print("Tried 5 times and giving up")
                 else:
