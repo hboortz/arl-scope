@@ -42,3 +42,26 @@
 11. Launch failed, slid sideways, tilted down, and crashed
 
 12. DID NOT CLEAR WAYPOINT MANUALLY. Launch went to A (it shouldn't have done this). Quadcopter successfully went C-A-C-A-C-A. It did not do the wild turn that we saw two tests ago.
+
+13. Tried to bump throttle to half to get batter takeoff, quadcopter still drifted on takeoff. I DID clear wapyoints manually, but it still headed to A on launch. Successfully did A5-B10-C5
+
+14. Cleared waypoints manually, launched at half throttle, took off perfectly, landed manually. Quadcopter flipped after landing due to props spinnning.
+
+15. 16. Flew C5-B10-A5 and C5-C10-A10-A5 correctly.
+
+-- TRY TO SEND WAYPOINTS AS A LIST
+-- MAKE SURE CLEAR_WAYPOINTS IS HAPPENING CORRECTLY
+
+Test flights! We made a diamond and ran it 1-3-2-4, placed cones underneath where the quadcopter paused.
+	{"Test1": {"latitude": 42.2929104, "longitude": -71.2630701, "altitude": 5},
+	 "Test2": {"latitude": 42.2928398, "longitude": -71.2629666, "altitude": 5},
+	 "Test3": {"latitude": 42.2927655, "longitude": -71.2629273, "altitude": 5},
+	 "Test4": {"latitude": 42.2927511, "longitude": -71.2630641, "altitude": 5}}
+
+Test1: Flipped on launch an we lost signal, power cycled
+
+Test2: (About 10 minutes after we took waypoints) Correctly ran the waypoints. The first point was way off (5m?) but the others were good. Maybe took Test1 waypoint badly. Retook the point and recorded it.
+BAD WAYPOINT 1? 42.2927957, -71.2631073
+
+Test3: Launched and went to the last waypoint, even when we cleared waypoints manually. Is again WAY off on the first test waypoint, even after we re-took it.
+BAD WAYPOINT 1? 42.2929104, -71.2630701
