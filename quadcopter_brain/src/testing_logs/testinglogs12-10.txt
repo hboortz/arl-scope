@@ -52,6 +52,7 @@
 -- TRY TO SEND WAYPOINTS AS A LIST
 -- MAKE SURE CLEAR_WAYPOINTS IS HAPPENING CORRECTLY
 
+///////////////////////////////
 Test flights! We made a diamond and ran it 1-3-2-4, placed cones underneath where the quadcopter paused.
 	{"Test1": {"latitude": 42.2929104, "longitude": -71.2630701, "altitude": 5},
 	 "Test2": {"latitude": 42.2928398, "longitude": -71.2629666, "altitude": 5},
@@ -65,3 +66,12 @@ BAD WAYPOINT 1? 42.2927957, -71.2631073
 
 Test3: Launched and went to the last waypoint, even when we cleared waypoints manually. Is again WAY off on the first test waypoint, even after we re-took it.
 BAD WAYPOINT 1? 42.2929104, -71.2630701
+
+ERRORS OFF THE POINTS, IN METERS
+Test1: 9 SW
+Test1 Retake: 8.5 N
+Test2: 0.28 N, 1.07 NNW
+Test3: 2.35 NNW, 2.05 SE
+Test4: 1.1 N, 2.45 N
+
+///////////////////////////////
