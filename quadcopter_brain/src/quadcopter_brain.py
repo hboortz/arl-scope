@@ -3,6 +3,7 @@
 import rospy
 import time
 import json
+import rospkg
 
 import roscopter
 import roscopter.msg
@@ -30,9 +31,6 @@ class QuadcopterBrain(object):
             'trigger_auto', Empty)
         self.adjust_throttle_service = rospy.ServiceProxy(
             'adjust_throttle', Empty)
-        # self.land_service = rospy.ServiceProxy(
-        #     'land', Empty
-        # )
 
     def send_waypoint(self, waypoint):
         successfully_sent_waypoint = False
@@ -102,7 +100,10 @@ def gps_to_mavlink(coordinate):
 
 
 def open_waypoint_file(filename):
-    f = open(filename)
+    rospack = rospkg.RosPack()
+    f = open("%s%s%s" %(rospack.get_path("quadcopter_brain"),
+                        "/src/",
+                        filename))
     waypoints = json.load(f)
     return waypoints
 
