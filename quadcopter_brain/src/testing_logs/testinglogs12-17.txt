@@ -1,0 +1,7 @@
+1. Failed several times to arm in AUTO. After power cycling the quadcopter and arming first by hand the quadcopter then successfully armed in AUTO. The tentative fix is to A) connect with roscopter, B) arm with the controller, C) take off in AUTO
+
+2. Successfully ran an A-B-C circuit from master. On B it failed once to send. A and C transmitted successfully the first time
+
+3. Reconnected with roscopter and ran quadcopter_brain with no internal waypoint clearing. It did an A-C circuit successfully. We think killing/reconnecting roscopter automatically clears waypoints
+
+4. Quadcopter failed to arm in AUTO.
