@@ -1,0 +1,5 @@
+{"test1": {"latitude": 42.2935917, "longitude": -71.2651560, "altitude": 5.0},
+ "test2": {"latitude": 42.2936281, "longitude": -71.2651509, "altitude": 5.0},
+ "test2-1": {"latitude": 42.2936281, "longitude": -71.2651509, "altitude": 1.0},
+ "test2-2": {"latitude": 42.2936281, "longitude": -71.2651509, "altitude": 2.0},
+ "test2-3": {"latitude": 42.2936281, "longitude": -71.2651509, "altitude": 3.0}}
