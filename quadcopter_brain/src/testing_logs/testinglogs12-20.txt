@@ -1,0 +1,7 @@
+1. Tried to send a waypoint list but it failed five times. Carl launched fine, was landed manually
+
+2. Quadcopter launched successfully, sending waypoints failed 4 times and then succeeded. The quadcopter went to the first waypoint (test2). After 20 seconds or so it turned around, but didn't descend even though the second waypoint was test2(3). Timed out on land, was landed manually. Could the antennae be the issue? It's dropped signal mid-run once so far and made roscopter quit
+
+3. Tried running code without arming and launch, transmission of waypoints succeeded first time
+
+4. Cleared waypoints manually before flight, quadcopter flips on arming
