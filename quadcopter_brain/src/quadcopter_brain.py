@@ -105,8 +105,8 @@ def open_waypoint_file(filename):
     quadcopter_brain_path = rospack.get_path("quadcopter_brain")
     source_path = "src"
     file_path = os.path.join(quadcopter_brain_path, source_path, filename)
-    f = open(file_path)
-    waypoints = json.load(f)
+    with open(file_path, "r") as f:
+        waypoints = json.load(f)
     return waypoints
 
 
@@ -116,5 +116,5 @@ if __name__ == '__main__':
     carl.clear_waypoints_service()
     great_lawn_waypoints = open_waypoint_file(
         "waypoint_data/great_lawn_waypoints.json")
-    carl.fly_path([great_lawn_waypoints['A'], great_lawn_waypoints['B'],
-                   great_lawn_waypoints['C']])
+    carl.fly_path([great_lawn_waypoints['V1'], great_lawn_waypoints['V2'],
+                   great_lawn_waypoints['V3']])
