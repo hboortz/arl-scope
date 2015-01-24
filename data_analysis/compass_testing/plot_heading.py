@@ -11,7 +11,7 @@ def plot_averages(actual, measured):
 
 
 if __name__ == '__main__':
-    fin = open('data/faked_data.json','r')
+    fin = open('data/sfaked_data.json','r')
     data = json.load(fin)
     # data saved as nested array: [ [actual], [measured]  ]
     actual = data[0]
