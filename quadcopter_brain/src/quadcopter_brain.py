@@ -10,6 +10,7 @@ import roscopter.msg
 import roscopter.srv
 from std_srvs.srv import *
 from sensor_msgs.msg import NavSatFix, NavSatStatus, Imu
+from position_subscriber import CurrentPosition
 
 
 class QuadcopterBrain(object):
@@ -30,6 +31,11 @@ class QuadcopterBrain(object):
         # self.land_service = rospy.ServiceProxy(
         #     'land', Empty
         # )
+        
+        pos = CurrentPosition()
+        print pos
+        import pdb
+        pdb.set_trace()
 
     def send_waypoint(self, waypoint):
         successfully_sent_waypoint = False
@@ -127,10 +133,6 @@ def get_pos():
 
 def main():
     rospy.init_node("quadcopter_brain")
-    rospy.Subscriber("/filtered_pos",
-                     roscopter.msg.FilteredPosition,
-                     callback)
-                     #self.on_position_update)
     carl = QuadcopterBrain()
     carl.clear_waypoints_service()
     great_lawn_waypoints = open_waypoint_file(
@@ -140,16 +142,6 @@ def main():
                    great_lawn_waypoints['C']])
     rospy.spin()
    
-
-
-def test_pos_sub():
-    rospy.init_node("quadcopter_brain")
-    rospy.Subscriber("/filtered_pos",
-                     roscopter.msg.FilteredPosition,
-                     callback)
-    rospy.loginfo("made subscriber")
-    rospy.spin()
-
 
 if __name__ == '__main__':
     main()
