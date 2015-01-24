@@ -114,10 +114,16 @@ def open_waypoint_file(filename):
     waypoints = json.load(f)
     return waypoints
 
+
 def callback(data):
     rospy.loginfo(rospy.get_caller_id() + "Long: %s", data.longitude)
-    print"RAWRAWRAWRWAR"
+    print"RAWRAWRAWRWAR", data.longitude
 
+
+def get_pos():
+    for i in range (10):
+        time.sleep(2)
+        rospy.spin()
 
 def main():
     rospy.init_node("quadcopter_brain")
@@ -125,16 +131,15 @@ def main():
                      roscopter.msg.FilteredPosition,
                      callback)
                      #self.on_position_update)
-    print "made sub"
-    rospy.spin()
     carl = QuadcopterBrain()
     carl.clear_waypoints_service()
     great_lawn_waypoints = open_waypoint_file(
         "waypoint_data/great_lawn_waypoints.json")
     print carl.reached_waypoint(great_lawn_waypoints['A'])
-    #carl.fly_path([great_lawn_waypoints['A'], great_lawn_waypoints['B'],
-    #               great_lawn_waypoints['C']])
-
+    carl.fly_path([great_lawn_waypoints['A'], great_lawn_waypoints['B'],
+                   great_lawn_waypoints['C']])
+    rospy.spin()
+   
 
 
 def test_pos_sub():
