@@ -13,6 +13,6 @@ def latlon_diff(latA, lonA, latB, lonB):
     print "Distance (m): ", (dX**2 + dY**2)**0.5
 
 if __name__ == '__main__':
-    latlon_diff(42.1111, -71.5555, 42.3333, -71.7777)
+    latlon_diff(42., -71., 42.3333, -71.7777)
 
 # Put data here as you gather it

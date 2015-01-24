@@ -38,21 +38,30 @@ class LandingSite(object):
         self.center = Pose(position=Point(x=sums[0]/count,
                                           y=sums[1]/count,
                                           z=sums[2]/count))
+        print "Landing site: ", self.center
 
     def latlon(self, copter):
         '''
         Latitude, longitude of the landing site
+        Note: we use (-y) data from the camera because
+              the orientation of the reported data has
+              (+y) going backwards
         '''
-        heading = math.radians(air_to_math(copter.heading))
-        rotation = np.array([cos(heading), -sin(heading)],
-                            [sin(heading), cos(heading)])
-        relative_site = np.array([self.center.x], [self.center.y])
+        heading = radians(air_to_math(copter.heading))
+        print "copter.heading:", copter.heading
+        print "heading:", heading
+        rotation = np.array([[cos(heading), -sin(heading)],
+                             [sin(heading), cos(heading)]])
+        relative_site = np.array([[-self.center.position.x], 
+                                  [self.center.position.y]])
+        print "relative_site:", relative_site
         absolute_site = np.dot(rotation, relative_site)
+        print "absolute_site:", absolute_site
         copter_utm = geodesy.utm.fromLatLong(copter.latitude,
                                              copter.longitude)
         site_utm = deepcopy(copter_utm)
-        site_utm.easting += absolute_site[0]
-        site_utm.northing += absolute_site[1]
+        site_utm.easting += absolute_site[0][0]
+        site_utm.northing += absolute_site[1][0]
         site_latlon = site_utm.toMsg()
         return site_latlon.latitude, site_latlon.longitude
 

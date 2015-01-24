@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 
 import datetime
@@ -18,19 +17,27 @@ class QuadcopterFiducialBrain(QuadcopterBrain):
         time_limit = datetime.timedelta(minutes=1)
         time_end = datetime.datetime.Now() + time_limit
         seen = False
+        print "Searching for landing site..."
         while datetime.datetime.Now() < time_end:
             if landing_site.in_view():
                 seen = True
                 break
             rospy.sleep(0.1)
 
+        print("Found landing site? ", seen)
+
         if seen:
+            print "Landing site info: ", landing_site.center
             goal_lat, goal_lon, goal_alt = landing_site.latlon(self)
             waypoint = build_waypoint({'latitude': goal_lat,
                                        'longitude': goal_lon,
                                        'altitude': 1.0})
+
+            print "Given waypoint: ", waypoint
+            print "Sending waypoint!"
             self.send_waypoint(waypoint)
-            rospy.sleep(15.0)
+
+        print "Landing!!!"
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
 
     def setup_test(self, waypoint_data):
@@ -53,7 +60,9 @@ class QuadcopterFiducialBrain(QuadcopterBrain):
 if __name__ == '__main__':
     carl = QuadcopterFiducialBrain()
     carl.clear_waypoints_service()
+    rospy.sleep(2)
+    rospy.spin()
     great_lawn_waypoints = open_waypoint_file(
         "waypoint_data/great_lawn_waypoints.json")
-    carl.fly_path([great_lawn_waypoints['A']])
+    carl.setup_test([great_lawn_waypoints['A']])
     carl.land_on_fiducial()
