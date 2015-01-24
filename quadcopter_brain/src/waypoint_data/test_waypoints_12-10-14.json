@@ -1,4 +1,7 @@
 {"Test1": {"latitude": 42.2929104, "longitude": -71.2630701, "altitude": 5},
  "Test2": {"latitude": 42.2928398, "longitude": -71.2629666, "altitude": 5},
  "Test3": {"latitude": 42.2927655, "longitude": -71.2629273, "altitude": 5},
- "Test4": {"latitude": 42.2927511, "longitude": -71.2630641, "altitude": 5}}
+ "Test4": {"latitude": 42.2927511, "longitude": -71.2630641, "altitude": 5},
+ "V1": {"latitude": 42.292778, "longitude": -71.263091, "altitude": 5},
+ "V2": {"latitude": 42.292718, "longitude": -71.263046, "altitude": 5},
+ "V3": {"latitude": 42.292901, "longitude": -71.263017, "altitude": 5}}
