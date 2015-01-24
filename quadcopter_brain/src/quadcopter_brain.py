@@ -10,7 +10,6 @@ import roscopter.msg
 import roscopter.srv
 from std_srvs.srv import *
 from sensor_msgs.msg import NavSatFix, NavSatStatus, Imu
-from position_subscriber import CurrentPosition
 
 
 class QuadcopterBrain(object):
@@ -32,27 +31,18 @@ class QuadcopterBrain(object):
         #     'land', Empty
         # )
         
-        pos = CurrentPosition()
-        print pos
-        import pdb
-        pdb.set_trace()
-
     def send_waypoint(self, waypoint):
         successfully_sent_waypoint = False
         tries = 0
-        while not successfully_sent_waypoint and tries < 2:
+
+        while not successfully_sent_waypoint and tries < 5:
             res = self.waypoint_service(waypoint)
-            tries += 1
             successfully_sent_waypoint = res.result
+            tries += 1
             if successfully_sent_waypoint:
                 print('Sent waypoint %d, %d' % (waypoint.latitude,
                                                 waypoint.longitude))
-                wait_time = 0
-                while not self.reached_waypoint(waypoint):
-                    time.sleep(5)
-                    wait_time += 5
-                    print "Traveling to waypoint for %d seconds" % (wait_time)
-                print "Reached waypoint"
+                print self.check_reached_waypoint(waypoint):
             else:
                 print("Failed to send waypoint %d, %d" % (waypoint.latitude,
                                                           waypoint.longitude))
@@ -62,11 +52,34 @@ class QuadcopterBrain(object):
                 else:
                     print("Trying again. Tries: %d" % (tries))
 
-    def reached_waypoint(self, waypoint):
+    def check_reached_waypoint(self, waypoint):
+        wait_time = 0
+        rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
+                         self.position_callback) 
+        time.sleep(5)
+        wait_time += 5
+        print "Traveling to waypoint for %d seconds" % (wait_time)
+        print "Current position is %d, %d" % (self.current_lat,
+                                              self.current_long)
+        if not self.has_reached_waypoint(waypoint):
+            rospy.spin()
+        return "Reached waypoint"
+
+    def has_reached_waypoint(self, waypoint):
         print("In reached waypoint")
-        lat_delta = math.fabs(self.current_lat - waypoint.latitude) 
-        long_delta = math.fabs(self.current_long - waypoint.longitude)
-        return lat_delta < 30 and long_delta < 30
+        try:
+            lat_delta = math.fabs(self.current_lat - waypoint.latitude) 
+            long_delta = math.fabs(self.current_long - waypoint.longitude)
+            return lat_delta < 30 and long_delta < 30
+        except:
+            return False
+
+    def position_callback(self, data):
+        print "Updating Position Data"
+        self.current_lat = data.latitude
+        self.current_long = data.longitude
+        self.current_rel_alt = data.relative_altitude 
+        self.current_alt = data.altitude
 
     def fly_path(self, waypoint_data):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
