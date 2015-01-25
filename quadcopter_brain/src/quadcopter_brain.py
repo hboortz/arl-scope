@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
-import rospy
 import time
 import json
 import math
+import os
 
+import rospkg
+import rospy
 import roscopter
 import roscopter.msg
 import roscopter.srv
@@ -122,6 +124,12 @@ def gps_to_mavlink(coordinate):
 def open_waypoint_file(filename):
     f = open(filename)
     waypoints = json.load(f)
+    rospack = rospkg.RosPack()
+    quadcopter_brain_path = rospack.get_path("quadcopter_brain")
+    source_path = "src"
+    file_path = os.path.join(quadcopter_brain_path, source_path, filename)
+    with open(file_path, "r") as f:
+        waypoints = json.load(f)
     return waypoints
 
 
