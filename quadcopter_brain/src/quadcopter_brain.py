@@ -34,7 +34,6 @@ class QuadcopterBrain(object):
     def send_waypoint(self, waypoint):
         successfully_sent_waypoint = False
         tries = 0
-
         while not successfully_sent_waypoint and tries < 5:
             res = self.waypoint_service(waypoint)
             successfully_sent_waypoint = res.result
@@ -42,7 +41,7 @@ class QuadcopterBrain(object):
             if successfully_sent_waypoint:
                 print('Sent waypoint %d, %d' % (waypoint.latitude,
                                                 waypoint.longitude))
-                print self.check_reached_waypoint(waypoint):
+                print self.check_reached_waypoint(waypoint)
             else:
                 print("Failed to send waypoint %d, %d" % (waypoint.latitude,
                                                           waypoint.longitude))
@@ -62,20 +61,21 @@ class QuadcopterBrain(object):
         print "Current position is %d, %d" % (self.current_lat,
                                               self.current_long)
         if not self.has_reached_waypoint(waypoint):
-            rospy.spin()
-        return "Reached waypoint"
+            rospy.spin() # regrab data from topic
+        else:
+            time.sleep(3) # stay at waypoint for a few seconds
+            return "Reached waypoint"
 
     def has_reached_waypoint(self, waypoint):
-        print("In reached waypoint")
+        error_margin = 10000  #this will be determined from tests
         try:
             lat_delta = math.fabs(self.current_lat - waypoint.latitude) 
             long_delta = math.fabs(self.current_long - waypoint.longitude)
-            return lat_delta < 30 and long_delta < 30
-        except:
+            return lat_delta < error_margin and long_delta < error_margin
+        except: # if haven't gotten current position data
             return False
 
     def position_callback(self, data):
-        print "Updating Position Data"
         self.current_lat = data.latitude
         self.current_long = data.longitude
         self.current_rel_alt = data.relative_altitude 
@@ -96,15 +96,6 @@ class QuadcopterBrain(object):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
         print('Landing')
 
-    def on_position_update(self, data):
-        '''
-        data: GPS + IMU
-        '''
-        print("Updating pos RAWRAWRAWRAWR")
-        self.current_data = data
-        self.current_lat = data.longitude
-        self.current_long = data.latitude
-        self.current_alt = data.altitude
 
 def build_waypoint(data):
     latitude = data['latitude']
@@ -134,23 +125,12 @@ def open_waypoint_file(filename):
     return waypoints
 
 
-def callback(data):
-    rospy.loginfo(rospy.get_caller_id() + "Long: %s", data.longitude)
-    print"RAWRAWRAWRWAR", data.longitude
-
-
-def get_pos():
-    for i in range (10):
-        time.sleep(2)
-        rospy.spin()
-
 def main():
     rospy.init_node("quadcopter_brain")
     carl = QuadcopterBrain()
     carl.clear_waypoints_service()
     great_lawn_waypoints = open_waypoint_file(
         "waypoint_data/great_lawn_waypoints.json")
-    print carl.reached_waypoint(great_lawn_waypoints['A'])
     carl.fly_path([great_lawn_waypoints['A'], great_lawn_waypoints['B'],
                    great_lawn_waypoints['C']])
     rospy.spin()
@@ -158,4 +138,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    #test_pos_sub()
