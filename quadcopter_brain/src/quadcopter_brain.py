@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
-import rospy
 import time
 import json
 import math
+import os
 
+import rospkg
+import rospy
 import roscopter
 import roscopter.msg
 import roscopter.srv
@@ -42,7 +44,19 @@ class QuadcopterBrain(object):
             if successfully_sent_waypoint:
                 print('Sent waypoint %d, %d' % (waypoint.latitude,
                                                 waypoint.longitude))
-                print self.check_reached_waypoint(waypoint):
+                print self.check_reached_waypoint(waypoint):	
+
+    def send_waypoint(self, waypoint):
+        successfully_sent_waypoint = False
+        tries = 0
+        while not successfully_sent_waypoint and tries < 5:
+            res = self.waypoint_service(waypoint)
+            tries += 1
+            successfully_sent_waypoint = res.result
+            if successfully_sent_waypoint:
+                print('Sent waypoint %d, %d' % (waypoint.latitude,
+                                                waypoint.longitude))
+                time.sleep(15)
             else:
                 print("Failed to send waypoint %d, %d" % (waypoint.latitude,
                                                           waypoint.longitude))
@@ -80,6 +94,10 @@ class QuadcopterBrain(object):
         self.current_long = data.longitude
         self.current_rel_alt = data.relative_altitude 
         self.current_alt = data.altitude
+                if tries == 4:
+                    print("Tried 5 times and giving up")
+                else:
+                    print("Trying again. Tries: %d" % (tries+1))
 
     def fly_path(self, waypoint_data):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
@@ -131,6 +149,12 @@ def gps_to_mavlink(coordinate):
 def open_waypoint_file(filename):
     f = open(filename)
     waypoints = json.load(f)
+    rospack = rospkg.RosPack()
+    quadcopter_brain_path = rospack.get_path("quadcopter_brain")
+    source_path = "src"
+    file_path = os.path.join(quadcopter_brain_path, source_path, filename)
+    with open(file_path, "r") as f:
+        waypoints = json.load(f)
     return waypoints
 
 
@@ -158,4 +182,5 @@ def main():
 
 if __name__ == '__main__':
     main()
-    #test_pos_sub()
+    carl.fly_path([great_lawn_waypoints['V1'], great_lawn_waypoints['V2'],
+                   great_lawn_waypoints['V3']])

@@ -1,0 +1,27 @@
+ON THE GREAT LAWN (Eric, Allie, Kyle)
+1. Failed several times to arm in AUTO. After power cycling the quadcopter and arming first by hand the quadcopter then successfully armed in AUTO. The tentative fix is to A) connect with roscopter, B) arm with the controller, C) take off in AUTO
+
+2. Successfully ran an A-B-C circuit from master. On B it failed once to send. A and C transmitted successfully the first time
+
+3. Reconnected with roscopter and ran quadcopter_brain with no internal waypoint clearing. It did an A-C circuit successfully. We think killing/reconnecting roscopter automatically clears waypoints
+
+4. Quadcopter failed to arm in AUTO.
+
+
+TESTING BEHIND THE LPB (Eric)
+IN MASTER
+1. Did a test1(7)-test2(5) run correctly. Cleared the WPs manually before running and had no issues. Going to next test low waypoints
+
+2. Ran a test1(5)-test2(3) set correctly. The quadcopter seemed to take off towards the old waypoint at first during launch, but soon caught itself and went straight up
+
+3. Ran a test2(5)-test2(3)-test2(2)-test2(5) set correctly. I cleared the waypoints manually before takeoff, it launched straight up
+
+4. Ran a test2(3)-test2(1)-test2(2) set correctly. I did NOT clear waypoints manually, and it launched sideways at takeoff, then caught itself after a second and went up
+NO CHANGES MADE TO MASTER
+
+IN DEBUG/CLEARWPS
+1. With 15s wait time after clear, it had two missions before clear and 1 mission after. Successfully took off straight up and did a test2(3) waypoint.
+
+2. With a 3.0s wait time after clear, it armed but didn't launch. This is potentially because the throttle wasn't at half.
+
+3. With a 3s wait time after clear, and the throttle definitely at half, the quadcopter cleared waypoints, waited three seconds, then launched successfully. It took off a little to the side, but it notably didn't take off a little to the side in the direction of the last waypoint. It went to test2(3) WP, but took control, landed, and went inside b/c of darkness.
