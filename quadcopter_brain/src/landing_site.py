@@ -52,8 +52,8 @@ class LandingSite(object):
         print "heading:", heading
         rotation = np.array([[cos(heading), -sin(heading)],
                              [sin(heading), cos(heading)]])
-        relative_site = np.array([[-self.center.position.x], 
-                                  [self.center.position.y]])
+        relative_site = np.array([[self.center.position.x], 
+                                  [-self.center.position.y]])
         print "relative_site:", relative_site
         absolute_site = np.dot(rotation, relative_site)
         print "absolute_site:", absolute_site
@@ -68,8 +68,7 @@ class LandingSite(object):
 
 def air_to_math(aircraft_heading):
     '''
-    Converts a heading from (clockwise from North) to
-    (counterclockwise from East)
+    Converts a heading from clockwise to counterclockwise
     '''
-    math_heading = (-(aircraft_heading - 360) + 90) % 360
+    math_heading = -(aircraft_heading - 360)
     return math_heading
