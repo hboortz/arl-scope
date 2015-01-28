@@ -32,7 +32,7 @@ def calculate_precision_accuracy(actual, measured, dataset):
 if __name__ == '__main__':
     i=1
     for test in test_data:
-        plt.subplot(2,2,i)
+        plt.subplot(2, 2, i)
         i+=1
         fin = open('data/' + test, 'r')
         data = json.load(fin)
