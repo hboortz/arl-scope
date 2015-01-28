@@ -8,26 +8,32 @@ test_data = ['paul-O-1-25-2015.json',
              'carl-O-1-25-2015.json',
              'paul-SoccerField-1-25-2015.json',
              'carl-SoccerField-1-25-2015.json']
+titles = {test_data[0] : 'Paul (Iris+) in Courtyard (the O)',
+          test_data[1] : 'Carl (Iris) in Courtyard (the O)',
+          test_data[2] : 'Paul (Iris+) on Soccer Field',
+          test_data[3] : 'Carl (Iris) on Soccer Field'}
 
-def plot_data(actual, measured, title):
+def plot_data(actual, measured, dataset):
     plt.plot([0, 360], [0, 360], 'r', linewidth=2)
     plt.plot(actual, measured, '.', markersize=15)
-    plt.title(title)
+    plt.title(titles[dataset])
     plt.xlabel('Actual (degrees)')
     plt.ylabel('Iris Compass (degrees)')
-    plt.show()
 
-def calculate_precision_accuracy(actual, measured, test):
+def calculate_precision_accuracy(actual, measured, dataset):
     error = np.array([])
     for i in range(len(actual)):
         error = np.append(error, measured[i] - actual[i])
     print ""
-    print "Data for test ", test
+    print "Data from dataset ", dataset
     print "Average error:", error.mean()
     print "Std deviation of error:", error.std()
 
 if __name__ == '__main__':
+    i=1
     for test in test_data:
+        plt.subplot(2,2,i)
+        i+=1
         fin = open('data/' + test, 'r')
         data = json.load(fin)
         # data saved as nested array: [ [actual], [measured]  ]
@@ -35,3 +41,4 @@ if __name__ == '__main__':
         measured = [point / 100.0 for point in data[1]]
         calculate_precision_accuracy(actual, measured, test)
         plot_data(actual, measured, test)
+    plt.show()
