@@ -21,7 +21,7 @@ def main():
 
     derpy.latitude = 42.0
     derpy.longitude = -71.0
-    derpy.heading = 315
+    derpy.heading = 0
     
     moon.center = Pose(position=Point(x=6, y=6, z=6))
 
