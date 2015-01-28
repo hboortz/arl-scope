@@ -22,7 +22,7 @@ class LandingSite(object):
                                       ARMarkers,
                                       self.on_fiducial_update)
 
-    def on_fiducial_update(data):
+    def on_fiducial_update(self,data):
         markers = data.markers
         visible = []
         sums = [0, 0, 0]
@@ -30,15 +30,16 @@ class LandingSite(object):
         for fiducial in markers:
             visible.append(fiducial.id)
             count += 1
-            fpose = fiducial.pose.pose
+            fpose = fiducial.pose.pose.position
             sums[0] += fpose.x
             sums[1] += fpose.y
             sums[2] += fpose.z
         self.in_view = len(visible) > 0
-        self.center = Pose(position=Point(x=sums[0]/count,
-                                          y=sums[1]/count,
-                                          z=sums[2]/count))
-        print "Landing site: ", self.center
+        if count:
+            self.center = Pose(position=Point(x=sums[0]/count,
+                                              y=sums[1]/count,
+                                              z=sums[2]/count))
+        # print "Landing site: ", self.center
 
     def latlon(self, copter):
         '''
@@ -48,15 +49,11 @@ class LandingSite(object):
               (+y) going backwards
         '''
         heading = radians(air_to_math(copter.heading))
-        print "copter.heading:", copter.heading
-        print "heading:", heading
         rotation = np.array([[cos(heading), -sin(heading)],
                              [sin(heading), cos(heading)]])
         relative_site = np.array([[self.center.position.x], 
                                   [-self.center.position.y]])
-        print "relative_site:", relative_site
         absolute_site = np.dot(rotation, relative_site)
-        print "absolute_site:", absolute_site
         copter_utm = geodesy.utm.fromLatLong(copter.latitude,
                                              copter.longitude)
         site_utm = deepcopy(copter_utm)

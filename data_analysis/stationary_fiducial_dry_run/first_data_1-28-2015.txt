@@ -1,0 +1,17 @@
+dry spot: 42.293004, -71.263612
+1) Given waypoint:  latitude: 422929955
+longitude: -712636023
+NOTE: RVIZ fiducials seemed off (the yellow dots)
+2) Given waypoint:  latitude: 422930048
+longitude: -712636229
+3) Given waypoint:  latitude: 422929606
+longitude: -712636175
+
+
+black line: 42.293002, -71.26355
+1) Given waypoint:  latitude: 422929737
+longitude: -712636127
+2) Given waypoint:  latitude: 422929662
+longitude: -712636271
+3) Given waypoint:  latitude: 422929698
+longitude: -712636057
