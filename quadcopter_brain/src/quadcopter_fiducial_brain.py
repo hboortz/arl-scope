@@ -35,10 +35,10 @@ class QuadcopterFiducialBrain(QuadcopterBrain):
 
             print "Given waypoint: ", waypoint
             print "Sending waypoint!"
-            # self.send_waypoint(waypoint)
+            self.send_waypoint(waypoint)
 
         print "Landing!!!"
-        # self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
+        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
 
     def setup_test(self, waypoint_data):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     carl.clear_waypoints_service()
     rospy.init_node("fiducial_landing")
     rospy.sleep(2)
-    # great_lawn_waypoints = open_waypoint_file(
-    #     "waypoint_data/great_lawn_waypoints.json")
-    # carl.setup_test([great_lawn_waypoints['A']])
+    great_lawn_waypoints = open_waypoint_file(
+        "waypoint_data/great_lawn_waypoints.json")
+    carl.setup_test([great_lawn_waypoints['A']])
     carl.land_on_fiducial()
