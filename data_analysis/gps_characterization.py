@@ -22,10 +22,7 @@ def simple_moving_average(data, window=5):
     return numpy.convolve(data, weights, 'valid')
 
 
-def speed_moving_average(times, data):
-    print data
+def speeds(times, data):
     delta_times = times[1:] - times[:-1]
     distances = [euclidean_distance(p1, p2) for p1, p2 in zip(data[1:], data[:-1])]
-    print distances
-    speeds = [distance / time for distance, time in zip(distances, delta_times)]
-    return simple_moving_average(speeds)
+    return [distance / time for distance, time in zip(distances, delta_times)]

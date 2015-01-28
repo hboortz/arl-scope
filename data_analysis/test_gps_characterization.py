@@ -44,13 +44,17 @@ class TestGPSCharacterization(unittest.TestCase):
         self.assertTrue(numpy.allclose(moving_averages, true_moving_averages))
 
     @mock.patch("gps_characterization.euclidean_distance")
-    def test_speed_moving_average(self, euclidean_distance_mock):
-        times = numpy.array([1, 2, 1, 1, 2, 1, 2, 1, 1, 2])
-        data = numpy.tile(numpy.array([1, 1]), (10, 1))
+    def test_speeds(self, euclidean_distance_mock):
+        times = numpy.array([1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15])
+        data = numpy.tile(numpy.array([1, 1]), (11, 1))
         euclidean_distance_mock.side_effect = [2, 1, 2, 2, 1, 2, 1, 2, 2, 1]
 
-        true_speed_moving_averages = numpy.repeat(1.6, 6)
-        speed_moving_averages = gps_characterization.speed_moving_average(times, data)
+        true_speeds = numpy.array([1, 1, 2, 1, 1, 1, 1, 2, 1, 1])
+        speeds = gps_characterization.speeds(times, data)
+
+        self.assertTrue(numpy.allclose(true_speeds, speeds))
+
+        
 
 
 if __name__ == "__main__":
