@@ -13,6 +13,7 @@ import roscopter.msg
 import roscopter.srv
 from std_srvs.srv import *
 from sensor_msgs.msg import NavSatFix, NavSatStatus, Imu
+from geodesy import utm
 
 
 class QuadcopterBrain(object):
@@ -30,9 +31,6 @@ class QuadcopterBrain(object):
             'trigger_auto', Empty)
         self.adjust_throttle_service = rospy.ServiceProxy(
             'adjust_throttle', Empty)
-        # self.land_service = rospy.ServiceProxy(
-        #     'land', Empty
-        # )
 
     def send_waypoint(self, waypoint):
         successfully_sent_waypoint = False
@@ -71,11 +69,18 @@ class QuadcopterBrain(object):
             return "Reached waypoint"
 
     def has_reached_waypoint(self, waypoint):
-        error_margin = 10000  #this will be determined from tests
+        error_margin = 3  # meters
         try:
-            lat_delta = math.fabs(self.current_lat - waypoint.latitude) 
-            long_delta = math.fabs(self.current_long - waypoint.longitude)
-            return lat_delta < error_margin and long_delta < error_margin
+            current_pt = utm.fromLatLong(self.current_lat, self.current_long)
+            current_x = current_pt.easting
+            current_y = current_pt.northing
+            waypoint_pt = utm.fromLatLong(waypoint.latitude, waypoint.longitude)
+            waypoint_x = waypoint_pt.easting
+            waypoint_y = waypoint_pt.northing
+            x_delta = math.fabs(current_x - waypoint_x)
+            y_delta = math.fabs(current_y - waypoint_y)
+            dist_from_waypoint = math.sqrt(x_delta**2 + y_delta**2) 
+            return dist_from_waypoint < error_margin
         except: # if haven't gotten current position data
             return False
 
@@ -97,8 +102,8 @@ class QuadcopterBrain(object):
         self.adjust_throttle_service()
         for waypoint in waypoints:
             self.send_waypoint(waypoint)
-        #self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
-        #print('Landing')
+        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
+        print('Landing')
 
 
 def build_waypoint(data):
@@ -142,6 +147,7 @@ def main():
     great_lawn_waypoints = open_waypoint_file(
         "waypoint_data/great_lawn_waypoints.json")
     carl.fly_path([great_lawn_waypoints["far_corner"]])
+
 
 if __name__ == '__main__':
     main()
