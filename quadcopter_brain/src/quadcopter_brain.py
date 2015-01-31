@@ -62,7 +62,7 @@ class QuadcopterBrain(object):
         print "--> Traveling to waypoint for %d seconds" % (wait_time)
         print "--> Current position is %d, %d" % (self.current_lat,
                                               self.current_long)
-        if not self.has_reached_waypoint(waypoint):
+        if not self.has_reached_waypoint(waypoint):`
             rospy.spin() # regrab data from topic
         else:
             time.sleep(5) # stay at waypoint for a few seconds
@@ -93,7 +93,7 @@ class QuadcopterBrain(object):
     def fly_path(self, waypoint_data):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
         # Execute flight plan
-        self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
+        #self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
         print('Armed')
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
         print('Launched')
@@ -146,7 +146,7 @@ def main():
     carl.clear_waypoints_service()
     great_lawn_waypoints = open_waypoint_file(
         "waypoint_data/great_lawn_waypoints.json")
-    carl.fly_path([great_lawn_waypoints["far_corner"]])
+    carl.fly_path([great_lawn_waypoints["far_corner1"], great_lawn_waypoints["far_corner2"]])
 
 
 if __name__ == '__main__':
