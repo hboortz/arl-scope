@@ -7,6 +7,7 @@ import os
 
 import rospkg
 import rospy
+import rosbag
 import roscopter
 import roscopter.msg
 import roscopter.srv
@@ -51,7 +52,7 @@ class QuadcopterBrain(object):
                 if tries == 5:
                     print("Tried % times and giving up" % (tries)) 
                 else:
-                    print("Trying again. Tries: %d" % (tries))
+                    print("Retrying. Tries: %d" % (tries))
 
     def check_reached_waypoint(self, waypoint):
         wait_time = 0
@@ -59,13 +60,13 @@ class QuadcopterBrain(object):
                          self.position_callback) 
         time.sleep(5)
         wait_time += 5
-        print "Traveling to waypoint for %d seconds" % (wait_time)
-        print "Current position is %d, %d" % (self.current_lat,
+        print "--> Traveling to waypoint for %d seconds" % (wait_time)
+        print "--> Current position is %d, %d" % (self.current_lat,
                                               self.current_long)
         if not self.has_reached_waypoint(waypoint):
             rospy.spin() # regrab data from topic
         else:
-            time.sleep(3) # stay at waypoint for a few seconds
+            time.sleep(5) # stay at waypoint for a few seconds
             return "Reached waypoint"
 
     def has_reached_waypoint(self, waypoint):
@@ -95,8 +96,8 @@ class QuadcopterBrain(object):
         self.adjust_throttle_service()
         for waypoint in waypoints:
             self.send_waypoint(waypoint)
-        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
-        print('Landing')
+        #self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
+        #print('Landing')
 
 
 def build_waypoint(data):
@@ -139,10 +140,7 @@ def main():
     carl.clear_waypoints_service()
     great_lawn_waypoints = open_waypoint_file(
         "waypoint_data/great_lawn_waypoints.json")
-    carl.fly_path([great_lawn_waypoints['A'], great_lawn_waypoints['B'],
-                   great_lawn_waypoints['C']])
-    rospy.spin()
-   
+    carl.fly_path([great_lawn_waypoints["far_corner"]])
 
 if __name__ == '__main__':
     main()
