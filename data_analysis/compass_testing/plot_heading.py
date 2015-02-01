@@ -8,10 +8,11 @@ test_data = ['paul-O-1-25-2015.json',
              'carl-O-1-25-2015.json',
              'paul-SoccerField-1-25-2015.json',
              'carl-SoccerField-1-25-2015.json']
-titles = {test_data[0] : 'Paul (Iris+) in Courtyard (the O)',
-          test_data[1] : 'Carl (Iris) in Courtyard (the O)',
-          test_data[2] : 'Paul (Iris+) on Soccer Field',
-          test_data[3] : 'Carl (Iris) on Soccer Field'}
+titles = {test_data[0]: 'Paul (Iris+) in Courtyard (the O)',
+          test_data[1]: 'Carl (Iris) in Courtyard (the O)',
+          test_data[2]: 'Paul (Iris+) on Soccer Field',
+          test_data[3]: 'Carl (Iris) on Soccer Field'}
+
 
 def plot_data(actual, measured, dataset):
     plt.plot([0, 360], [0, 360], 'r', linewidth=2)
@@ -20,25 +21,33 @@ def plot_data(actual, measured, dataset):
     plt.xlabel('Actual (degrees)')
     plt.ylabel('Iris Compass (degrees)')
 
+
 def calculate_precision_accuracy(actual, measured, dataset):
     error = np.array([])
     for i in range(len(actual)):
         error = np.append(error, measured[i] - actual[i])
-    print ""
-    print "Data from dataset ", dataset
-    print "Average error:", error.mean()
-    print "Std deviation of error:", error.std()
+    return dataset, error.mean(), error.std()
 
-if __name__ == '__main__':
-    i=1
+
+def main():
+    i = 1
     for test in test_data:
         plt.subplot(2, 2, i)
-        i+=1
+        i += 1
         fin = open('data/' + test, 'r')
         data = json.load(fin)
         # data saved as nested array: [ [actual], [measured]  ]
         actual = data[0]
         measured = [point / 100.0 for point in data[1]]
-        calculate_precision_accuracy(actual, measured, test)
+        dataset, error_mean, error_std = \
+            calculate_precision_accuracy(actual, measured, test)
+        print ""
+        print "Data from dataset ", dataset
+        print "Average error:", error_mean
+        print "Std deviation of error:", error_std
         plot_data(actual, measured, test)
     plt.show()
+
+
+if __name__ == '__main__':
+    main()
