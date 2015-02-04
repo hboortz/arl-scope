@@ -52,7 +52,6 @@ class QuadcopterBrain(object):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
         print('Landing')
 
-
     def go_to_waypoint(self, waypoint):
         successfully_sent_waypoint = False
         tries = 0
@@ -70,7 +69,7 @@ class QuadcopterBrain(object):
                                                           waypoint.longitude))
                 time.sleep(0.1)
                 if tries == 5:
-                    print("Tried % times and giving up" % (tries)) 
+                    print("Tried % times and giving up" % (tries))
                 else:
                     print("Retrying. Tries: %d" % (tries))
 
@@ -83,12 +82,12 @@ class QuadcopterBrain(object):
             wait_time += 5
             print "--> Traveling to waypoint for %d seconds" % (wait_time)
             print "--> Current position is %d, %d" % (self.current_lat,
-                                                          self.current_long)
-        if wait_time < 50: # successfully reached
-            time.sleep(5) # stay at waypoint for a few seconds
+                                                      self.current_long)
+        if wait_time < 50:  # successfully reached
+            time.sleep(5)  # stay at waypoint for a few seconds
             return "Reached waypoint"
         else:
-            return "Failed to reach waypoint" 
+            return "Failed to reach waypoint"
 
     def has_reached_waypoint(self, waypoint):
         error_margin = 3  # in meters
@@ -96,20 +95,21 @@ class QuadcopterBrain(object):
             current_pt = utm.fromLatLong(self.current_lat, self.current_long)
             current_x = current_pt.easting
             current_y = current_pt.northing
-            waypoint_pt = utm.fromLatLong(waypoint.latitude, waypoint.longitude)
+            waypoint_pt = utm.fromLatLong(waypoint.latitude,
+                                          waypoint.longitude)
             waypoint_x = waypoint_pt.easting
             waypoint_y = waypoint_pt.northing
             x_delta = math.fabs(current_x - waypoint_x)
             y_delta = math.fabs(current_y - waypoint_y)
-            dist_from_waypoint = math.sqrt(x_delta**2 + y_delta**2) 
+            dist_from_waypoint = math.sqrt(x_delta**2 + y_delta**2)
             return dist_from_waypoint < error_margin
-        except AttributeError: # if haven't gotten current position data
+        except AttributeError:  # if haven't gotten current position data
             return False
 
     def position_callback(self, data):
         self.current_lat = data.latitude
         self.current_long = data.longitude
-        self.current_rel_alt = data.relative_altitude 
+        self.current_rel_alt = data.relative_altitude
         self.current_alt = data.altitude
 
     def fly_path(self, waypoint_data):
