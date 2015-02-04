@@ -11,9 +11,11 @@ def load_gps_data(filename):
         reader.next()
         return [FilteredPos(row) for row in reader]
 
+
 def extract_gps_coordinates(filtered_poses):
-    return numpy.array([(each.latitude, 
+    return numpy.array([(each.latitude,
                          each.longitude) for each in filtered_poses])
+
 
 def extract_gps_times(filtered_poses):
     times = numpy.array([each.time for each in filtered_poses])
