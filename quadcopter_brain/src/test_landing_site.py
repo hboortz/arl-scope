@@ -15,6 +15,7 @@ class TestLandingSite(unittest.TestCase):
         self.brain = QuadcopterFiducialBrain()
         self.brain.latitude = 42.0
         self.brain.longitude = -71.0
+        self.brain.heading = 0
 
     def test_landing_site_lat_lon_same_position(self):
         self.landing_site.center = Pose(position=Point(x=0, y=0, z=6))
@@ -41,6 +42,50 @@ class TestLandingSite(unittest.TestCase):
                                            lat, lon)
             self.assertAlmostEqual(xErr, test[3], 3)  # 3 is acceptable (mm)
             self.assertAlmostEqual(yErr, test[4], 3)
+
+    def test_landing_site_lat_lon_greater_x(self):
+        '''
+        latitude shouldn't change (within a few meters)   
+        longitude should be greater 
+        '''
+        self.landing_site.center = Pose(position=Point(x=1000, y=0, z=6))
+
+        lat, lon = self.landing_site.lat_lon(self.brain)
+        self.assertAlmostEqual(self.brain.latitude, lat, 3)
+        self.assertGreater(lon, self.brain.longitude)
+
+    def test_landing_site_lat_lon_greater_y(self):
+        '''
+        latitude should be smaller (camera +y is backwards on the copter)
+        longitude shouldn't change (within a few meters)
+        '''
+        self.landing_site.center = Pose(position=Point(x=0, y=1000, z=6))
+
+        lat, lon = self.landing_site.lat_lon(self.brain)
+        self.assertLess(lat, self.brain.latitude)
+        self.assertAlmostEqual(self.brain.longitude, lon, 3)
+
+    def test_landing_site_lat_lon_lesser_x(self):
+        '''
+        latitude shouldn't change (within a few meters)
+        longitude should be bigger 
+        '''
+        self.landing_site.center = Pose(position=Point(x=-1000, y=0, z=6))
+
+        lat, lon = self.landing_site.lat_lon(self.brain)
+        self.assertAlmostEqual(self.brain.latitude, lat, 3)
+        self.assertLess(lon, self.brain.longitude)
+
+    def test_landing_site_lat_lon_lesser_y(self):
+        '''
+        latitude should be greater (camera -y is forwards on the copter)
+        longitude shouldn't change (within a few meters)
+        '''
+        self.landing_site.center = Pose(position=Point(x=0, y=-1000, z=6))
+
+        lat, lon = self.landing_site.lat_lon(self.brain)
+        self.assertGreater(lat, self.brain.latitude)
+        self.assertAlmostEqual(lon, self.brain.longitude, 3)
 
 
 if __name__ == '__main__':
