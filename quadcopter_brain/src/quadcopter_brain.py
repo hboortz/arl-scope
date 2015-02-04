@@ -41,7 +41,7 @@ class QuadcopterBrain(object):
         print('Launched')
         time.sleep(5)
 
-    def send_waypoints(self, waypoint_data):
+    def go_to_waypoints(self, waypoint_data):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
         self.trigger_auto_service()
         self.adjust_throttle_service()
@@ -52,7 +52,7 @@ class QuadcopterBrain(object):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
         print('Landing')
 
-    def go_to_waypoint(self, waypoint):
+    def send_waypoint(self, waypoint):
         successfully_sent_waypoint = False
         tries = 0
 
