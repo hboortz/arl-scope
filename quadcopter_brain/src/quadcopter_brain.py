@@ -32,7 +32,7 @@ class QuadcopterBrain(object):
         self.adjust_throttle_service = rospy.ServiceProxy(
             'adjust_throttle', Empty)
 
-    def send_waypoint(self, waypoint):
+    def go_to_waypoint(self, waypoint):
         successfully_sent_waypoint = False
         tries = 0
 
@@ -56,20 +56,21 @@ class QuadcopterBrain(object):
     def check_reached_waypoint(self, waypoint):
         wait_time = 0
         rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
-                         self.position_callback) 
-        time.sleep(5)
-        wait_time += 5
-        print "--> Traveling to waypoint for %d seconds" % (wait_time)
-        print "--> Current position is %d, %d" % (self.current_lat,
-                                              self.current_long)
-        if not self.has_reached_waypoint(waypoint):`
-            rospy.spin() # regrab data from topic
-        else:
+                         self.position_callback)
+        while not self.has_reached_waypoint and wait_time < 50:
+            time.sleep(5)
+            wait_time += 5
+            print "--> Traveling to waypoint for %d seconds" % (wait_time)
+            print "--> Current position is %d, %d" % (self.current_lat,
+                                                          self.current_long)
+        if wait_time < 50: # successfully reached
             time.sleep(5) # stay at waypoint for a few seconds
             return "Reached waypoint"
+        else:
+            return "Failed to reach waypoint" 
 
     def has_reached_waypoint(self, waypoint):
-        error_margin = 3  # meters
+        error_margin = 3  # in meters
         try:
             current_pt = utm.fromLatLong(self.current_lat, self.current_long)
             current_x = current_pt.easting
@@ -81,7 +82,7 @@ class QuadcopterBrain(object):
             y_delta = math.fabs(current_y - waypoint_y)
             dist_from_waypoint = math.sqrt(x_delta**2 + y_delta**2) 
             return dist_from_waypoint < error_margin
-        except: # if haven't gotten current position data
+        except AttributeError: # if haven't gotten current position data
             return False
 
     def position_callback(self, data):
@@ -92,8 +93,7 @@ class QuadcopterBrain(object):
 
     def fly_path(self, waypoint_data):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
-        # Execute flight plan
-        #self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
+        self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
         print('Armed')
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
         print('Launched')
@@ -101,7 +101,7 @@ class QuadcopterBrain(object):
         self.trigger_auto_service()
         self.adjust_throttle_service()
         for waypoint in waypoints:
-            self.send_waypoint(waypoint)
+            self.go_to_waypoint(waypoint)
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
         print('Landing')
 
@@ -146,7 +146,7 @@ def main():
     carl.clear_waypoints_service()
     great_lawn_waypoints = open_waypoint_file(
         "waypoint_data/great_lawn_waypoints.json")
-    carl.fly_path([great_lawn_waypoints["far_corner1"], great_lawn_waypoints["far_corner2"]])
+    carl.fly_path([great_lawn_waypoints["A"], great_lawn_waypoints["B"]])
 
 
 if __name__ == '__main__':
