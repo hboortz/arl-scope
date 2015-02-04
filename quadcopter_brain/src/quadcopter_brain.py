@@ -33,10 +33,6 @@ class QuadcopterBrain(object):
         self.adjust_throttle_service = rospy.ServiceProxy(
             'adjust_throttle', Empty)
 
-        self.latitude = -1.0
-        self.longitude = -1.0
-        self.altitude = -1.0
-        self.heading = -1.0
 
     def send_waypoint(self, waypoint):
         successfully_sent_waypoint = False

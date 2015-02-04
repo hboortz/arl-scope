@@ -16,10 +16,10 @@ def plot_lat_lon(latA, lonA, latB, lonB, site):
     them, in meters
     '''
     assert (len(latA) == len(latB)) and (len(lonA) == len(lonB))
-
-    error_array = [PositionTools.lat_lon_diff(latA[i], lonA[i],
-                                              latB[i], lonB[i])
-                   for i in range(len(latA))]
+    error_array = [
+        PositionTools.lat_lon_diff(latA[i], lonA[i], latB[i], lonB[i])
+        for i in range(len(latA))
+    ]
     xError = [data_point[0] for data_point in error_array]
     yError = [data_point[1] for data_point in error_array]
 
@@ -34,16 +34,14 @@ def main():
     try:
         with open('1-31-2015-data.json', "r") as f:
             test_runs = json.load(f)
-    except:
+        for test in test_runs:
+            plot_lat_lon(test_runs[test]['actual latitude'],
+                         test_runs[test]['actual longitude'],
+                         test_runs[test]['measured latitude'],
+                         test_runs[test]['measured longitude'],
+                         test)
+    except IOError:
         print "Check that the data file exists"
-        test_runs = []
-
-    for test in test_runs:
-        plot_lat_lon(test_runs[test]['actual latitude'],
-                     test_runs[test]['actual longitude'],
-                     test_runs[test]['measured latitude'],
-                     test_runs[test]['measured longitude'],
-                     test)
 
 
 if __name__ == '__main__':

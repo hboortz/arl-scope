@@ -23,17 +23,14 @@ def plot_data(actual, measured, dataset):
 
 
 def calculate_precision_accuracy(actual, measured, dataset):
-    error = np.array([])
-    for i in range(len(actual)):
-        error = np.append(error, measured[i] - actual[i])
+    error = numpy.array([m-a for a,m in zip(actual, meas)])
     return dataset, error.mean(), error.std()
 
 
 def print_error_and_std_dev(actual, measured, test):
     dataset, error_mean, error_std = \
         calculate_precision_accuracy(actual, measured, test)
-    print ""
-    print "Data from dataset ", dataset
+    print "\nData from dataset ", dataset
     print "Average error:", error_mean
     print "Std deviation of error:", error_std
 

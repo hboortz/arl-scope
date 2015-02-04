@@ -3,9 +3,9 @@
 import unittest
 
 from geometry_msgs.msg import Pose, Point
+
 from quadcopter_fiducial_brain import QuadcopterFiducialBrain
 from landing_site import LandingSite
-
 from position_tools import PositionTools
 
 
@@ -40,8 +40,8 @@ class TestLandingSite(unittest.TestCase):
                 PositionTools.lat_lon_diff(self.brain.latitude,
                                            self.brain.longitude,
                                            lat, lon)
-            self.assertAlmostEqual(xErr, test[3], 3)  # 3 is acceptable (mm)
-            self.assertAlmostEqual(yErr, test[4], 3)
+            self.assertAlmostEqual(xErr, test[3], 3)  # 1 mm is reasonable
+            self.assertAlmostEqual(yErr, test[4], 3)  #   margin of error
 
     def test_landing_site_lat_lon_greater_x(self):
         '''

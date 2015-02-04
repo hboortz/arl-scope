@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import geodesy.utm
 import numpy as np
+import geodesy.utm
 import roslib
 import rospy
 roslib.load_manifest('ar_pose')
@@ -13,9 +13,7 @@ from position_tools import PositionTools
 
 class LandingSite(object):
     def __init__(self):
-        '''
-        TODO: Variables to implement: orientation, is_upright
-        '''
+        # TODO: Variables to implement: orientation, is_upright
         self.center = Pose()
         in_view = False
         update_sub = rospy.Subscriber('/ar_pose_marker', ARMarkers,
@@ -25,32 +23,32 @@ class LandingSite(object):
         '''
         Sets the in_view and center variables when given new data
         '''
-        X, Y, Z, visible = self.clean_fiducials(data)
+        x_coords, y_coords, z_coords, visible = self.clean_fiducials(data)
         self.in_view = len(visible) > 0
         if self.in_view:
-            self.center = self.find_fiducial_center(X, Y, Z, visible)
+            self.center = self.find_fiducial_center(x_coords, y_coords, z_coords, visible)
 
     def clean_fiducials(self, data):
         '''
         Takes raw fiducial data (type ARMarkers) and returns list of the
-        relative, X, Y, and Z positions of visible fiducials. Also returns a
+        relative, x_coords, y_coords, and z_coords positions of visible fiducials. Also returns a
         list of the visible fiducial ids
         '''
         markers = data.markers
-        X = [f.pose.pose.position.x for f in markers]
-        Y = [f.pose.pose.position.y for f in markers]
-        Z = [f.pose.pose.position.z for f in markers]
+        x_coords = [f.pose.pose.position.x for f in markers]
+        y_coords = [f.pose.pose.position.y for f in markers]
+        z_coords = [f.pose.pose.position.z for f in markers]
         ids = [f.id for f in markers]
-        return X, Y, Z, ids
+        return x_coords, y_coords, z_coords, ids
 
     def find_fiducial_center(self, X, Y, Z, ids):
         '''
         Finds the center of the fiducial, in meters, from the camera
         TODO: Incorporate which fiducials are seen to find the center
         '''
-        return Pose(position=Point(x=np.mean(X),
-                                   y=np.mean(Y),
-                                   z=np.mean(Z)))
+        return Pose(position=Point(x=np.mean(x_coords),
+                                   y=np.mean(y_coords),
+                                   z=np.mean(z_coords)))
 
     def lat_lon(self, copter):
         '''
@@ -76,5 +74,5 @@ def switch_CW_and_CCW(aircraft_heading):
     '''
     Converts a heading from clockwise to counterclockwise
     '''
-    math_heading = -(aircraft_heading - 360)
+    math_heading = 360 - aircraft_heading
     return math_heading

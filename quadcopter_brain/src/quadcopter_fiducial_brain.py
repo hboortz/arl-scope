@@ -37,7 +37,7 @@ class QuadcopterFiducialBrain(QuadcopterBrain):
         time_end = datetime.datetime.now() + time_limit
         seen = False
         print "Searching for landing site..."
-        while datetime.datetime.now() < time_end and not seen:
+        while not seen and datetime.datetime.now() < time_end:
             site = deepcopy(self.landing_site)
             seen = site.in_view
             rospy.sleep(0.1)
@@ -75,6 +75,7 @@ def main():
         "waypoint_data/great_lawn_waypoints.json")
     carl.dry_run([great_lawn_waypoints['A']])
     carl.land_on_fiducial()
+
 
 if __name__ == '__main__':
     main()
