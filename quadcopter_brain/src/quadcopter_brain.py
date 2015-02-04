@@ -44,7 +44,7 @@ class QuadcopterBrain(object):
     def go_to_waypoints(self, waypoint_data):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
         for waypoint in waypoints:
-            self.go_to_waypoint(waypoint)
+            self.send_waypoint(waypoint)
 
     def land(self):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
@@ -115,7 +115,7 @@ class QuadcopterBrain(object):
     def fly_path(self, waypoint_data):
         self.arm()
         self.launch()
-        self.send_waypoints(waypoint_data)
+        self.go_to_waypoints(waypoint_data)
         self.land()
 
 
