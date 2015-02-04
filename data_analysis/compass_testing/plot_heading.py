@@ -29,23 +29,27 @@ def calculate_precision_accuracy(actual, measured, dataset):
     return dataset, error.mean(), error.std()
 
 
+def print_error_and_std_dev(actual, measured, test):
+    dataset, error_mean, error_std = \
+        calculate_precision_accuracy(actual, measured, test)
+    print ""
+    print "Data from dataset ", dataset
+    print "Average error:", error_mean
+    print "Std deviation of error:", error_std
+
+
 def main():
     i = 1
     for test in test_data:
         plt.subplot(2, 2, i)
-        i += 1
         fin = open('data/' + test, 'r')
         data = json.load(fin)
-        # data saved as nested array: [ [actual], [measured]  ]
+        # data saved as nested array: [[actual], [measured]]
         actual = data[0]
         measured = [point / 100.0 for point in data[1]]
-        dataset, error_mean, error_std = \
-            calculate_precision_accuracy(actual, measured, test)
-        print ""
-        print "Data from dataset ", dataset
-        print "Average error:", error_mean
-        print "Std deviation of error:", error_std
+        print_error_and_std_dev(actual, measured, test)
         plot_data(actual, measured, test)
+        i += 1
     plt.show()
 
 

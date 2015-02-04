@@ -1,41 +1,50 @@
 #!/usr/bin/env python
 
-import sys, os
+import json
+import os
+import sys
 sys.path.append(os.path.relpath('../../quadcopter_brain/src'))
-from position_tools import PositionTools
 
-import geodesy.utm
 import matplotlib.pyplot as plt
 
+from position_tools import PositionTools
 
-def plot_lat_lon(data, site):
-    for spot in data:
-        lat,lon = spot
-        plt.plot(lat, lon, 'b.', markersize=25)
-    plt.title('Error between estimated and tagged landing sites for ' +
-               site + ' site')
+
+def plot_lat_lon(latA, lonA, latB, lonB, site):
+    '''
+    Takes two lists of lat, lon points and plots the difference between
+    them, in meters
+    '''
+    assert (len(latA) == len(latB)) and (len(lonA) == len(lonB))
+
+    error_array = [PositionTools.lat_lon_diff(latA[i], lonA[i],
+                                              latB[i], lonB[i])
+                   for i in range(len(latA))]
+    xError = [data_point[0] for data_point in error_array]
+    yError = [data_point[1] for data_point in error_array]
+
+    plt.plot(xError, yError, 'b.', markersize=25)
+    plt.title('Error for ' + site)
     plt.xlabel('X (Easting) error between estimation and tag')
     plt.ylabel('Y (Northing) error between estimation and tag')
     plt.show()
 
 
 def main():
-    print "dry spot:"
-    plt.figure(1)
-    locations = []
-    locations.append( PositionTools.lat_lon_diff(42.293004, -71.263612, 42.2929955, -71.2636023) )
-    locations.append( PositionTools.lat_lon_diff(42.293004, -71.263612, 42.2930048, -71.2636229) )
-    locations.append( PositionTools.lat_lon_diff(42.293004, -71.263612, 42.2929606, -71.2636175) )
-    plot_lat_lon(locations, "dry spot")
+    try:
+        with open('1-31-2015-data.json', "r") as f:
+            test_runs = json.load(f)
+    except:
+        print "Check that the data file exists"
+        test_runs = []
 
-    print "black line:"
-    plt.figure(2)
-    locations = []
-    locations.append( PositionTools.lat_lon_diff(42.293002 , -71.26355, 42.2929737, -71.2636127) )
-    locations.append( PositionTools.lat_lon_diff(42.293002 , -71.26355, 42.2929662, -71.2636271) )
-    locations.append( PositionTools.lat_lon_diff(42.293002 , -71.26355, 42.2929698, -71.2636057) )
-    plot_lat_lon(locations, "black line")
+    for test in test_runs:
+        plot_lat_lon(test_runs[test]['actual latitude'],
+                     test_runs[test]['actual longitude'],
+                     test_runs[test]['measured latitude'],
+                     test_runs[test]['measured longitude'],
+                     test)
+
 
 if __name__ == '__main__':
     main()
-# Put data here as you gather it
