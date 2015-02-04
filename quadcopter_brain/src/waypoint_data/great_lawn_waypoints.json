@@ -25,9 +25,7 @@
  "A1": {"latitude": 42.292739, "longitude": -71.263206, "altitude": 5},
  "A2": {"latitude": 42.292668, "longitude": -71.262994, "altitude": 5},
  "A3": {"latitude": 42.292825, "longitude": -71.263059, "altitude": 5},
- "WH_corner": {"latitude": 42.292903, "longitude": -71.263089, "altitude": 5},
- "MH_corner": {"latitude": 42.242751, "longitude": -71.263291, "altitude": 5},
- "far_corner1": {"latitude": 42.292257, "longitude": -71.262788, "altitude": 5},
- "far_corner2": {"latitude": 42.292257, "longitude": -71.262788, "altitude": 2}}
- 
+ "WH_corner": {"latitude": 42.292903, "longitude": -71.263089, "alititude": 5},
+ "MH_corner": {"latitude": 42.242751, "longitude": -71.263291, "alititude": 5},
+ "far_corner": {"latitude": 42.292257, "longitude": -71.262788, "alititude": 5}}
 

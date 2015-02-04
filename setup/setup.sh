@@ -81,6 +81,7 @@ sudo apt-get install -y clang
 sudo apt-get install -y xclip
 sudo apt-get install -y vim
 sudo apt-get install -y sl
+sudo apt-get install -y screen
 sudo apt-get install -y gimp
 sudo apt-get install -y inkscape
 sudo apt-get install -y gparted
