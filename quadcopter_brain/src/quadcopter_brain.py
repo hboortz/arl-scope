@@ -32,6 +32,27 @@ class QuadcopterBrain(object):
         self.adjust_throttle_service = rospy.ServiceProxy(
             'adjust_throttle', Empty)
 
+    def arm(self):
+        self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
+        print('Armed')
+
+    def launch(self):
+        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
+        print('Launched')
+        time.sleep(5)
+
+    def send_waypoints(self, waypoint_data):
+        waypoints = [build_waypoint(datum) for datum in waypoint_data]
+        self.trigger_auto_service()
+        self.adjust_throttle_service()
+        for waypoint in waypoints:
+            self.go_to_waypoint(waypoint)
+
+    def land(self):
+        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
+        print('Landing')
+
+
     def go_to_waypoint(self, waypoint):
         successfully_sent_waypoint = False
         tries = 0
@@ -92,18 +113,10 @@ class QuadcopterBrain(object):
         self.current_alt = data.altitude
 
     def fly_path(self, waypoint_data):
-        waypoints = [build_waypoint(datum) for datum in waypoint_data]
-        self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
-        print('Armed')
-        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
-        print('Launched')
-        time.sleep(5)
-        self.trigger_auto_service()
-        self.adjust_throttle_service()
-        for waypoint in waypoints:
-            self.go_to_waypoint(waypoint)
-        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
-        print('Landing')
+        self.arm()
+        self.launch()
+        self.send_waypoints(waypoint_data)
+        self.land()
 
 
 def build_waypoint(data):
