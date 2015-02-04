@@ -28,6 +28,7 @@ class TestLandingSite(unittest.TestCase):
         tests = [[6, -9, 0, 6, 9],
                  [6, -9, 180, -6, -9],
                  [-3, 5, 270, 5, -3]]
+
         for test in tests:
             self.landing_site.center = Pose(position=Point(x=test[0],
                                                            y=test[1],
