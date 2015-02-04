@@ -28,11 +28,6 @@ def precision(data):
     return numpy.mean(distances)
 
 
-def simple_moving_average(data, window=5):
-    weights = numpy.repeat(1.0, window) / window
-    return numpy.convolve(data, weights, 'valid')
-
-
 def speeds(times, data):
     delta_times = times[1:] - times[:-1]
     distances = [euclidean_distance(p1, p2) for p1, p2 in zip(data[1:],

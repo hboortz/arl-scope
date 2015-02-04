@@ -14,11 +14,12 @@ def print_metrics(gps_coordinates, gps_times):
     print gps_metrics.average_speed(gps_times, gps_coordinates)
 
 
-def get_filename():
+def get_filepath(filename):
     user = os.environ["USER"]
-    filename = ("/home/" + user + "/catkin_ws/src/arl-scope/bagfiles"
-                "/carl_nearpostandroad_2015-01-28-15-51-22.csv")
-    return filename
+    filepath = (
+        "/home/%s/catkin_ws/src/arl-scope/bagfiles/%s" % (user, filename)
+    )
+    return filepath
 
 
 def plot_gps_coordinates_in_meters(measured_gps, true_gps):
@@ -43,12 +44,12 @@ def lat_lon_to_meters(gps_points):
     utm_points = [geodesy.utm.fromLatLong(lat, lon) for lat, lon in gps_points]
     x_metered_points = [point.northing for point in utm_points]
     y_metered_points = [point.easting for point in utm_points]
-
     return (x_metered_points, y_metered_points)
 
 
 def main():
-    data = gps_data.load_gps_data(get_filename())
+    filepath = get_filepath("carl_nearpostandroad_2015-01-28-15-51-22.csv")
+    data = gps_data.load_gps_data(filepath)
     gps_coordinates = gps_data.extract_gps_coordinates(data)
     gps_times = gps_data.extract_gps_times(data)
     #print_metrics(gps_coordinates, gps_times)

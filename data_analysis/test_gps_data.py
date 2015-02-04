@@ -14,8 +14,6 @@ class TestLoadGPSData(unittest.TestCase):
     def test_extract_gps_coordinates(self):
         gps_coords = gps_data.extract_gps_coordinates(self.data)
         true_gps_coords = numpy.tile(numpy.array([4e-7, 5e-7]), (10, 1))
-
-        print gps_coords
         self.assertTrue(numpy.array_equal(true_gps_coords, gps_coords))
         self.assertEqual(type(gps_coords), numpy.ndarray)
 
@@ -24,6 +22,7 @@ class TestLoadGPSData(unittest.TestCase):
         true_gps_times = numpy.array([0] * 10)
         self.assertTrue(numpy.array_equal(true_gps_times, gps_times))
         self.assertEqual(type(gps_times), numpy.ndarray)
+
 
 if __name__ == '__main__':
     unittest.main()

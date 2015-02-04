@@ -31,13 +31,6 @@ class TestGPSCharacterization(unittest.TestCase):
         precision = gps_metrics.precision(points)
         self.assertAlmostEqual(1.5, precision)
 
-    def test_moving_average(self):
-        points = numpy.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-
-        true_moving_averages = numpy.array([3, 4, 5, 6, 7, 8])
-        moving_averages = gps_metrics.simple_moving_average(points)
-        self.assertTrue(numpy.allclose(moving_averages, true_moving_averages))
-
     @mock.patch("gps_metrics.euclidean_distance")
     def test_speeds(self, euclidean_distance_mock):
         times = numpy.array([1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15])
