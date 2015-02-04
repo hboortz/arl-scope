@@ -80,14 +80,16 @@ class QuadcopterBrain(object):
         '''
         data: GPS + Compass (+ IMU?)
         '''
-        self.latitude=data.latitude / 10.0**7
-        self.longitude=data.longitude / 10.0**7
-        self.altitude = data.altitude / 1000.0
-        self.heading = data.heading / 100.0
+        self.latitude = data.latitude / 1e7
+        self.longitude = data.longitude / 1e7
+        self.altitude = data.altitude / 1e3
+        self.heading = data.heading / 1e2
+
 
 def build_waypoint(data):
     '''
-    data: dictionary with latitude and longitude ( altitude and hold_time optional)
+    data: dictionary with latitude and longitude
+          (altitude and hold_time optional)
     '''
     latitude = data['latitude']
     longitude = data['longitude']
@@ -107,7 +109,7 @@ def gps_to_mavlink(coordinate):
     '''
     coordinate: decimal degrees
     '''
-    return int(coordinate * 1e+7)
+    return int(coordinate * 1e7)
 
 
 def open_waypoint_file(filename):

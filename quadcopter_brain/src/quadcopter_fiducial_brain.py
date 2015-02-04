@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
+from copy import deepcopy
 import datetime
+
 import rospy
 
 import quadcopter_brain
@@ -14,33 +16,43 @@ class QuadcopterFiducialBrain(QuadcopterBrain):
         self.landing_site = LandingSite()
 
     def land_on_fiducial(self):
+        seen, goal_lat, goal_lon = self.find_landing_site()
+        if seen:
+            waypoint = build_waypoint({'latitude': goal_lat,
+                                       'longitude': goal_lon,
+                                       'altitude': 1.0})
+            print "Given waypoint: ", waypoint
+            print "Sending waypoint!"
+            self.send_waypoint(waypoint)
+        print "Landing!!!"
+        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
+
+    def find_landing_site(self):
+        '''
+        Executes a search behavior for the fiducial, return its placement of
+        the fiducial it has, in lat, lon form
+        TODO: Make a behavior that takes more data to place the site
+        '''
         time_limit = datetime.timedelta(minutes=1)
         time_end = datetime.datetime.now() + time_limit
         seen = False
         print "Searching for landing site..."
-        while datetime.datetime.now() < time_end:
-            if self.landing_site.in_view:
-                seen = True
-                break
+        while datetime.datetime.now() < time_end and not seen:
+            site = deepcopy(self.landing_site)
+            seen = site.in_view
             rospy.sleep(0.1)
-
-        print("Found landing site? ", seen)
-
         if seen:
-            print "Landing site info: ", self.landing_site.center
-            goal_lat, goal_lon = self.landing_site.latlon(self)
-            waypoint = build_waypoint({'latitude': goal_lat,
-                                       'longitude': goal_lon,
-                                       'altitude': 1.0})
+            print "Landing site info: ", site.center
+            return True, site.latlon(self)
+        else:
+            print "Landing site was NOT FOUND"
+            return False, 0, 0
 
-            print "Given waypoint: ", waypoint
-            print "Sending waypoint!"
-            self.send_waypoint(waypoint)
-
-        print "Landing!!!"
-        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
-
-    def setup_test(self, waypoint_data):
+    def dry_run(self, waypoint_data):
+        '''
+        This test will be redone once quadcopter_brain is broken into more
+        configurable methods
+        '''
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
         # Execute flight plan
         self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
@@ -53,16 +65,16 @@ class QuadcopterFiducialBrain(QuadcopterBrain):
         for waypoint in waypoints:
             self.send_waypoint(waypoint)
 
-    # TODO: Add an aqcuire_landing_site() function that hovers for a half
-    # second or so and can continuously see the fiducial
 
-
-if __name__ == '__main__':
+def main():
     carl = QuadcopterFiducialBrain()
     carl.clear_waypoints_service()
     rospy.init_node("fiducial_landing")
     rospy.sleep(2)
     great_lawn_waypoints = open_waypoint_file(
         "waypoint_data/great_lawn_waypoints.json")
-    carl.setup_test([great_lawn_waypoints['A']])
+    carl.dry_run([great_lawn_waypoints['A']])
     carl.land_on_fiducial()
+
+if __name__ == '__main__':
+    main()
