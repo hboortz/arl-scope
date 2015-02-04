@@ -118,8 +118,10 @@ class QuadcopterBrain(object):
         self.go_to_waypoints(waypoint_data)
         self.land()
 
-
 def build_waypoint(data):
+    '''
+    data: dictionary with latitude and longitude ( altitude and hold_time optional)
+    '''
     latitude = data['latitude']
     longitude = data['longitude']
     altitude = data.get('altitude', 8)
@@ -157,6 +159,8 @@ def main():
     rospy.init_node("quadcopter_brain")
     carl = QuadcopterBrain()
     carl.clear_waypoints_service()
+    print "Sleeping for 3 seconds..."
+    rospy.sleep(3)
     great_lawn_waypoints = open_waypoint_file(
         "waypoint_data/great_lawn_waypoints.json")
     carl.fly_path([great_lawn_waypoints["A"], great_lawn_waypoints["B"]])
