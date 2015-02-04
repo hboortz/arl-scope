@@ -57,7 +57,7 @@ class QuadcopterBrain(object):
         wait_time = 0
         rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
                          self.position_callback)
-        while not self.has_reached_waypoint and wait_time < 50:
+        while not self.has_reached_waypoint(waypoint) and wait_time < 50:
             time.sleep(5)
             wait_time += 5
             print "--> Traveling to waypoint for %d seconds" % (wait_time)
