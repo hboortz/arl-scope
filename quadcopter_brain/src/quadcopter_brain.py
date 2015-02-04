@@ -2,15 +2,18 @@
 
 import time
 import json
+import math
 import os
 
 import rospkg
 import rospy
+import rosbag
 import roscopter
 import roscopter.msg
 import roscopter.srv
 from std_srvs.srv import *
 from sensor_msgs.msg import NavSatFix, NavSatStatus, Imu
+from geodesy import utm
 
 
 class QuadcopterBrain(object):
@@ -18,10 +21,6 @@ class QuadcopterBrain(object):
     High-level quadcopter controller.
     '''
     def __init__(self):
-        rospy.Subscriber("filtered_pos",
-                         roscopter.msg.FilteredPosition,
-                         self.on_position_update)
-
         self.clear_waypoints_service = rospy.ServiceProxy(
             'clear_waypoints', Empty)
         self.command_service = rospy.ServiceProxy(
@@ -33,57 +32,91 @@ class QuadcopterBrain(object):
         self.adjust_throttle_service = rospy.ServiceProxy(
             'adjust_throttle', Empty)
 
-        self.latitude = -1.0
-        self.longitude = -1.0
-        self.altitude = -1.0
-        self.heading = -1.0
+    def arm(self):
+        self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
+        print('Armed')
+
+    def launch(self):
+        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
+        print('Launched')
+        time.sleep(5)
+
+    def go_to_waypoints(self, waypoint_data):
+        waypoints = [build_waypoint(datum) for datum in waypoint_data]
+        for waypoint in waypoints:
+            self.send_waypoint(waypoint)
+
+    def land(self):
+        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
+        print('Landing')
 
     def send_waypoint(self, waypoint):
+        self.trigger_auto_service()
+        self.adjust_throttle_service()
         successfully_sent_waypoint = False
         tries = 0
+
         while not successfully_sent_waypoint and tries < 5:
             res = self.waypoint_service(waypoint)
-            tries += 1
             successfully_sent_waypoint = res.result
+            tries += 1
             if successfully_sent_waypoint:
                 print('Sent waypoint %d, %d' % (waypoint.latitude,
                                                 waypoint.longitude))
-                time.sleep(15)
+                print self.check_reached_waypoint(waypoint)
             else:
                 print("Failed to send waypoint %d, %d" % (waypoint.latitude,
                                                           waypoint.longitude))
                 time.sleep(0.1)
-                if tries == 4:
-                    print("Tried 5 times and giving up")
+                if tries == 5:
+                    print("Tried % times and giving up" % (tries))
                 else:
-                    print("Trying again. Tries: %d" % (tries+1))
+                    print("Retrying. Tries: %d" % (tries))
+
+    def check_reached_waypoint(self, waypoint):
+        wait_time = 0
+        rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
+                         self.position_callback)
+        while not self.has_reached_waypoint and wait_time < 50:
+            time.sleep(5)
+            wait_time += 5
+            print "--> Traveling to waypoint for %d seconds" % (wait_time)
+            print "--> Current position is %d, %d" % (self.current_lat,
+                                                      self.current_long)
+        if wait_time < 50:  # successfully reached
+            time.sleep(5)  # stay at waypoint for a few seconds
+            return "Reached waypoint"
+        else:
+            return "Failed to reach waypoint"
+
+    def has_reached_waypoint(self, waypoint):
+        error_margin = 3  # in meters
+        try:
+            current_pt = utm.fromLatLong(self.current_lat, self.current_long)
+            current_x = current_pt.easting
+            current_y = current_pt.northing
+            waypoint_pt = utm.fromLatLong(waypoint.latitude,
+                                          waypoint.longitude)
+            waypoint_x = waypoint_pt.easting
+            waypoint_y = waypoint_pt.northing
+            x_delta = math.fabs(current_x - waypoint_x)
+            y_delta = math.fabs(current_y - waypoint_y)
+            dist_from_waypoint = math.sqrt(x_delta**2 + y_delta**2)
+            return dist_from_waypoint < error_margin
+        except AttributeError:  # if haven't gotten current position data
+            return False
+
+    def position_callback(self, data):
+        self.current_lat = data.latitude
+        self.current_long = data.longitude
+        self.current_rel_alt = data.relative_altitude
+        self.current_alt = data.altitude
 
     def fly_path(self, waypoint_data):
-        waypoints = [build_waypoint(datum) for datum in waypoint_data]
-        # Execute flight plan
-        self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
-        print('Armed')
-        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
-        print('Launched')
-        time.sleep(5)
-        self.trigger_auto_service()
-        self.adjust_throttle_service()
-        for waypoint in waypoints:
-            self.send_waypoint(waypoint)
-        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
-        print('Landing')
-
-    def reached_waypoint(self, waypoint):
-        pass
-
-    def on_position_update(self, data):
-        '''
-        data: GPS + Compass (+ IMU?)
-        '''
-        self.latitude=data.latitude / 10.0**7
-        self.longitude=data.longitude / 10.0**7
-        self.altitude = data.altitude / 1000.0
-        self.heading = data.heading / 100.0
+        self.arm()
+        self.launch()
+        self.go_to_waypoints(waypoint_data)
+        self.land()
 
 def build_waypoint(data):
     '''
@@ -111,6 +144,8 @@ def gps_to_mavlink(coordinate):
 
 
 def open_waypoint_file(filename):
+    f = open(filename)
+    waypoints = json.load(f)
     rospack = rospkg.RosPack()
     quadcopter_brain_path = rospack.get_path("quadcopter_brain")
     source_path = "src"
@@ -120,7 +155,7 @@ def open_waypoint_file(filename):
     return waypoints
 
 
-if __name__ == '__main__':
+def main():
     rospy.init_node("quadcopter_brain")
     carl = QuadcopterBrain()
     carl.clear_waypoints_service()
@@ -128,5 +163,8 @@ if __name__ == '__main__':
     rospy.sleep(3)
     great_lawn_waypoints = open_waypoint_file(
         "waypoint_data/great_lawn_waypoints.json")
-    carl.fly_path([great_lawn_waypoints['V1'], great_lawn_waypoints['V2'],
-                   great_lawn_waypoints['V3']])
+    carl.fly_path([great_lawn_waypoints["A"], great_lawn_waypoints["B"]])
+
+
+if __name__ == '__main__':
+    main()
