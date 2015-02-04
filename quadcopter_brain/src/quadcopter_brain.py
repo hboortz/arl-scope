@@ -33,6 +33,11 @@ class QuadcopterBrain(object):
         self.adjust_throttle_service = rospy.ServiceProxy(
             'adjust_throttle', Empty)
 
+        self.latitude = -1.0
+        self.longitude = -1.0
+        self.altitude = -1.0
+        self.heading = -1.0
+
     def send_waypoint(self, waypoint):
         successfully_sent_waypoint = False
         tries = 0
@@ -73,12 +78,19 @@ class QuadcopterBrain(object):
 
     def on_position_update(self, data):
         '''
-        data: GPS + IMU
+        data: GPS + Compass (+ IMU?)
         '''
-        pass
+        self.latitude = data.latitude / 1e7
+        self.longitude = data.longitude / 1e7
+        self.altitude = data.altitude / 1e3
+        self.heading = data.heading / 1e2
 
 
 def build_waypoint(data):
+    '''
+    data: dictionary with latitude and longitude
+          (altitude and hold_time optional)
+    '''
     latitude = data['latitude']
     longitude = data['longitude']
     altitude = data.get('altitude', 8)
@@ -97,7 +109,7 @@ def gps_to_mavlink(coordinate):
     '''
     coordinate: decimal degrees
     '''
-    return int(coordinate * 1e+7)
+    return int(coordinate * 1e7)
 
 
 def open_waypoint_file(filename):
