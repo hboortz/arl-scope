@@ -43,8 +43,6 @@ class QuadcopterBrain(object):
 
     def go_to_waypoints(self, waypoint_data):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
-        self.trigger_auto_service()
-        self.adjust_throttle_service()
         for waypoint in waypoints:
             self.go_to_waypoint(waypoint)
 
@@ -53,6 +51,8 @@ class QuadcopterBrain(object):
         print('Landing')
 
     def send_waypoint(self, waypoint):
+        self.trigger_auto_service()
+        self.adjust_throttle_service()
         successfully_sent_waypoint = False
         tries = 0
 
