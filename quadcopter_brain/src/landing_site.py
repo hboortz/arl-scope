@@ -26,13 +26,14 @@ class LandingSite(object):
         x_coords, y_coords, z_coords, visible = self.clean_fiducials(data)
         self.in_view = len(visible) > 0
         if self.in_view:
-            self.center = self.find_fiducial_center(x_coords, y_coords, z_coords, visible)
+            self.center = self.find_fiducial_center(x_coords, y_coords,
+                                                    z_coords, visible)
 
     def clean_fiducials(self, data):
         '''
         Takes raw fiducial data (type ARMarkers) and returns list of the
-        relative, x_coords, y_coords, and z_coords positions of visible fiducials. Also returns a
-        list of the visible fiducial ids
+        relative, x_coords, y_coords, and z_coords positions of visible
+        fiducials. Also returns a list of the visible fiducial ids
         '''
         markers = data.markers
         x_coords = [f.pose.pose.position.x for f in markers]

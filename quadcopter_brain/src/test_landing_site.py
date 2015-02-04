@@ -40,13 +40,14 @@ class TestLandingSite(unittest.TestCase):
                 PositionTools.lat_lon_diff(self.brain.latitude,
                                            self.brain.longitude,
                                            lat, lon)
-            self.assertAlmostEqual(xErr, test[3], 3)  # 1 mm is reasonable
-            self.assertAlmostEqual(yErr, test[4], 3)  #   margin of error
+            # 1 mm (3 decimals) is a reasonable margin of error
+            self.assertAlmostEqual(xErr, test[3], 3)
+            self.assertAlmostEqual(yErr, test[4], 3)
 
     def test_landing_site_lat_lon_greater_x(self):
         '''
-        latitude shouldn't change (within a few meters)   
-        longitude should be greater 
+        latitude shouldn't change (within a few meters)
+        longitude should be greater
         '''
         self.landing_site.center = Pose(position=Point(x=1000, y=0, z=6))
 
@@ -68,7 +69,7 @@ class TestLandingSite(unittest.TestCase):
     def test_landing_site_lat_lon_lesser_x(self):
         '''
         latitude shouldn't change (within a few meters)
-        longitude should be bigger 
+        longitude should be bigger
         '''
         self.landing_site.center = Pose(position=Point(x=-1000, y=0, z=6))
 
