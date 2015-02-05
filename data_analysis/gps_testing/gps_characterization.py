@@ -1,11 +1,14 @@
 import os
+import sys
+sys.path.append(os.path.relpath('../../quadcopter_brain/src/'))
 
 import geodesy.utm
+import matplotlib.pyplot as plt
 
 import gps_data
 import gps_metrics
 import plotting
-import matplotlib.pyplot as plt
+from position_tools import PositionTools
 
 
 def print_metrics(gps_coordinates, gps_times):
@@ -23,8 +26,8 @@ def get_filepath(filename):
 
 
 def plot_gps_coordinates_in_meters(measured_gps, true_gps):
-    measured_gps = lat_lon_to_meters(measured_gps)
-    true_gps = lat_lon_to_meters([true_gps])
+    measured_gps = PositionTools.lat_lon_to_meters(measured_gps)
+    true_gps = PositionTools.lat_lon_to_meters([true_gps])
 
     fig, ax = plt.subplots(1, 1)
     plotting.plot_xy_coordinates(
@@ -38,13 +41,6 @@ def plot_gps_coordinates_in_meters(measured_gps, true_gps):
         ax, 'Raised Stationary GPS Test (2)', 'Latitude (m)', 'Longitude (m)'
     )
     plt.show()
-
-
-def lat_lon_to_meters(gps_points):
-    utm_points = [geodesy.utm.fromLatLong(lat, lon) for lat, lon in gps_points]
-    x_metered_points = [point.northing for point in utm_points]
-    y_metered_points = [point.easting for point in utm_points]
-    return (x_metered_points, y_metered_points)
 
 
 def main():
