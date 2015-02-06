@@ -1,0 +1,18 @@
+AT THE LOWER CORNER OF THE GREAT LAWN, ALLIE AND ERIC
+IN THE SNOW
+
+1. We captured the GPS waypoint of a clear spot and tried to send the quadcopter there. The quadcopter took off up the great lawn and crashed in the snow. It turns out we didn't add the period to the captured longitude.
+2. Period was added to quadcopter but quadcopter flew up great lawn, again. Crashed in snow. We blew off as much snow as possible.
+3. Quadcopter flew up great lawn again. Crashed in snow. :(
+
+POWER CYCLED THE QUADCOPTER, REFRESHED ROSCOPTER
+
+4. Successfully armed and launched(only command being requested)
+5. Armed, launched, and went to waypoint "clearspot" at 5 m
+6. Armed, launched, and went to waypoint "clearspot" at 2 m
+7. Armed, went up to about 2 meters, and went to waypoint "clearspot" at 1 m
+    Launch failed and the quadcopter progressed to waypoints immediately, without the 15s wait
+8. Armed, launched, and went to waypoint "clearspot" at 1 m
+9. Armed, launched, went to waypoint "clearspot" at 5m, and then went to "clearspot" at 1 m
+
+
