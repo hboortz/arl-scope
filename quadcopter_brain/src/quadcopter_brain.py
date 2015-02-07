@@ -31,6 +31,13 @@ class QuadcopterBrain(object):
             'trigger_auto', Empty)
         self.adjust_throttle_service = rospy.ServiceProxy(
             'adjust_throttle', Empty)
+        rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
+                         self.position_callback)
+        self.current_lat = 0
+        self.current_long = 0
+        self.current_rel_alt = 0
+        self.current_alt = 0
+        self.heading = 0
 
     def arm(self):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
@@ -45,6 +52,11 @@ class QuadcopterBrain(object):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
         for waypoint in waypoints:
             self.send_waypoint(waypoint)
+
+    def hover_in_place(self):
+        self.go_to_waypoints([{"latitude": self.current_lat,
+                               "longitude": self.current_long,
+                               "altitude": self.current_rel_alt}])
 
     def land(self):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
@@ -75,8 +87,6 @@ class QuadcopterBrain(object):
 
     def check_reached_waypoint(self, waypoint):
         wait_time = 0
-        rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
-                         self.position_callback)
         while not self.has_reached_waypoint and wait_time < 50:
             time.sleep(5)
             wait_time += 5
@@ -111,6 +121,7 @@ class QuadcopterBrain(object):
         self.current_long = data.longitude
         self.current_rel_alt = data.relative_altitude
         self.current_alt = data.altitude
+        self.heading = data.heading
 
     def fly_path(self, waypoint_data):
         self.arm()
