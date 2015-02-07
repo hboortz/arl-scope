@@ -71,7 +71,7 @@ class QuadcopterBrain(object):
                                                           waypoint.longitude))
                 time.sleep(0.1)
                 if tries == 5:
-                    print("Tried % times and giving up" % (tries))
+                    print("Tried %d times and giving up" % (tries))
                 else:
                     print("Retrying. Tries: %d" % (tries))
 
