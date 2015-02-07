@@ -169,8 +169,6 @@ def main():
         "waypoint_data/great_lawn_waypoints.json")
     if outside:
         carl.arm()
-    else:
-        print outside
     carl.fly_path([great_lawn_waypoints["A"], great_lawn_waypoints["B"]])
 
 if __name__ == '__main__':
