@@ -1,9 +1,13 @@
+import os
+import sys
 import unittest
+sys.path.append(os.path.relpath('.../../quadcopter_brain/src/'))
 
 import mock
 import numpy
 
 import gps_metrics
+from position_tools import PositionTools
 
 
 class TestGPSCharacterization(unittest.TestCase):
@@ -18,7 +22,7 @@ class TestGPSCharacterization(unittest.TestCase):
         self.assertTrue(numpy.allclose(cog, numpy.array([0, 0])))
 
     @mock.patch("gps_metrics.center_of_gravity")
-    @mock.patch("gps_metrics.latlon_diff")
+    @mock.patch("PositionTools.lat_lon_diff")
     def test_precision(self, latlon_diff_mock, center_of_gravity_mock):
         p1 = numpy.array([1, 0])
         p2 = numpy.array([0, 2])
@@ -26,7 +30,7 @@ class TestGPSCharacterization(unittest.TestCase):
         p4 = numpy.array([0, -2])
         points = numpy.array([p1, p2, p3, p4])
 
-        latlon_diff_mock.side_effect = [1, 2, 1, 2]
+        lat_lon_diff_mock.side_effect = [1, 2, 1, 2]
         center_of_gravity_mock.return_value = numpy.array([0, 0])
         precision = gps_metrics.precision(points)
         self.assertAlmostEqual(1.5, precision)
