@@ -18,7 +18,7 @@ def euclidean_distance(p1, p2):
     '''
     Takes in two lat/lon pairs and returns distance in meters between them
     '''
-    dX, dY, dist = PositionTools.lat_lon_diff(p1[0], p1[1], p2[0], p2[1])
+    _, _, dist = PositionTools.lat_lon_diff(p1[0], p1[1], p2[0], p2[1])
     return dist
 
 

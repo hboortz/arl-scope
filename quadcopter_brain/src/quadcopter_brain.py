@@ -94,7 +94,7 @@ class QuadcopterBrain(object):
     def has_reached_waypoint(self, waypoint):
         error_margin = 3  # in meters
         try:
-            dX, dY, dist_from_waypoint = \
+            _, _, dist_from_waypoint = \
                 PositionTools.lat_lon_diff(self.current_lat,
                                            self.current_long,
                                            waypoint.latitude,
