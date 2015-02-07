@@ -1,14 +1,10 @@
-import os
-import sys
-sys.path.append(os.path.relpath('../../quadcopter_brain/src/'))
-
 import geodesy.utm
 import matplotlib.pyplot as plt
 
 import gps_data
 import gps_metrics
 import plotting
-from position_tools import PositionTools
+from quadcopter_brain import position_tools
 
 
 def print_metrics(gps_coordinates, gps_times):
@@ -26,8 +22,8 @@ def get_filepath(filename):
 
 
 def plot_gps_coordinates_in_meters(measured_gps, true_gps):
-    measured_gps = PositionTools.lat_lon_to_meters(measured_gps)
-    true_gps = PositionTools.lat_lon_to_meters([true_gps])
+    measured_gps = position_tools.PositionTools.lat_lon_to_meters(measured_gps)
+    true_gps = position_tools.PositionTools.lat_lon_to_meters([true_gps])
 
     fig, ax = plt.subplots(1, 1)
     plotting.plot_xy_coordinates(

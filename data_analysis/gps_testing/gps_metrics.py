@@ -1,11 +1,7 @@
-import os
-import sys
-sys.path.append(os.path.relpath('../../quadcopter_brain/src/'))
-
 import numpy
 import geodesy.utm
 
-import position_tools
+from quadcopter_brain import position_tools
 
 
 def center_of_gravity(data):

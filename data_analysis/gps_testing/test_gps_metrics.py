@@ -1,13 +1,10 @@
-import os
-import sys
 import unittest
-sys.path.append(os.path.relpath('.../../quadcopter_brain/src/'))
 
 import mock
 import numpy
 
 import gps_metrics
-from position_tools import PositionTools
+from quadcopter_brain import position_tools
 
 
 class TestGPSCharacterization(unittest.TestCase):
@@ -22,7 +19,7 @@ class TestGPSCharacterization(unittest.TestCase):
         self.assertTrue(numpy.allclose(cog, numpy.array([0, 0])))
 
     @mock.patch("gps_metrics.center_of_gravity")
-    @mock.patch("position_tools.PositionTools")
+    @mock.patch("quadcopter_brain.position_tools.PositionTools")
     def test_precision(self, position_tools_mock, center_of_gravity_mock):
         p1 = numpy.array([1, 0])
         p2 = numpy.array([0, 2])
