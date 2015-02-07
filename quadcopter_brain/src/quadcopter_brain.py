@@ -142,8 +142,6 @@ def gps_to_mavlink(coordinate):
 
 
 def open_waypoint_file(filename):
-    f = open(filename)
-    waypoints = json.load(f)
     rospack = rospkg.RosPack()
     quadcopter_brain_path = rospack.get_path("quadcopter_brain")
     source_path = "src"
