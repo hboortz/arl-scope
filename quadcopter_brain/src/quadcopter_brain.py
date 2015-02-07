@@ -15,8 +15,6 @@ from std_srvs.srv import *
 from sensor_msgs.msg import NavSatFix, NavSatStatus, Imu
 from geodesy import utm
 
-from position_tools import PositionTools
-
 
 class QuadcopterBrain(object):
     '''
