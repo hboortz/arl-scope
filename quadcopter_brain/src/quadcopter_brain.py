@@ -15,6 +15,8 @@ from std_srvs.srv import *
 from sensor_msgs.msg import NavSatFix, NavSatStatus, Imu
 from geodesy import utm
 
+from position_tools import PositionTools
+
 
 class QuadcopterBrain(object):
     '''
@@ -168,6 +170,7 @@ def main():
     if outside:
         carl.arm()
     carl.fly_path([great_lawn_waypoints["A"], great_lawn_waypoints["B"]])
+
 
 if __name__ == '__main__':
     main()
