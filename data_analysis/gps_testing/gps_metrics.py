@@ -5,7 +5,7 @@ sys.path.append(os.path.relpath('../../quadcopter_brain/src/'))
 import numpy
 import geodesy.utm
 
-from position_tools import PositionTools
+import position_tools
 
 
 def center_of_gravity(data):
@@ -18,7 +18,9 @@ def euclidean_distance(p1, p2):
     '''
     Takes in two lat/lon pairs and returns distance in meters between them
     '''
-    _, _, dist = PositionTools.lat_lon_diff(p1[0], p1[1], p2[0], p2[1])
+    _, _, dist = position_tools.PositionTools.lat_lon_diff(
+        p1[0], p1[1], p2[0], p2[1]
+    )
     return dist
 
 

@@ -22,16 +22,19 @@ class TestGPSCharacterization(unittest.TestCase):
         self.assertTrue(numpy.allclose(cog, numpy.array([0, 0])))
 
     @mock.patch("gps_metrics.center_of_gravity")
-    @mock.patch("PositionTools.lat_lon_diff")
-    def test_precision(self, latlon_diff_mock, center_of_gravity_mock):
+    @mock.patch("position_tools.PositionTools")
+    def test_precision(self, position_tools_mock, center_of_gravity_mock):
         p1 = numpy.array([1, 0])
         p2 = numpy.array([0, 2])
         p3 = numpy.array([-1, 0])
         p4 = numpy.array([0, -2])
         points = numpy.array([p1, p2, p3, p4])
 
-        lat_lon_diff_mock.side_effect = [1, 2, 1, 2]
         center_of_gravity_mock.return_value = numpy.array([0, 0])
+        position_tools_mock.lat_lon_diff.side_effect = [
+            (1, 1, 1), (2, 2, 2), (1, 1, 1), (2, 2, 2)
+        ]
+
         precision = gps_metrics.precision(points)
         self.assertAlmostEqual(1.5, precision)
 
