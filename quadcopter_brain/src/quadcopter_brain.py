@@ -99,12 +99,14 @@ class QuadcopterBrain(object):
                             "\t 3 - Terminate \n"
                             ">>> ")
         if choice == '1':
-            check_reached_waypoint(waypoint, max_wait_time=curr_wait_time*2,
-                                   wait_time=curr_wait_time)
+            return check_reached_waypoint(waypoint, 
+                                          max_wait_time=curr_wait_time*2,
+                                          wait_time=curr_wait_time)
         elif choice == '2':
             return "Failed to reach waypoint. Continuing on path"
         else:  # for 3 or if nothing chosen
             raise FlightError("Failed to reach waypoint", self)
+
 
     def has_reached_waypoint(self, waypoint):
         error_margin = 3  # in meters
