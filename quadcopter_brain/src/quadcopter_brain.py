@@ -15,6 +15,8 @@ from std_srvs.srv import *
 from sensor_msgs.msg import NavSatFix, NavSatStatus, Imu
 from geodesy import utm
 
+from position_tools import PositionTools
+
 
 class QuadcopterBrain(object):
     '''
@@ -89,20 +91,19 @@ class QuadcopterBrain(object):
         else:
             return "Failed to reach waypoint"
 
-    def has_reached_waypoint(self, waypoint):
-        error_margin = 3  # in meters
+    def has_reached_waypoint(self, waypoint, xy_error_margin=3,
+                             alt_error_margin=1):
+        """ Waypoint is roscopter waypoint type
+            error margins are in meters
+
+            returns boolean of whether position is within error margins"""
         try:
-            current_pt = utm.fromLatLong(self.current_lat, self.current_long)
-            current_x = current_pt.easting
-            current_y = current_pt.northing
-            waypoint_pt = utm.fromLatLong(waypoint.latitude,
-                                          waypoint.longitude)
-            waypoint_x = waypoint_pt.easting
-            waypoint_y = waypoint_pt.northing
-            x_delta = math.fabs(current_x - waypoint_x)
-            y_delta = math.fabs(current_y - waypoint_y)
-            dist_from_waypoint = math.sqrt(x_delta**2 + y_delta**2)
-            return dist_from_waypoint < error_margin
+            _, _, dist = math.fabs(PositionTools.lon_lon_diff(self.current_lat,
+                                                              self.current_lon,
+                                                              waypoint.latitude,
+                                                              waypoint.longitude))
+            alt_diff = math.fabs(self.current_alt - waypoint.altitude)
+            return dist < xy_error_margin and alt_diff < alt_error_margin
         except AttributeError:  # if haven't gotten current position data
             return False
 
@@ -159,14 +160,16 @@ def open_waypoint_file(filename):
 
 def main():
     rospy.init_node("quadcopter_brain")
+    outside = rospy.get_param("outside", False)
     carl = QuadcopterBrain()
     carl.clear_waypoints_service()
     print "Sleeping for 3 seconds..."
     rospy.sleep(3)
     great_lawn_waypoints = open_waypoint_file(
         "waypoint_data/great_lawn_waypoints.json")
+    if outside:
+        carl.arm()
     carl.fly_path([great_lawn_waypoints["A"], great_lawn_waypoints["B"]])
-
 
 if __name__ == '__main__':
     main()
