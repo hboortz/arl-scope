@@ -15,7 +15,7 @@ from std_srvs.srv import *
 from sensor_msgs.msg import NavSatFix, NavSatStatus, Imu
 from geodesy import utm
 
-from PositionTools import lat_lon_diff
+from position_tools import PositionTools
 
 
 class QuadcopterBrain(object):
@@ -98,10 +98,10 @@ class QuadcopterBrain(object):
 
             returns boolean of whether position is within error margins"""
         try:
-            _, _, dist = math.fabs(lon_lon_diff(self.current_lat,
-                                                self.current_lon,
-                                                waypoint.latitude,
-                                                waypoint.longitude)[2]
+            _, _, dist = math.fabs(PositionTools.lon_lon_diff(self.current_lat,
+                                                              self.current_lon,
+                                                              waypoint.latitude,
+                                                              waypoint.longitude)
             alt_diff = math.fabs(self.current_alt - waypoint.altitude)
             return dist < xy_error_margin and alt_diff < alt_error_margin
         except AttributeError:  # if haven't gotten current position data
