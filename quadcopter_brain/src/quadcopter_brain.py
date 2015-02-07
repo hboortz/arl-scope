@@ -15,6 +15,8 @@ from std_srvs.srv import *
 from sensor_msgs.msg import NavSatFix, NavSatStatus, Imu
 from geodesy import utm
 
+from flight_error import FlightError
+
 
 class QuadcopterBrain(object):
     '''
@@ -73,21 +75,36 @@ class QuadcopterBrain(object):
                 else:
                     print("Retrying. Tries: %d" % (tries))
 
-    def check_reached_waypoint(self, waypoint):
-        wait_time = 0
+    def check_reached_waypoint(self, waypoint, max_wait_time=50, wait_time=0):
         rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
                          self.position_callback)
-        while not self.has_reached_waypoint and wait_time < 50:
+        while not self.has_reached_waypoint and wait_time < max_wait_time:
             time.sleep(5)
             wait_time += 5
             print "--> Traveling to waypoint for %d seconds" % (wait_time)
             print "--> Current position is %d, %d" % (self.current_lat,
                                                       self.current_long)
-        if wait_time < 50:  # successfully reached
+        if wait_time < max_wait_time:  # successfully reached
             time.sleep(5)  # stay at waypoint for a few seconds
             return "Reached waypoint"
         else:
-            return "Failed to reach waypoint"
+            return waypoint_timeout_choice(waypoint, wait_time)
+    
+    def waypoint_timeout_choice(self, waypoint, curr_wait_time):
+        choice = raw_input("TIMEOUT: Traveling to waypoint for %d sec.\n" 
+                            % (curr_wait_time) +
+                           "\t Choose an option number:\n"
+                            "\t 1 - Continue traveling to waypoint\n"
+                            "\t 2 - Continue to next command \n"
+                            "\t 3 - Terminate \n"
+                            ">>> ")
+        if choice == '1':
+            check_reached_waypoint(waypoint, max_wait_time=curr_wait_time*2,
+                                   wait_time=curr_wait_time)
+        elif choice == '2':
+            return "Failed to reach waypoint. Continuing on path"
+        else:  # for 3 or if nothing chosen
+            raise FlightError("Failed to reach waypoint", self)
 
     def has_reached_waypoint(self, waypoint):
         error_margin = 3  # in meters
