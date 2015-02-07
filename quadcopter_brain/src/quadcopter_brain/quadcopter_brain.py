@@ -15,6 +15,8 @@ from std_srvs.srv import *
 from sensor_msgs.msg import NavSatFix, NavSatStatus, Imu
 from geodesy import utm
 
+from position_tools import PositionTools
+
 
 class QuadcopterBrain(object):
     '''
@@ -92,16 +94,11 @@ class QuadcopterBrain(object):
     def has_reached_waypoint(self, waypoint):
         error_margin = 3  # in meters
         try:
-            current_pt = utm.fromLatLong(self.current_lat, self.current_long)
-            current_x = current_pt.easting
-            current_y = current_pt.northing
-            waypoint_pt = utm.fromLatLong(waypoint.latitude,
-                                          waypoint.longitude)
-            waypoint_x = waypoint_pt.easting
-            waypoint_y = waypoint_pt.northing
-            x_delta = math.fabs(current_x - waypoint_x)
-            y_delta = math.fabs(current_y - waypoint_y)
-            dist_from_waypoint = math.sqrt(x_delta**2 + y_delta**2)
+            _, _, dist_from_waypoint = \
+                PositionTools.lat_lon_diff(self.current_lat,
+                                           self.current_long,
+                                           waypoint.latitude,
+                                           waypoint.longitude)
             return dist_from_waypoint < error_margin
         except AttributeError:  # if haven't gotten current position data
             return False
@@ -145,8 +142,6 @@ def gps_to_mavlink(coordinate):
 
 
 def open_waypoint_file(filename):
-    f = open(filename)
-    waypoints = json.load(f)
     rospack = rospkg.RosPack()
     quadcopter_brain_path = rospack.get_path("quadcopter_brain")
     source_path = "src"
