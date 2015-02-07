@@ -15,8 +15,6 @@ from std_srvs.srv import *
 from sensor_msgs.msg import NavSatFix, NavSatStatus, Imu
 from geodesy import utm
 
-from position_tools import PositionTools
-
 
 class QuadcopterBrain(object):
     '''
@@ -52,13 +50,8 @@ class QuadcopterBrain(object):
 
     def go_to_waypoints(self, waypoint_data):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
-        i = 0  # Remove this after testing hover
         for waypoint in waypoints:
-            if i > 0:  # Remove this after testing hover
-                self.send_waypoint(waypoint)
-            else:  # Remove this after testing hover
-                self.hover_in_place()
-            i += 1  # Remove this after testing hover
+            self.send_waypoint(waypoint)
 
     def hover_in_place(self):
         # Test two options for stopping:
@@ -87,7 +80,16 @@ class QuadcopterBrain(object):
             if successfully_sent_waypoint:
                 print('Sent waypoint %d, %d' % (waypoint.latitude,
                                                 waypoint.longitude))
-                print self.check_reached_waypoint(waypoint)
+
+                # print self.check_reached_waypoint(waypoint)  # Uncomment after testing hover
+
+                print "Waiting for 5 seconds until hover..."  # Remove after testing hover
+                time.sleep(5.0)   # Remove after testing hover
+                print "Hovering"   # Remove after testing hover
+                self.hover_in_place()   # Remove after testing hover
+                print "Waiting for 5 seconds until resuming..."  # Remove after testing hover
+                time.sleep(5.0)   # Remove after testing hover
+                print "Resuming"  # Remove after testing hover
             else:
                 print("Failed to send waypoint %d, %d" % (waypoint.latitude,
                                                           waypoint.longitude))
@@ -114,11 +116,16 @@ class QuadcopterBrain(object):
     def has_reached_waypoint(self, waypoint):
         error_margin = 3  # in meters
         try:
-            _, _, dist_from_waypoint = \
-                PositionTools.lat_lon_diff(self.current_lat,
-                                           self.current_long,
-                                           waypoint.latitude,
-                                           waypoint.longitude)
+            current_pt = utm.fromLatLong(self.current_lat, self.current_long)
+            current_x = current_pt.easting
+            current_y = current_pt.northing
+            waypoint_pt = utm.fromLatLong(waypoint.latitude,
+                                          waypoint.longitude)
+            waypoint_x = waypoint_pt.easting
+            waypoint_y = waypoint_pt.northing
+            x_delta = math.fabs(current_x - waypoint_x)
+            y_delta = math.fabs(current_y - waypoint_y)
+            dist_from_waypoint = math.sqrt(x_delta**2 + y_delta**2)
             return dist_from_waypoint < error_margin
         except AttributeError:  # if haven't gotten current position data
             return False
@@ -163,6 +170,8 @@ def gps_to_mavlink(coordinate):
 
 
 def open_waypoint_file(filename):
+    f = open(filename)
+    waypoints = json.load(f)
     rospack = rospkg.RosPack()
     quadcopter_brain_path = rospack.get_path("quadcopter_brain")
     source_path = "src"
