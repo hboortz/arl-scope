@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import geodesy.utm
 
 
@@ -9,8 +7,8 @@ class PositionTools():
         '''
         (latA, lonA): first coordinate
         (latB, lonB): second coordinate
-        returns: distance between coordinates in meters as X, Y,
-                 and straight line distance
+        returns: distance between coordinates in meters as X, Y, and straight
+                 line distance
         '''
         pointA = geodesy.utm.fromLatLong(latA, lonA)
         pointB = geodesy.utm.fromLatLong(latB, lonB)
@@ -31,3 +29,15 @@ class PositionTools():
         given_utm.northing += dY
         return_lat_lon = given_utm.toMsg()
         return return_lat_lon.latitude, return_lat_lon.longitude
+
+    @staticmethod
+    def lat_lon_to_meters(gps_points):
+        '''
+        Takes a list of (lat, lon) GPS points and returns a list of (x, y)
+        points in meters (UTM)
+        '''
+        utm_points = \
+            [geodesy.utm.fromLatLong(lat, lon) for lat, lon in gps_points]
+        x_metered_points = [point.northing for point in utm_points]
+        y_metered_points = [point.easting for point in utm_points]
+        return (x_metered_points, y_metered_points)
