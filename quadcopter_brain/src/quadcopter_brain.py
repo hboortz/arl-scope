@@ -50,13 +50,23 @@ class QuadcopterBrain(object):
 
     def go_to_waypoints(self, waypoint_data):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
+        i = 0  # Remove this after testing hover
         for waypoint in waypoints:
-            self.send_waypoint(waypoint)
+            if i > 0:  # Remove this after testing hover
+                self.send_waypoint(waypoint)
+            else:  # Remove this after testing hover
+                self.hover_in_place()
+            i += 1  # Remove this after testing hover
 
     def hover_in_place(self):
-        self.go_to_waypoints([{"latitude": self.current_lat,
-                               "longitude": self.current_long,
-                               "altitude": self.current_rel_alt}])
+        # Test two options for stopping:
+        # A - clear waypoints - does it then stop in place?
+        self.clear_waypoints_service()
+        print "Clearing waypoints... am I hovering in place?"
+        # B - Send the quadcopter to a waypoint at its position
+        # self.go_to_waypoints([{"latitude": self.current_lat,
+        #                        "longitude": self.current_long,
+        #                        "altitude": self.current_rel_alt}])
 
     def land(self):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
