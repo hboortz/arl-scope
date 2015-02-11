@@ -171,7 +171,9 @@ def open_waypoint_file(filename):
 
 def main():
     rospy.init_node("quadcopter_brain")
-    outside = rospy.get_param("outside", False)
+    # In order to set the outside parameter, add _outside:=True to rosrun call
+    outside = rospy.get_param("quadcopter_brain/outside", False)
+    print "The code is in outside mode: ", outside
     carl = QuadcopterBrain()
     carl.clear_waypoints_service()
     print "Sleeping for 3 seconds..."
