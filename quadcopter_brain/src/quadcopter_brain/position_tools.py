@@ -41,3 +41,19 @@ class PositionTools():
         x_metered_points = [point.northing for point in utm_points]
         y_metered_points = [point.easting for point in utm_points]
         return (x_metered_points, y_metered_points)
+
+    @staticmethod
+    def gps_to_mavlink(coordinate):
+        '''
+        coordinate: decimal degrees
+        returns an integer representation of lat/long that mavlink wants
+        '''
+        return int(coordinate * 1e7)
+
+    @staticmethod
+    def mavlink_to_gps(int_coordinate):
+        '''
+        coordinate: integer lat/long from mavlink
+        returns decimal degrees
+        '''
+        return int_coordinate / 1e7
