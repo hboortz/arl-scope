@@ -64,7 +64,6 @@ class QuadcopterBrain(object):
         self.adjust_throttle_service()
         successfully_sent_waypoint = False
         tries = 0
-
         while not successfully_sent_waypoint and tries < 5:
             res = self.waypoint_service(waypoint)
             successfully_sent_waypoint = res.result
@@ -84,7 +83,10 @@ class QuadcopterBrain(object):
 
     def check_reached_waypoint(self, waypoint):
         wait_time = 0
-        while not self.has_reached_waypoint and wait_time < 50:
+
+        rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
+                         self.position_callback)
+        while not self.has_reached_waypoint(waypoint) and wait_time < 50:
             time.sleep(5)
             wait_time += 5
             print "--> Traveling to waypoint for %d seconds" % (wait_time)
@@ -97,13 +99,17 @@ class QuadcopterBrain(object):
             return "Failed to reach waypoint"
 
     def has_reached_waypoint(self, waypoint):
+        latitude = mavlink_to_gps(waypoint.latitude)
+        longitude = mavlink_to_gps(waypoint.longitude)
         error_margin = 3  # in meters
         try:
             _, _, dist_from_waypoint = \
                 PositionTools.lat_lon_diff(self.current_lat,
                                            self.current_long,
-                                           waypoint.latitude,
-                                           waypoint.longitude)
+                                           latitude,
+                                           longitude)
+            print "Distance to waypoint: " + str(dist_from_waypoint)
+            print "Current lat: " + self.latitude + self.longitude
             return dist_from_waypoint < error_margin
         except AttributeError:  # if haven't gotten current position data
             return False
@@ -145,6 +151,12 @@ def gps_to_mavlink(coordinate):
     coordinate: decimal degrees
     '''
     return int(coordinate * 1e7)
+
+def mavlink_to_gps(coordinate):
+    '''
+    coordinate: decimal degrees
+    '''
+    return int(coordinate / 1e7)
 
 
 def open_waypoint_file(filename):
