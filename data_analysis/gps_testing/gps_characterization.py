@@ -1,3 +1,5 @@
+import os
+
 import geodesy.utm
 import matplotlib.pyplot as plt
 
@@ -40,12 +42,12 @@ def plot_gps_coordinates_in_meters(measured_gps, true_gps):
 
 
 def main():
-    filepath = get_filepath("carl_nearpostandroad_2015-01-28-15-51-22.csv")
+    filepath = get_filepath("hover_data_2015-02-11_last_30s_bad.csv")
     data = gps_data.load_gps_data(filepath)
     gps_coordinates = gps_data.extract_gps_coordinates(data)
     gps_times = gps_data.extract_gps_times(data)
-    #print_metrics(gps_coordinates, gps_times)
-    plot_gps_coordinates_in_meters(gps_coordinates, (42.292050, -71.262735))
+    print_metrics(gps_coordinates, gps_times)
+    plot_gps_coordinates_in_meters(gps_coordinates, (42.292101, -71.262690))
 
 
 if __name__ == '__main__':
