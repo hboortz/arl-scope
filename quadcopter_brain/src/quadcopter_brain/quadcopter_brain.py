@@ -64,7 +64,6 @@ class QuadcopterBrain(object):
         self.adjust_throttle_service()
         successfully_sent_waypoint = False
         tries = 0
-        print waypoint.longitude
         while not successfully_sent_waypoint and tries < 5:
             res = self.waypoint_service(waypoint)
             successfully_sent_waypoint = res.result
@@ -84,12 +83,10 @@ class QuadcopterBrain(object):
 
     def check_reached_waypoint(self, waypoint):
         wait_time = 0
-        print waypoint.longitude
 
         rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
                          self.position_callback)
         while not self.has_reached_waypoint(waypoint) and wait_time < 50:
-            print waypoint.latitude
             time.sleep(5)
             wait_time += 5
             print "--> Traveling to waypoint for %d seconds" % (wait_time)
