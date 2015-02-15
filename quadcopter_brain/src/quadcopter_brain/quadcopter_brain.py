@@ -173,7 +173,7 @@ def main():
     rospy.init_node("quadcopter_brain")
     # In order to set the outside parameter, add _outside:=True to rosrun call
     outside = rospy.get_param("quadcopter_brain/outside", False)
-    print "The code is in outside mode: ", outside
+    print "In outside mode: ", outside, ". If incorrect, add _outside:=True to rosrun"
     carl = QuadcopterBrain()
     carl.clear_waypoints_service()
     print "Sleeping for 3 seconds..."
