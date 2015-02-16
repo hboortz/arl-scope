@@ -86,8 +86,10 @@ class QuadcopterBrain(object):
                 time.sleep(5.0)   # Remove after testing hover
                 print "Hovering"   # Remove after testing hover
                 self.hover_in_place()   # Remove after testing hover
-                print "Waiting for 5 seconds until resuming..."  # Remove after testing hover
-                time.sleep(5.0)   # Remove after testing hover
+                print "Waiting for 15 seconds until resuming..."  # Remove after testing hover
+                time.sleep(12.0)   # Remove after testing hover
+                print "3 seconds until resuming..."  # Remove after testing hover
+                time.sleep(3.0)   # Remove after testing hover
                 print "Resuming"  # Remove after testing hover
             else:
                 print("Failed to send waypoint %d, %d" % (waypoint.latitude,
