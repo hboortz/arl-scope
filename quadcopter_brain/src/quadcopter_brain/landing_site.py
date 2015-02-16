@@ -65,8 +65,8 @@ class LandingSite(object):
                                   [-self.center.position.y]])
         absolute_site = np.dot(rotation, relative_site)
 
-        return PositionTools.metered_offset(copter.latitude,
-                                            copter.longitude,
+        return PositionTools.metered_offset(copter.current_lat,
+                                            copter.current_long,
                                             absolute_site[0][0],
                                             absolute_site[1][0])
 

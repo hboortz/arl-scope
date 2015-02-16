@@ -79,7 +79,8 @@ def open_waypoint_file(filename):
 
 
 def main():
-    outside = rospy.get_param("outside", False)
+    outside = rospy.get_param("quadcopter_brain/outside", False)
+    print "In outside mode: ", outside, ". If incorrect, add _outside:=True to rosrun"
     carl = QuadcopterFiducialBrain()
     carl.clear_waypoints_service()
     rospy.init_node("fiducial_landing")
