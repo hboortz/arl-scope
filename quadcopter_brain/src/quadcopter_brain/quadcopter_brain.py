@@ -112,16 +112,16 @@ class QuadcopterBrain(object):
     def waypoint_timeout_choice(self, waypoint, curr_wait_time):
         choice = 0
         print "TIMEOUT: Traveling to waypoint for %d sec." % (curr_wait_time)
-        choice = input("\t Choose an option number:\n" +                                                "\t 1 - Continue traveling to waypoint\n" + 
-                       "\t 2 - Continue to next command \n" +
-                       "\t 3 - Terminate \n" + 
+        choice = input("\t Choose an option number:\n"                                                  "\t 1 - Continue traveling to waypoint\n"  
+                       "\t 2 - Continue to next command \n" 
+                       "\t 3 - Terminate \n"  
                        ">>> ")
         print "CHOICE: ", choice
-        if choice == '1':
+        if choice == 1:
             return self.check_reached_waypoint(waypoint,
                                                max_wait_time=curr_wait_time*2,
                                                wait_time=curr_wait_time)
-        elif choice == '2':
+        elif choice == 2:
             return "Failed to reach waypoint. Continuing on path"
         else:  # for 3 or if nothing chosen
             raise FlightError("Failed to reach waypoint", self)
