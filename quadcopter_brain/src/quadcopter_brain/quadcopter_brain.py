@@ -82,7 +82,7 @@ class QuadcopterBrain(object):
             if successfully_sent_waypoint:
                 print('Sent waypoint %d, %d' % (waypoint.latitude,
                                                 waypoint.longitude))
-                print self.check_reached_waypoint(waypoint)
+                print self.check_reached_waypoint(waypoint, max_wait_time=5)
             else:
                 print("Failed to send waypoint %d, %d" % (waypoint.latitude,
                                                           waypoint.longitude))
@@ -107,20 +107,20 @@ class QuadcopterBrain(object):
             time.sleep(5)  # stay at waypoint for a few seconds
             return "Reached waypoint"
         else:
-            return waypoint_timeout_choice(waypoint, wait_time)
+            return self.waypoint_timeout_choice(waypoint, wait_time)
 
     def waypoint_timeout_choice(self, waypoint, curr_wait_time):
-        choice = raw_input("TIMEOUT: Traveling to waypoint for %d sec.\n"
-                           % (curr_wait_time) +
-                           "\t Choose an option number:\n"
-                           "\t 1 - Continue traveling to waypoint\n"
-                           "\t 2 - Continue to next command \n"
-                           "\t 3 - Terminate \n"
-                           ">>> ")
+        choice = 0
+        print "TIMEOUT: Traveling to waypoint for %d sec." % (curr_wait_time)
+        choice = input("\t Choose an option number:\n" +                                                "\t 1 - Continue traveling to waypoint\n" + 
+                       "\t 2 - Continue to next command \n" +
+                       "\t 3 - Terminate \n" + 
+                       ">>> ")
+        print "CHOICE: ", choice
         if choice == '1':
-            return check_reached_waypoint(waypoint,
-                                          max_wait_time=curr_wait_time*2,
-                                          wait_time=curr_wait_time)
+            return self.check_reached_waypoint(waypoint,
+                                               max_wait_time=curr_wait_time*2,
+                                               wait_time=curr_wait_time)
         elif choice == '2':
             return "Failed to reach waypoint. Continuing on path"
         else:  # for 3 or if nothing chosen
@@ -133,10 +133,10 @@ class QuadcopterBrain(object):
 
             returns boolean of whether position is within error margins"""
         try:
-            _, _, dist = math.fabs(PositionTools.lon_lon_diff(self.current_lat,
-                                                              self.current_lon,
-                                                              waypoint.latitude,
-                                                             waypoint.longitude))
+            _, _, dist = PositionTools.lon_lon_diff(self.current_lat,
+                                                    self.current_lon,
+                                                    waypoint.latitude,
+                                                    waypoint.longitude)
             alt_diff = math.fabs(self.current_alt - waypoint.altitude)
             return dist < xy_error_margin and alt_diff < alt_error_margin
         except AttributeError:  # if haven't gotten current position data
@@ -202,14 +202,14 @@ def main():
     outside = rospy.get_param("_outside", False)
     # In order to set the outside parameter, add _outside:=True to rosrun call
     outside = rospy.get_param("quadcopter_brain/outside", False)
-    print "In outside mode: ", outside
+    print "Outside = ", outside
     carl = QuadcopterBrain()
     carl.clear_waypoints_service()
     print "Sleeping for 3 seconds..."
     rospy.sleep(3)
     great_lawn_waypoints = open_waypoint_file(
         "waypoint_data/great_lawn_waypoints.json")
-    if _outside:
+    if outside:
         carl.arm()
     carl.fly_path([great_lawn_waypoints["A"], great_lawn_waypoints["B"]])
 
