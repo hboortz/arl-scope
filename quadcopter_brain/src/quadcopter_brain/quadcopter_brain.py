@@ -34,7 +34,14 @@ class QuadcopterBrain(object):
             'trigger_auto', Empty)
         self.adjust_throttle_service = rospy.ServiceProxy(
             'adjust_throttle', Empty)
-
+        self.current_lat = 0.0
+        self.current_long = 0.0
+        self.current_rel_alt = 0.0
+        self.current_alt = 0.0
+        self.heading = 0.0
+        rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
+                         self.position_callback)
+    
     def arm(self):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
         print('Armed')
@@ -68,7 +75,6 @@ class QuadcopterBrain(object):
         self.adjust_throttle_service()
         successfully_sent_waypoint = False
         tries = 0
-
         while not successfully_sent_waypoint and tries < 5:
             res = self.waypoint_service(waypoint)
             successfully_sent_waypoint = res.result
@@ -136,12 +142,12 @@ class QuadcopterBrain(object):
         except AttributeError:  # if haven't gotten current position data
             return False
 
-
     def position_callback(self, data):
         self.current_lat = data.latitude
         self.current_long = data.longitude
         self.current_rel_alt = data.relative_altitude
         self.current_alt = data.altitude
+        self.heading = data.heading
 
     def fly_path(self, waypoint_data):
         self.launch()
@@ -174,10 +180,14 @@ def gps_to_mavlink(coordinate):
     '''
     return int(coordinate * 1e7)
 
+def mavlink_to_gps(coordinate):
+    '''
+    coordinate: decimal degrees
+    '''
+    return int(coordinate / 1e7)
+
 
 def open_waypoint_file(filename):
-    f = open(filename)
-    waypoints = json.load(f)
     rospack = rospkg.RosPack()
     quadcopter_brain_path = rospack.get_path("quadcopter_brain")
     source_path = "src"
@@ -190,6 +200,9 @@ def open_waypoint_file(filename):
 def main():
     rospy.init_node("quadcopter_brain")
     outside = rospy.get_param("_outside", False)
+    # In order to set the outside parameter, add _outside:=True to rosrun call
+    outside = rospy.get_param("quadcopter_brain/outside", False)
+    print "In outside mode: ", outside
     carl = QuadcopterBrain()
     carl.clear_waypoints_service()
     print "Sleeping for 3 seconds..."

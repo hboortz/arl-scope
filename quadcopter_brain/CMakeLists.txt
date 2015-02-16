@@ -17,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
+catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -163,4 +163,4 @@ include_directories(
 # catkin_add_nosetests(test)
 # find_package(rostest)
 # add_rostest(test/test_quadcopter_brain.launch)
-catkin_add_nosetests(src/test_landing_site.py)
+catkin_add_nosetests(src/quadcopter_brain/test_landing_site.py)

@@ -2,9 +2,14 @@
 
 from copy import deepcopy
 import datetime
+import os
+import time
+import json
 
 import rospy
 
+import rospkg
+import roscopter
 import quadcopter_brain
 from quadcopter_brain import QuadcopterBrain, build_waypoint
 from landing_site import LandingSite
@@ -55,25 +60,38 @@ class QuadcopterFiducialBrain(QuadcopterBrain):
         '''
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
         # Execute flight plan
-        self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
-        print('Armed')
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
         print('Launched')
         time.sleep(5)
         self.trigger_auto_service()
-        self.adjust_throttle_service()
+        self.adjust_throttle_service()              
         for waypoint in waypoints:
             self.send_waypoint(waypoint)
 
+def open_waypoint_file(filename):
+    rospack = rospkg.RosPack()
+    quadcopter_brain_path = rospack.get_path("quadcopter_brain")
+    source_path = "src"
+    file_path = os.path.join(quadcopter_brain_path, source_path, filename)
+    with open(file_path, "r") as f:
+        waypoints = json.load(f)
+    return waypoints
+
 
 def main():
+    outside = rospy.get_param("quadcopter_brain/outside", False)
+    print "In outside mode: ", outside, ". If incorrect, add _outside:=True to rosrun"
     carl = QuadcopterFiducialBrain()
     carl.clear_waypoints_service()
     rospy.init_node("fiducial_landing")
     rospy.sleep(2)
-    great_lawn_waypoints = open_waypoint_file(
-        "waypoint_data/great_lawn_waypoints.json")
-    carl.dry_run([great_lawn_waypoints['A']])
+    # great_lawn_waypoints = open_waypoint_file(
+        # "waypoint_data/great_lawn_waypoints.json")
+    oval_waypoints = open_waypoint_file(
+            "waypoint_data/oval_waypoints.json")
+    if outside:
+        carl.arm()
+    carl.dry_run([oval_waypoints['A']])
     carl.land_on_fiducial()
 
 

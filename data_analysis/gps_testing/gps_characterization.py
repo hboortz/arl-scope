@@ -1,11 +1,12 @@
 import os
 
 import geodesy.utm
+import matplotlib.pyplot as plt
 
 import gps_data
 import gps_metrics
 import plotting
-import matplotlib.pyplot as plt
+from quadcopter_brain import position_tools
 
 
 def print_metrics(gps_coordinates, gps_times):
@@ -23,8 +24,8 @@ def get_filepath(filename):
 
 
 def plot_gps_coordinates_in_meters(measured_gps, true_gps):
-    measured_gps = lat_lon_to_meters(measured_gps)
-    true_gps = lat_lon_to_meters([true_gps])
+    measured_gps = position_tools.PositionTools.lat_lon_to_meters(measured_gps)
+    true_gps = position_tools.PositionTools.lat_lon_to_meters([true_gps])
 
     fig, ax = plt.subplots(1, 1)
     plotting.plot_xy_coordinates(
@@ -40,20 +41,13 @@ def plot_gps_coordinates_in_meters(measured_gps, true_gps):
     plt.show()
 
 
-def lat_lon_to_meters(gps_points):
-    utm_points = [geodesy.utm.fromLatLong(lat, lon) for lat, lon in gps_points]
-    x_metered_points = [point.northing for point in utm_points]
-    y_metered_points = [point.easting for point in utm_points]
-    return (x_metered_points, y_metered_points)
-
-
 def main():
-    filepath = get_filepath("carl_nearpostandroad_2015-01-28-15-51-22.csv")
+    filepath = get_filepath("hover_data_2015-02-11_last_30s_bad.csv")
     data = gps_data.load_gps_data(filepath)
     gps_coordinates = gps_data.extract_gps_coordinates(data)
     gps_times = gps_data.extract_gps_times(data)
-    #print_metrics(gps_coordinates, gps_times)
-    plot_gps_coordinates_in_meters(gps_coordinates, (42.292050, -71.262735))
+    print_metrics(gps_coordinates, gps_times)
+    plot_gps_coordinates_in_meters(gps_coordinates, (42.292101, -71.262690))
 
 
 if __name__ == '__main__':
