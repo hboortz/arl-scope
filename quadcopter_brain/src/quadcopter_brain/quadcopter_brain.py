@@ -99,17 +99,19 @@ class QuadcopterBrain(object):
             return "Failed to reach waypoint"
 
     def has_reached_waypoint(self, waypoint):
-        latitude = mavlink_to_gps(waypoint.latitude)
-        longitude = mavlink_to_gps(waypoint.longitude)
+        wpt_latitude = mavlink_to_gps(waypoint.latitude)
+        wpt_longitude = mavlink_to_gps(waypoint.longitude)
+
         error_margin = 3  # in meters
+        print "Checking reached:"
         try:
             _, _, dist_from_waypoint = \
                 PositionTools.lat_lon_diff(self.current_lat,
                                            self.current_long,
-                                           latitude,
-                                           longitude)
+                                           wpt_latitude,
+                                           wpt_longitude)
             print "Distance to waypoint: " + str(dist_from_waypoint)
-            print "Current lat: " + self.latitude + self.longitude
+            print "Current pos: %s, %s"%(self.current_lat, self.current_long)
             return dist_from_waypoint < error_margin
         except AttributeError:  # if haven't gotten current position data
             return False
@@ -171,7 +173,7 @@ def open_waypoint_file(filename):
 
 def main():
     rospy.init_node("quadcopter_brain")
-    outside = rospy.get_param("outside", False)
+    outside = rospy.get_param("outside", True)
     carl = QuadcopterBrain()
     carl.clear_waypoints_service()
     print "Sleeping for 3 seconds..."
