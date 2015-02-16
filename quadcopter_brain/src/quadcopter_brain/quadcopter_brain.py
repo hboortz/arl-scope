@@ -104,7 +104,7 @@ class QuadcopterBrain(object):
 
     def check_reached_waypoint(self, waypoint):
         wait_time = 0
-        while not self.has_reached_waypoint and wait_time < 50:
+        while not self.has_reached_waypoint(waypoint) and wait_time < 50:
             time.sleep(5)
             wait_time += 5
             print "--> Traveling to waypoint for %d seconds" % (wait_time)
@@ -133,10 +133,10 @@ class QuadcopterBrain(object):
             return False
 
     def position_callback(self, data):
-        self.current_lat = data.latitude
-        self.current_long = data.longitude
-        self.current_rel_alt = data.relative_altitude
-        self.current_alt = data.altitude
+        self.current_lat = mavlink_to_gps(data.latitude)
+        self.current_long = mavlink_to_gps(data.longitude)
+        self.current_rel_alt = data.relative_altitude / 1000.0  # From mm to m
+        self.current_alt = data.altitude / 1000.0  # From mm to m
         self.heading = data.heading
 
     def fly_path(self, waypoint_data):
@@ -172,9 +172,9 @@ def gps_to_mavlink(coordinate):
 
 def mavlink_to_gps(coordinate):
     '''
-    coordinate: decimal degrees
+    coordinate: integer representation of degrees
     '''
-    return int(coordinate / 1e7)
+    return coordinate / 1e7
 
 
 def open_waypoint_file(filename):
