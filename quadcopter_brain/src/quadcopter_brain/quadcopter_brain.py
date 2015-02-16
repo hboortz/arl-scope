@@ -31,14 +31,14 @@ class QuadcopterBrain(object):
             'trigger_auto', Empty)
         self.adjust_throttle_service = rospy.ServiceProxy(
             'adjust_throttle', Empty)
+        self.current_lat = 0.0
+        self.current_long = 0.0
+        self.current_rel_alt = 0.0
+        self.current_alt = 0.0
+        self.heading = 0.0
         rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
                          self.position_callback)
-        self.current_lat = 0
-        self.current_long = 0
-        self.current_rel_alt = 0
-        self.current_alt = 0
-        self.heading = 0
-
+    
     def arm(self):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
         print('Armed')
@@ -72,7 +72,6 @@ class QuadcopterBrain(object):
         self.adjust_throttle_service()
         successfully_sent_waypoint = False
         tries = 0
-
         while not successfully_sent_waypoint and tries < 5:
             res = self.waypoint_service(waypoint)
             successfully_sent_waypoint = res.result
@@ -114,18 +113,17 @@ class QuadcopterBrain(object):
             return "Failed to reach waypoint"
 
     def has_reached_waypoint(self, waypoint):
+        latitude = mavlink_to_gps(waypoint.latitude)
+        longitude = mavlink_to_gps(waypoint.longitude)
         error_margin = 3  # in meters
         try:
-            current_pt = utm.fromLatLong(self.current_lat, self.current_long)
-            current_x = current_pt.easting
-            current_y = current_pt.northing
-            waypoint_pt = utm.fromLatLong(waypoint.latitude,
-                                          waypoint.longitude)
-            waypoint_x = waypoint_pt.easting
-            waypoint_y = waypoint_pt.northing
-            x_delta = math.fabs(current_x - waypoint_x)
-            y_delta = math.fabs(current_y - waypoint_y)
-            dist_from_waypoint = math.sqrt(x_delta**2 + y_delta**2)
+            _, _, dist_from_waypoint = \
+                PositionTools.lat_lon_diff(self.current_lat,
+                                           self.current_long,
+                                           latitude,
+                                           longitude)
+            print "Distance to waypoint: " + str(dist_from_waypoint)
+            print "Current lat: " + self.latitude + self.longitude
             return dist_from_waypoint < error_margin
         except AttributeError:  # if haven't gotten current position data
             return False
@@ -168,6 +166,12 @@ def gps_to_mavlink(coordinate):
     '''
     return int(coordinate * 1e7)
 
+def mavlink_to_gps(coordinate):
+    '''
+    coordinate: decimal degrees
+    '''
+    return int(coordinate / 1e7)
+
 
 def open_waypoint_file(filename):
     f = open(filename)
@@ -183,7 +187,9 @@ def open_waypoint_file(filename):
 
 def main():
     rospy.init_node("quadcopter_brain")
-    outside = rospy.get_param("outside", False)
+    # In order to set the outside parameter, add _outside:=True to rosrun call
+    outside = rospy.get_param("quadcopter_brain/outside", False)
+    print "The code is in outside mode: ", outside
     carl = QuadcopterBrain()
     carl.clear_waypoints_service()
     print "Sleeping for 3 seconds..."
