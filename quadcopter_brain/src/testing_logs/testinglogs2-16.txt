@@ -1,0 +1,13 @@
+AT THE LOWER CORNER OF THE GREAT LAWN, KYLE AND ERIC
+IN THE SNOW
+
+We are trying to test hover_in_place on the feature/hover_in_place branch. There
+are two possibilities we're testing:
+	1) Does just clearing the waypoints make it hover?
+	2) If not, can we send a waypoint at the current point to make it stop?
+
+CAN WE JUST CLEAR WAYPOINTS TO MAKE THE QUAD STOP?
+1. Armed and launched correctly, Malificent seems to launching very high. Copter started heading towards waypoint, and when waypoints were cleared it appeared to head back to the landing site, we took control and landed
+2. Armed, launched, started to WP1 (E5) and when cleared the copter went back to the launch point (same x, y, still high). The copter didn't go to the second WP (F5), but it said the WP sent correctly
+
+CAN WE SEND WP TO THE CURRENT POSITION?

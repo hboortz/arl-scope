@@ -56,12 +56,14 @@ class QuadcopterBrain(object):
     def hover_in_place(self):
         # Test two options for stopping:
         # A - clear waypoints - does it then stop in place?
-        self.clear_waypoints_service()
-        print "Clearing waypoints... am I hovering in place?"
+        # self.clear_waypoints_service()
+        # print "Clearing waypoints... am I hovering in place?"
         # B - Send the quadcopter to a waypoint at its position
-        # self.go_to_waypoints([{"latitude": self.current_lat,
-        #                        "longitude": self.current_long,
-        #                        "altitude": self.current_rel_alt}])
+        print "Sending WP @ %f lat, %f long, %f alt" %(self.current_lat, self.current_long, self.current_rel_alt)
+        print "AM I HOVERING?"
+        self.go_to_waypoints([{"latitude": self.current_lat,
+                               "longitude": self.current_long,
+                               "altitude": self.current_rel_alt}])
 
     def land(self):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
@@ -125,7 +127,7 @@ class QuadcopterBrain(object):
                                            latitude,
                                            longitude)
             print "Distance to waypoint: " + str(dist_from_waypoint)
-            print "Current lat: " + self.latitude + self.longitude
+            print "Current lat: " + self.current_lat + self.current_long
             return dist_from_waypoint < error_margin
         except AttributeError:  # if haven't gotten current position data
             return False
@@ -140,7 +142,7 @@ class QuadcopterBrain(object):
     def fly_path(self, waypoint_data):
         self.launch()
         self.go_to_waypoints(waypoint_data)
-        self.land()
+        # self.land()
 
 
 def build_waypoint(data):
@@ -198,7 +200,8 @@ def main():
         "waypoint_data/great_lawn_waypoints.json")
     if outside:
         carl.arm()
-    carl.fly_path([great_lawn_waypoints["A"], great_lawn_waypoints["B"]])
+    carl.fly_path([great_lawn_waypoints["E5"], great_lawn_waypoints["F5"]])
+    print "TAKE CONTROL AND RETURN"
 
 
 if __name__ == '__main__':
