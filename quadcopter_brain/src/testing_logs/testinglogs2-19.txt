@@ -1,0 +1,13 @@
+AT THE LOWER CORNER OF THE GREAT LAWN, KAITLIN AND ERIC
+IN THE SNOW
+
+We are trying to test hover_in_place on the feature/hover_in_place branch. There
+are two possibilities we're testing:
+	1) Does just clearing the waypoints make it hover? (Tried on 2/16)
+	2) If not, can we send a waypoint at the current point to make it stop?
+
+
+CAN WE SEND WP TO THE CURRENT POSITION?
+Trying to head towards E5, hover, F5, hover, and land.
+
+1. 
