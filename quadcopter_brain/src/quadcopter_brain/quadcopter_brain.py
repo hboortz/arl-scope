@@ -52,6 +52,13 @@ class QuadcopterBrain(object):
         waypoints = [build_waypoint(datum) for datum in waypoint_data]
         for waypoint in waypoints:
             self.send_waypoint(waypoint)
+            print "Hovering"   # Remove after testing hover
+            self.hover_in_place()   # Remove after testing hover
+            print "Waiting for 15 seconds until resuming..."  # Remove after testing hover
+            time.sleep(12.0)   # Remove after testing hover
+            print "3 seconds until resuming..."  # Remove after testing hover
+            time.sleep(3.0)   # Remove after testing hover
+            print "Resuming"  # Remove after testing hover
 
     def hover_in_place(self):
         # Test two options for stopping:
@@ -61,9 +68,13 @@ class QuadcopterBrain(object):
         # B - Send the quadcopter to a waypoint at its position
         print "Sending WP @ %f lat, %f long, %f alt" %(self.current_lat, self.current_long, self.current_rel_alt)
         print "AM I HOVERING?"
-        self.go_to_waypoints([{"latitude": self.current_lat,
-                               "longitude": self.current_long,
-                               "altitude": self.current_rel_alt}])
+        waypoint_data = [{"latitude": self.current_lat, "longitude": self.current_long, "altitude": self.current_rel_alt}]
+        waypoints = [build_waypoint(datum) for datum in waypoint_data]
+        for waypoint in waypoints:
+            self.send_waypoint(waypoint)
+        # self.go_to_waypoints([{"latitude": self.current_lat,
+                               # "longitude": self.current_long,
+                               # "altitude": self.current_rel_alt}])
 
     def land(self):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
@@ -81,18 +92,9 @@ class QuadcopterBrain(object):
             if successfully_sent_waypoint:
                 print('Sent waypoint %d, %d' % (waypoint.latitude,
                                                 waypoint.longitude))
-
                 # print self.check_reached_waypoint(waypoint)  # Uncomment after testing hover
-
                 print "Waiting for 5 seconds until hover..."  # Remove after testing hover
                 time.sleep(5.0)   # Remove after testing hover
-                print "Hovering"   # Remove after testing hover
-                self.hover_in_place()   # Remove after testing hover
-                print "Waiting for 15 seconds until resuming..."  # Remove after testing hover
-                time.sleep(12.0)   # Remove after testing hover
-                print "3 seconds until resuming..."  # Remove after testing hover
-                time.sleep(3.0)   # Remove after testing hover
-                print "Resuming"  # Remove after testing hover
             else:
                 print("Failed to send waypoint %d, %d" % (waypoint.latitude,
                                                           waypoint.longitude))
