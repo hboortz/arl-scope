@@ -42,7 +42,7 @@ class LandingSite(object):
         ids = [f.id for f in markers]
         return x_coords, y_coords, z_coords, ids
 
-    def find_fiducial_center(self, X, Y, Z, ids):
+    def find_fiducial_center(self, x_coords, y_coords, z_coords, ids):
         '''
         Finds the center of the fiducial, in meters, from the camera
         TODO: Incorporate which fiducials are seen to find the center
