@@ -9,15 +9,15 @@ import std_srvs.srv
 
 class Quadcopter(object):
     def __init__(self):
-        self.clear_waypoints_service = rospy.ServiceProxy(
+        self._clear_waypoints_service = rospy.ServiceProxy(
             'clear_waypoints', std_srvs.srv.Empty)
-        self.command_service = rospy.ServiceProxy(
+        self._command_service = rospy.ServiceProxy(
             'command', roscopter.srv.APMCommand)
-        self.waypoint_service = rospy.ServiceProxy(
+        self._waypoint_service = rospy.ServiceProxy(
             'waypoint', roscopter.srv.SendWaypoint)
-        self.trigger_auto_service = rospy.ServiceProxy(
+        self._trigger_auto_service = rospy.ServiceProxy(
             'trigger_auto', std_srvs.srv.Empty)
-        self.adjust_throttle_service = rospy.ServiceProxy(
+        self._adjust_throttle_service = rospy.ServiceProxy(
             'adjust_throttle', std_srvs.srv.Empty)
 
         self.current_lat = 0.0
@@ -36,17 +36,20 @@ class Quadcopter(object):
         self.heading = data.heading
 
     def arm(self):
-        self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
+        self._command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
         print('Armed')
 
     def launch(self, system_wait=5):
-        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
+        self._command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
         print('Launched, waiting for %d seconds' % (system_wait))
         rospy.sleep(system_wait)
 
     def land(self):
-        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
+        self._command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
         print('Landing')
+
+    def clear_waypoints(self):
+        self._clear_waypoints_service()
 
     def send_waypoint(self, waypoint, max_num_tries=5):
         self._set_auto_mode()
@@ -54,7 +57,7 @@ class Quadcopter(object):
         tries = 0
 
         while not successfully_sent_waypoint and tries < max_num_tries:
-            res = self.waypoint_service(waypoint)
+            res = self._waypoint_service(waypoint)
             successfully_sent_waypoint = res.result
             tries += 1
             self._report_waypoint_status(
@@ -79,5 +82,5 @@ class Quadcopter(object):
             TODO: Explain why it is necessary to trigger_auto and
             adjust_throttle - b/c ROSCOPTER is dumb
         '''
-        self.trigger_auto_service()
-        self.adjust_throttle_service()
+        self._trigger_auto_service()
+        self._adjust_throttle_service()
