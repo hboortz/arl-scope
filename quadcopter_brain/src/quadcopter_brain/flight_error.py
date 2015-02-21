@@ -8,4 +8,5 @@ class FlightError(Exception):
         return self.msg
 
     def hover_in_place(self, copter):
+    	print "TRYING TO HOVER IN PLACE"
         copter.hover_in_place()
