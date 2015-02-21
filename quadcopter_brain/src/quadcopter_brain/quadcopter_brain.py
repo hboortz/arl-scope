@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import time
-
 import rospy
 
 from position_tools import PositionTools
@@ -29,13 +27,13 @@ class QuadcopterBrain(object):
     def check_reached_waypoint(self, waypoint):
         wait_time = 0
         while not self.has_reached_waypoint and wait_time < 50:
-            time.sleep(5)
+            rospy.sleep(5)
             wait_time += 5
             print "--> Traveling to waypoint for %d seconds" % (wait_time)
             print "--> Current position is %d, %d" % (self.current_lat,
                                                       self.current_long)
         if wait_time < 50:  # successfully reached
-            time.sleep(5)  # stay at waypoint for a few seconds
+            rospy.sleep(5)  # stay at waypoint for a few seconds
             return "Reached waypoint"
         else:
             return "Failed to reach waypoint"

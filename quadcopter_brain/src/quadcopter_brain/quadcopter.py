@@ -1,5 +1,3 @@
-import time
-
 import rospy
 # TODO: Determine if this import is needed
 # import roscopter
@@ -44,7 +42,7 @@ class Quadcopter(object):
     def launch(self, system_wait=5):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
         print('Launched, waiting for %d seconds' % (system_wait))
-        time.sleep(system_wait)
+        rospy.sleep(system_wait)
 
     def land(self):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
@@ -68,7 +66,7 @@ class Quadcopter(object):
             else:
                 print("Failed to send waypoint %d, %d" % (waypoint.latitude,
                                                           waypoint.longitude))
-                time.sleep(0.1)
+                rospy.sleep(0.1)
                 if tries == max_num_tries:
                     print("Tried %d times and giving up" % (tries))
                 else:
