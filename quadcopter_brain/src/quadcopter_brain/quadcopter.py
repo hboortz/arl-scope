@@ -12,15 +12,15 @@ import std_srvs.srv
 class Quadcopter(object):
     def __init__(self):
         self.clear_waypoints_service = rospy.ServiceProxy(
-            'clear_waypoints', Empty)
+            'clear_waypoints', std_srvs.srv.Empty)
         self.command_service = rospy.ServiceProxy(
             'command', roscopter.srv.APMCommand)
         self.waypoint_service = rospy.ServiceProxy(
             'waypoint', roscopter.srv.SendWaypoint)
         self.trigger_auto_service = rospy.ServiceProxy(
-            'trigger_auto', Empty)
+            'trigger_auto', std_srvs.srv.Empty)
         self.adjust_throttle_service = rospy.ServiceProxy(
-            'adjust_throttle', Empty)
+            'adjust_throttle', std_srvs.srv.Empty)
 
         self.current_lat = 0.0
         self.current_long = 0.0
