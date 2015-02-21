@@ -1,7 +1,10 @@
+import rospy
+
 from quadcopter_brain import QuadcopterBrain
+from waypoint_tools import WaypointTools
+
 
 def main():
-    rospy.init_node("quadcopter_brain")
     outside = rospy.get_param("outside", False)
     carl = QuadcopterBrain()
     carl.quadcopter.clear_waypoints()

@@ -9,6 +9,7 @@ import std_srvs.srv
 
 class Quadcopter(object):
     def __init__(self):
+        rospy.init_node("Quadcopter")
         self._clear_waypoints_service = rospy.ServiceProxy(
             'clear_waypoints', std_srvs.srv.Empty)
         self._command_service = rospy.ServiceProxy(
