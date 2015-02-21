@@ -39,13 +39,24 @@ class QuadcopterBrain(object):
             return "Failed to reach waypoint"
 
     def has_reached_waypoint(self, waypoint):
+        wpt_latitude = PositionTools.mavlink_to_gps(waypoint.latitude)
+        wpt_longitude = PositionTools.mavlink_to_gps(waypoint.longitude)
+
         error_margin = 3  # in meters
+        print "Checking reached:"
         try:
             _, _, dist_from_waypoint = \
-                PositionTools.lat_lon_diff(self.quadcopter.current_lat,
-                                           self.quadcopter.current_long,
-                                           waypoint.latitude,
-                                           waypoint.longitude)
+                PositionTools.lat_lon_diff(self.current_lat,
+                                           self.current_long,
+                                           wpt_latitude,
+                                           wpt_longitude)
+            print "Distance to waypoint: " + str(dist_from_waypoint)
+            print "Current pos: %s, %s"%(self.current_lat, self.current_long)
             return dist_from_waypoint < error_margin
         except AttributeError:  # if haven't gotten current position data
             return False
+
+    def fly_path(self, waypoint_data):
+        self.launch()
+        self.go_to_waypoints(waypoint_data)
+        self.land()

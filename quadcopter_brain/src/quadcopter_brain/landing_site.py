@@ -42,7 +42,7 @@ class LandingSite(object):
         ids = [f.id for f in markers]
         return x_coords, y_coords, z_coords, ids
 
-    def find_fiducial_center(self, X, Y, Z, ids):
+    def find_fiducial_center(self, x_coords, y_coords, z_coords, ids):
         '''
         Finds the center of the fiducial, in meters, from the camera
         TODO: Incorporate which fiducials are seen to find the center
@@ -65,8 +65,8 @@ class LandingSite(object):
                                   [-self.center.position.y]])
         absolute_site = np.dot(rotation, relative_site)
 
-        return PositionTools.metered_offset(copter.latitude,
-                                            copter.longitude,
+        return PositionTools.metered_offset(copter.current_lat,
+                                            copter.current_long,
                                             absolute_site[0][0],
                                             absolute_site[1][0])
 
