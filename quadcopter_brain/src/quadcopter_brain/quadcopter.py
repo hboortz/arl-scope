@@ -1,6 +1,4 @@
 import rospy
-# TODO: Determine if this import is needed
-# import roscopter
 import roscopter.msg
 import roscopter.srv
 import std_srvs.srv
@@ -35,26 +33,29 @@ class Quadcopter(object):
         self.current_long = PositionTools.mavlink_to_gps(data.longitude)
         self.current_rel_alt = data.relative_altitude / 1000.0  # From mm to m
         self.current_alt = data.altitude / 1000.0  # From mm to m
-        self.heading = data.heading
-# Work
+        self.heading = data.heading / 100.0
+
     def arm(self):
+        print('Sending arm command...')
         self._command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
         print('Armed')
 
     def launch(self, system_wait=5):
+        print('Sending launch command...')
         self._command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
         print('Launched, waiting for %d seconds' % (system_wait))
         rospy.sleep(system_wait)
 
     def land(self):
+        print('Sending land command...')
         self._command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
         print('Landing')
 
-# Work
     def clear_waypoints(self):
+        print('Sending clear waypoints command...')
         self._clear_waypoints_service()
+        print('Cleared waypoints')
 
-# Work
     def send_waypoint(self, waypoint, max_num_tries=5):
         self._set_auto_mode()
         sent_waypoint = False
@@ -65,12 +66,21 @@ class Quadcopter(object):
             sent_waypoint = res.result
             tries += 1
             self._print_send_waypoint_status(
-                sent_waypoint, tries, max_num_tries)
+                waypoint, sent_waypoint, tries, max_num_tries)
             rospy.sleep(0.1)
 
         return sent_waypoint
 
-    def _print_send_waypoint_status(self, sent_waypoint, tries, max_num_tries):
+    def _set_auto_mode(self):
+        '''
+            TODO: Explain why it is necessary to trigger_auto and
+            adjust_throttle - b/c ROSCOPTER is dumb
+        '''
+        self._trigger_auto_service()
+        self._adjust_throttle_service()
+
+    def _print_send_waypoint_status(self, waypoint, sent_waypoint,
+                                    tries, max_num_tries):
         if sent_waypoint:
             print('Sent waypoint %d, %d' % (waypoint.latitude,
                                             waypoint.longitude))
@@ -81,12 +91,3 @@ class Quadcopter(object):
                 print("Tried %d times and giving up" % (tries))
             else:
                 print("Retrying. Tries: %d" % (tries))
-
-
-    def _set_auto_mode(self):
-        '''
-            TODO: Explain why it is necessary to trigger_auto and
-            adjust_throttle - b/c ROSCOPTER is dumb
-        '''
-        self._trigger_auto_service()
-        self._adjust_throttle_service()

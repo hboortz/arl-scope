@@ -53,7 +53,7 @@ class QuadcopterBrain(object):
                                            wpt_latitude,
                                            wpt_longitude)
             print "Distance to waypoint: " + str(dist_from_waypoint)
-            print "Current pos: %s, %s"%(self.current_lat, self.current_long)
+            print "Current pos: %s, %s" % (self.current_lat, self.current_long)
             return dist_from_waypoint < error_margin
         except AttributeError:  # if haven't gotten current position data
             return False
