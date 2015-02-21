@@ -19,7 +19,8 @@ class QuadcopterBrain(object):
             WaypointTools.build_waypoint(datum) for datum in waypoint_data]
         for waypoint in waypoints:
             if self.quadcopter.send_waypoint(waypoint):
-                self.check_reached_waypoint(waypoint)
+                rospy.sleep(15)
+                # self.check_reached_waypoint(waypoint)
 
     def fly_path(self, waypoint_data):
         self.quadcopter.launch()
