@@ -36,7 +36,7 @@ class Quadcopter(object):
         self.current_rel_alt = data.relative_altitude / 1000.0  # From mm to m
         self.current_alt = data.altitude / 1000.0  # From mm to m
         self.heading = data.heading
-
+# Work
     def arm(self):
         self._command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
         print('Armed')
@@ -50,34 +50,38 @@ class Quadcopter(object):
         self._command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
         print('Landing')
 
+# Work
     def clear_waypoints(self):
         self._clear_waypoints_service()
 
+# Work
     def send_waypoint(self, waypoint, max_num_tries=5):
         self._set_auto_mode()
-        successfully_sent_waypoint = False
+        sent_waypoint = False
         tries = 0
 
-        while not successfully_sent_waypoint and tries < max_num_tries:
+        while not sent_waypoint and tries < max_num_tries:
             res = self._waypoint_service(waypoint)
-            successfully_sent_waypoint = res.result
+            sent_waypoint = res.result
             tries += 1
-            self._report_waypoint_status(
-                successfully_sent_waypoint, tries, max_num_tries)
-            if successfully_sent_waypoint:
-                print('Sent waypoint %d, %d' % (waypoint.latitude,
-                                                waypoint.longitude))
-                print self.check_reached_waypoint(waypoint)
-            else:
-                print("Failed to send waypoint %d, %d" % (waypoint.latitude,
-                                                          waypoint.longitude))
-                rospy.sleep(0.1)
-                if tries == max_num_tries:
-                    print("Tried %d times and giving up" % (tries))
-                else:
-                    print("Retrying. Tries: %d" % (tries))
+            self._print_send_waypoint_status(
+                sent_waypoint, tries, max_num_tries)
+            rospy.sleep(0.1)
 
-        return successfully_sent_waypoint
+        return sent_waypoint
+
+    def _print_send_waypoint_status(self, sent_waypoint, tries, max_num_tries):
+        if sent_waypoint:
+            print('Sent waypoint %d, %d' % (waypoint.latitude,
+                                            waypoint.longitude))
+        else:
+            print("Failed to send waypoint %d, %d" % (waypoint.latitude,
+                                                      waypoint.longitude))
+            if tries == max_num_tries:
+                print("Tried %d times and giving up" % (tries))
+            else:
+                print("Retrying. Tries: %d" % (tries))
+
 
     def _set_auto_mode(self):
         '''

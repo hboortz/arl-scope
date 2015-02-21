@@ -4,6 +4,7 @@ import rospy
 
 from position_tools import PositionTools
 from waypoint_tools import WaypointTools
+from quadcopter import Quadcopter
 
 
 class QuadcopterBrain(object):
@@ -17,7 +18,8 @@ class QuadcopterBrain(object):
         waypoints = [
             WaypointTools.build_waypoint(datum) for datum in waypoint_data]
         for waypoint in waypoints:
-            self.quadcopter.send_waypoint(waypoint)
+            if self.quadcopter.send_waypoint(waypoint):
+                self.check_reached_waypoint(waypoint)
 
     def fly_path(self, waypoint_data):
         self.quadcopter.launch()
@@ -55,8 +57,3 @@ class QuadcopterBrain(object):
             return dist_from_waypoint < error_margin
         except AttributeError:  # if haven't gotten current position data
             return False
-
-    def fly_path(self, waypoint_data):
-        self.launch()
-        self.go_to_waypoints(waypoint_data)
-        self.land()
