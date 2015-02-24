@@ -53,13 +53,16 @@ class TestPositionTools(unittest.TestCase):
         gps = PositionTools.mavlink_to_gps(420000000)
         self.assertEqual(gps, 42.0)
         gps = PositionTools.mavlink_to_gps(-711000000)
-        self.assertEqual(gps, -71.1)
-        self.assertEqual(type(gps), float)
+        self.assertAlmostEqual(gps, -71.1)
 
     def test_altitude_to_mavlink(self):
-        altitude = PositionTools.altitude_to_mavlink(42.3)
-        self.assertEqual(altitude, 42300)
-        self.assertEqual(type(altitude), int)
+        mavlink_altitude = PositionTools.altitude_to_mavlink(42.3)
+        self.assertEqual(mavlink_altitude, 42300)
+        self.assertEqual(type(mavlink_altitude), int)
+
+    def test_mavlink_to_altitude(self):
+        altitude = PositionTools.mavlink_to_altitude(42300)
+        self.assertAlmostEqual(altitude, 42.3)
 
 
 if __name__ == '__main__':

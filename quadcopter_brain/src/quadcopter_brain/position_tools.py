@@ -72,7 +72,7 @@ class PositionTools():
         coordinate: integer altitude from mavlink (mm)
         returns altitude in meters
         '''
-        return int_coordinate / 1e3
+        return int_altitude / 1e3
 
     @staticmethod
     def degrees_to_mavlink(heading):
