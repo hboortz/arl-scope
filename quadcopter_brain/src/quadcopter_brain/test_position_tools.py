@@ -64,6 +64,10 @@ class TestPositionTools(unittest.TestCase):
         altitude = PositionTools.mavlink_to_altitude(42300)
         self.assertAlmostEqual(altitude, 42.3)
 
+    def test_degrees_to_mavlink(self):
+        mavlink_degrees = PositionTools.degrees_to_mavlink(28)
+        self.assertEqual(mavlink_degrees, 2800)
+        self.assertEqual(type(mavlink_degrees), int)
 
 if __name__ == '__main__':
     unittest.main()
