@@ -33,9 +33,10 @@ class Quadcopter(object):
     def _position_callback(self, data):
         self.current_lat = PositionTools.mavlink_to_gps(data.latitude)
         self.current_long = PositionTools.mavlink_to_gps(data.longitude)
-        self.current_rel_alt = data.relative_altitude / 1000.0  # From mm to m
-        self.current_alt = data.altitude / 1000.0  # From mm to m
-        self.heading = data.heading
+        self.heading = PositionTools.mavlink_to_heading(data.heading)
+        self.current_alt = PositionTools.mavlink_to_altitude(data.altitude)
+        self.current_rel_alt =\
+            PositionTools.mavlink_to_altitude(data.relative_altitude)
 
     def arm(self):
         self._command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
