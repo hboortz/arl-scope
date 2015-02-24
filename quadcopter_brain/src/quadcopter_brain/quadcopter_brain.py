@@ -4,6 +4,7 @@ import rospy
 
 from position_tools import PositionTools
 from waypoint_tools import WaypointTools
+import quadcopter
 
 
 class QuadcopterBrain(object):
@@ -11,7 +12,7 @@ class QuadcopterBrain(object):
     High-level quadcopter controller.
     '''
     def __init__(self):
-        self.quadcopter = Quadcopter()
+        self.quadcopter = quadcopter.Quadcopter()
 
     def go_to_waypoints(self, waypoint_data):
         waypoints = [
