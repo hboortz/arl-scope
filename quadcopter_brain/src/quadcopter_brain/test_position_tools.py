@@ -56,6 +56,11 @@ class TestPositionTools(unittest.TestCase):
         self.assertEqual(gps, -71.1)
         self.assertEqual(type(gps), float)
 
+    def test_altitude_to_mavlink(self):
+        altitude = PositionTools.altitude_to_mavlink(42.3)
+        self.assertEqual(altitude, 42300)
+        self.assertEqual(type(altitude), int)
+
 
 if __name__ == '__main__':
     unittest.main()
