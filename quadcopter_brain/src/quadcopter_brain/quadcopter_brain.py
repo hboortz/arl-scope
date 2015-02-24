@@ -55,8 +55,3 @@ class QuadcopterBrain(object):
             return dist_from_waypoint < error_margin
         except AttributeError:  # if haven't gotten current position data
             return False
-
-    def fly_path(self, waypoint_data):
-        self.launch()
-        self.go_to_waypoints(waypoint_data)
-        self.land()
