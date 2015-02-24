@@ -1,6 +1,4 @@
 import rospy
-# TODO: Determine if this import is needed
-# import roscopter
 import roscopter.msg
 import roscopter.srv
 import std_srvs.srv
@@ -39,46 +37,40 @@ class Quadcopter(object):
             PositionTools.mavlink_to_altitude(data.relative_altitude)
 
     def arm(self):
+        print('Sending arm command...')
         self._command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
         print('Armed')
 
     def launch(self, system_wait=5):
+        print('Sending launch command...')
         self._command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
         print('Launched, waiting for %d seconds' % (system_wait))
         rospy.sleep(system_wait)
 
     def land(self):
+        print('Sending land command...')
         self._command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
         print('Landing')
 
     def clear_waypoints(self):
+        print('Sending clear waypoints command...')
         self._clear_waypoints_service()
+        print('Cleared waypoints')
 
     def send_waypoint(self, waypoint, max_num_tries=5):
         self._set_auto_mode()
-        successfully_sent_waypoint = False
+        sent_waypoint = False
         tries = 0
 
-        while not successfully_sent_waypoint and tries < max_num_tries:
+        while not sent_waypoint and tries < max_num_tries:
             res = self._waypoint_service(waypoint)
-            successfully_sent_waypoint = res.result
+            sent_waypoint = res.result
             tries += 1
-            self._report_waypoint_status(
-                successfully_sent_waypoint, tries, max_num_tries)
-            if successfully_sent_waypoint:
-                print('Sent waypoint %d, %d' % (waypoint.latitude,
-                                                waypoint.longitude))
-                print self.check_reached_waypoint(waypoint)
-            else:
-                print("Failed to send waypoint %d, %d" % (waypoint.latitude,
-                                                          waypoint.longitude))
-                rospy.sleep(0.1)
-                if tries == max_num_tries:
-                    print("Tried %d times and giving up" % (tries))
-                else:
-                    print("Retrying. Tries: %d" % (tries))
+            self._print_send_waypoint_status(
+                waypoint, sent_waypoint, tries, max_num_tries)
+            rospy.sleep(0.1)
 
-        return successfully_sent_waypoint
+        return sent_waypoint
 
     def _set_auto_mode(self):
         '''
@@ -87,3 +79,16 @@ class Quadcopter(object):
         '''
         self._trigger_auto_service()
         self._adjust_throttle_service()
+
+    def _print_send_waypoint_status(self, waypoint, sent_waypoint,
+                                    tries, max_num_tries):
+        if sent_waypoint:
+            print('Sent waypoint %d, %d' % (waypoint.latitude,
+                                            waypoint.longitude))
+        else:
+            print("Failed to send waypoint %d, %d" % (waypoint.latitude,
+                                                      waypoint.longitude))
+            if tries == max_num_tries:
+                print("Tried %d times and giving up" % (tries))
+            else:
+                print("Retrying. Tries: %d" % (tries))

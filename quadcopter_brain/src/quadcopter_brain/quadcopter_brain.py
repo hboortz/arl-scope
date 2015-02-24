@@ -18,7 +18,11 @@ class QuadcopterBrain(object):
         waypoints = [
             WaypointTools.build_waypoint(datum) for datum in waypoint_data]
         for waypoint in waypoints:
-            self.quadcopter.send_waypoint(waypoint)
+            if self.quadcopter.send_waypoint(waypoint):
+                print("Waypoint sent, sleeping 15 seconds for arrival")
+                rospy.sleep(15)
+                print("15 seconds passed, moving on")
+                # self.check_reached_waypoint(waypoint)
 
     def fly_path(self, waypoint_data):
         self.quadcopter.launch()
@@ -52,7 +56,7 @@ class QuadcopterBrain(object):
                                            wpt_latitude,
                                            wpt_longitude)
             print "Distance to waypoint: " + str(dist_from_waypoint)
-            print "Current pos: %s, %s"%(self.current_lat, self.current_long)
+            print "Current pos: %s, %s" % (self.current_lat, self.current_long)
             return dist_from_waypoint < error_margin
         except AttributeError:  # if haven't gotten current position data
             return False
