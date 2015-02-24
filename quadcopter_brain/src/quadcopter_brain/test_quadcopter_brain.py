@@ -34,14 +34,6 @@ class TestQuadcopterBrain(unittest.TestCase):
         go_to_waypoints_mock.assert_called_once_with(waypoint_data)
         self.quadcopter_mock.land.assert_called_once_with()
 
-    # def test_has_reached_waypoint(self):
-    #     pass
-
-    # def test_check_reached_waypoint(self):
-    #     pass
-
-# Todo: what other tests do we need?
-
 
 if __name__ == '__main__':
     unittest.main()
