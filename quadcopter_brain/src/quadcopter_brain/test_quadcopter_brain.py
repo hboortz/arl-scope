@@ -26,8 +26,13 @@ class TestQuadcopterBrain(unittest.TestCase):
         self.assertEqual(
             self.quadcopter_mock.send_waypoint.call_args_list, expected)
 
-    # def test_fly_path(self):
-    #     pass
+    @mock.patch('quadcopter_brain.QuadcopterBrain.go_to_waypoints')
+    def test_fly_path(self, go_to_waypoints_mock):
+        waypoint_data = [0, 1]
+        self.quadcopter_brain.fly_path(waypoint_data)
+        self.quadcopter_mock.launch.assert_called_once_with()
+        go_to_waypoints_mock.assert_called_once_with(waypoint_data)
+        self.quadcopter_mock.land.assert_called_once_with()
 
     # def test_has_reached_waypoint(self):
     #     pass
