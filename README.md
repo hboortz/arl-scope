@@ -11,18 +11,19 @@
 
 ### Running the code
 ####Setup your environment
-Our code has only been tested on Ubuntu 14.04
+Our code has only been tested on Ubuntu 14.04, though it will likely work on any system running a recent version of ROS with minimal modification.
 
 `setup/setup.sh` is a shell script that should install the necessary software. It can be run by downloading it, make it executable with `chmod u+x`, and then running it with `./setup.sh`. If you find any issues after using this, please file an issue.
 
 ####Roscopter
 Roscopter creates the services that we publish to in order to send commands across mavlink to the quadcopter. It can be started with 
 ```roslaunch roscopter.launch```
+a mavlink radio must be connected in order to run this.
 
 ####Quadcopter Brain
 In order to specify custom gps waypoints, create a json file in `arl-scope/quadcopter_brain/src/waypoint_data`, and then modify the arguments to `fly_path` in the main function of `arl-scope/quadcopter_brain/src/quadcopter_brain/quadcopter_brain.py`. The `arm`, `launch`, `go_to_waypoints`, and `land` methods can also be called individually if you only want to use some of them.
 
-In order to run the code in quadcopter brain, run
+In order to run the code in quadcopter brain, after roscopter has been started, run
 ```rosrun quadcopter_brain quadcopter_brain.py _outside:=True```
 If you wish to run the code without arming for testing purposes, simply omit the _outside parameter or set it to `False` instead of `True`.
 
