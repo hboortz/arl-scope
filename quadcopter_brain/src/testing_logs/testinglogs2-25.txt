@@ -32,4 +32,15 @@ this time, let go to land before taking control
 
 8.manually cleared waypoints, still went to E
 
-9. 
+
+
+LATER IN THE DAY, ALLIE AND ERIC, WITH MALIFICENT, AT THE BASE OF THE GREAT LAWN
+1. Trying a FEG path. Quadcopter says it launched successfully, but instead hovered just above the snow. When we tried to take control the quadcopter continued with its mission successfully. Upon landing, the quadcopter started heading towards East Hall before we took control
+
+2. Armed (throttle at zero), launched (on first time) and flew mission successfully. Took control after sending LAND
+
+3. Armed (throttle at zero). Launched after one retry. Flew mission and landed successfully.
+
+4. Armed (throttle at zero). Launched on first time and flew mission successfully.
+
+5. Armed (throttle at zero). Launched on the second time and flew mission successfully. Allie got video.
