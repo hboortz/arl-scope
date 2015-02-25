@@ -83,6 +83,11 @@ class TestPositionTools(unittest.TestCase):
         mavlink_degrees = PositionTools.degrees_to_mavlink(28.1)
         self.assertEqual(mavlink_degrees, 2810)
         self.assertEqual(type(mavlink_degrees), int)
+        with self.assertRaises(ValueError):
+            PositionTools.degrees_to_mavlink(-1)
+
+        with self.assertRaises(ValueError):
+            PositionTools.degrees_to_mavlink(361)
 
     def test_mavlink_to_degrees(self):
         degrees = PositionTools.mavlink_to_degrees(2810)

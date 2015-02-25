@@ -79,6 +79,9 @@ class PositionTools():
         '''
         heading: decimal degrees, 0-360
         '''
+        if heading < 0 or heading > 360:
+            raise ValueError
+
         return int(heading * 1e2)
 
     @staticmethod
