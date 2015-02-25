@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import rospy
 
 from position_tools import PositionTools
@@ -48,6 +46,19 @@ class QuadcopterBrain(object):
         self.go_to_waypoints(waypoint_data)
         self.quadcopter.land()
 
+    def hover_in_place(self):
+        # Test two options for stopping:
+        # A - clear waypoints - does it then stop in place?
+        print "Clearing waypoints... am I hovering in place?"
+        self.clear_waypoints_service()
+        # B - Send the quadcopter to a waypoint at its position
+        # print "Sending WP @ %f lat, %f long, %f alt" %(self.current_lat, self.current_long, self.current_rel_alt)
+        # print "AM I HOVERING?"
+        # waypoint_data = [{"latitude": self.current_lat, "longitude": self.current_long, "altitude": self.current_rel_alt}]
+        # waypoints = [build_waypoint(datum) for datum in waypoint_data]
+        # for waypoint in waypoints:
+        #     self.send_waypoint(waypoint)
+
     def check_reached_waypoint(self, waypoint):
         wait_time = 0
         while not self.has_reached_waypoint and wait_time < 50:
@@ -79,16 +90,3 @@ class QuadcopterBrain(object):
             return dist_from_waypoint < error_margin
         except AttributeError:  # if haven't gotten current position data
             return False
-
-    def hover_in_place(self):
-        # Test two options for stopping:
-        # A - clear waypoints - does it then stop in place?
-        print "Clearing waypoints... am I hovering in place?"
-        self.clear_waypoints_service()
-        # B - Send the quadcopter to a waypoint at its position
-        # print "Sending WP @ %f lat, %f long, %f alt" %(self.current_lat, self.current_long, self.current_rel_alt)
-        # print "AM I HOVERING?"
-        # waypoint_data = [{"latitude": self.current_lat, "longitude": self.current_long, "altitude": self.current_rel_alt}]
-        # waypoints = [build_waypoint(datum) for datum in waypoint_data]
-        # for waypoint in waypoints:
-        #     self.send_waypoint(waypoint)
