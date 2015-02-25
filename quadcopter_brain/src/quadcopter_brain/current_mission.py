@@ -7,11 +7,13 @@ from waypoint_tools import WaypointTools
 
 
 def main():
+    carl = QuadcopterBrain()
+
+    # Quadcopter node (carl) must be initialized before get_param will work
     outside = rospy.get_param("Quadcopter/outside", False)
     print("In outside mode: %s." % (outside),
-          "If incorrect, add outside:=True to the rosrun call")
+          "If incorrect, add _outside:=True to the rosrun call")
 
-    carl = QuadcopterBrain()
     carl.quadcopter.clear_waypoints()
     print("Sleeping for 3 seconds...")
     rospy.sleep(3)
