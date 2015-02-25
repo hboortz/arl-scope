@@ -107,35 +107,30 @@ class QuadcopterBrain(object):
             return self.waypoint_timeout_choice(waypoint, wait_time)
 
     def waypoint_timeout_choice(self, waypoint, curr_wait_time):
-        choice = 0
         print "TIMEOUT: Traveling to waypoint for %d sec." % (curr_wait_time)
         opt1 = "\t 1 - Continue traveling to waypoint\n" 
         opt2 = "\t 2 - Continue to next command \n"
         opt3 = "\t 3 - Terminate \n"
         options = "\t Choose an option number:\n%s%s%s>>> " % (opt1,opt2,opt3)
-        error_msg = "Invalid choice. Please enter 1, 2, or 3"
-        invalid_flag = False
-        while True:  # I'm sorry. I know, this is terribly ugly
-            time.sleep(0.1)  # there's some weird not getting input thing
+        msg = options
+        while True:  # I'm sorry.
+            rospy.sleep(0.1)  # there's some weird not getting input thing
             try:
-                choice = input(options)
-                print"CHOICE: ", choice
-                if choice == 1:
+                choice = raw_input(msg)
+                if choice == '1':
+                    print "Continuing toward waypoint."
                     return self.check_reached_waypoint(waypoint,
                         max_wait_time=curr_wait_time*2, wait_time=curr_wait_time)
-                elif choice == 2:
-                    return "Failed to reach waypoint. Continuing on path"
-                elif choice == 3:
+                elif choice == '2':
+                    return "Failed to reach waypoint. " \
+                            "Continuing to next command"
+                elif choice == '3':
                     raise FlightError("Timeout going to waypoint", self)
                 else:
-                    invalid_flag = True
-                    print error_msg
-            except SyntaxError, EOFError:
-                invalid_flag = True
-                print error_msg
-            except NameError:  # this doesn't like being in the above except
-                invalid_flag = True
-                print error_msg
+                    raise SyntaxError  # this gets caught in the except
+            except (SyntaxError, EOFError, NameError):
+                print "Invalid Choice."
+                msg = "Enter either 1, 2, or 3. \n>>> "
 
     def has_reached_waypoint(self, waypoint, xy_error_margin=3,
                              alt_error_margin=1):
