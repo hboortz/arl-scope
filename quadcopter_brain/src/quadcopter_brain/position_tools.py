@@ -57,3 +57,34 @@ class PositionTools():
         returns decimal degrees
         '''
         return int_coordinate / 1e7
+
+    @staticmethod
+    def altitude_to_mavlink(altitude):
+        '''
+        altitude: altitude in meters
+        returns integer altitude from mavlink (mm)
+        '''
+        return int(altitude * 1e3)
+
+    @staticmethod
+    def mavlink_to_altitude(int_altitude):
+        '''
+        coordinate: integer altitude from mavlink (mm)
+        returns altitude in meters
+        '''
+        return int_altitude / 1e3
+
+    @staticmethod
+    def degrees_to_mavlink(heading):
+        '''
+        heading: decimal degrees, 0-360
+        '''
+        return int(heading * 1e2)
+
+    @staticmethod
+    def mavlink_to_degrees(int_heading):
+        '''
+        int_heading: integer heading from mavlink
+        returns decimal degrees, 0-360
+        '''
+        return int_heading / 1e2
