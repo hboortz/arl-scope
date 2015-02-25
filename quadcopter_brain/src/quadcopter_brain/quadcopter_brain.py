@@ -15,6 +15,7 @@ from std_srvs.srv import *
 from sensor_msgs.msg import NavSatFix, NavSatStatus, Imu
 from geodesy import utm
 
+from flight_error import FlightError
 from position_tools import PositionTools
 
 
@@ -40,7 +41,7 @@ class QuadcopterBrain(object):
         self.heading = 0.0
         rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
                          self.position_callback)
-    
+
     def arm(self):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
         print('Armed')
@@ -59,6 +60,14 @@ class QuadcopterBrain(object):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
         print('Landing')
 
+    def hover_in_place(self):
+        lat = mavlink_to_gps(self.current_lat)
+        lon = mavlink_to_gps(self.current_long)
+        alt = mavlink_to_gps(self.current_rel_alt)
+        self.go_to_waypoints([{"latitude": lat,
+                               "longitude": lon,
+                               "altitude": alt}])
+
     def send_waypoint(self, waypoint):
         self.trigger_auto_service()
         self.adjust_throttle_service()
@@ -71,7 +80,7 @@ class QuadcopterBrain(object):
             if successfully_sent_waypoint:
                 print('Sent waypoint %d, %d' % (waypoint.latitude,
                                                 waypoint.longitude))
-                print self.check_reached_waypoint(waypoint)
+                print self.check_reached_waypoint(waypoint, max_wait_time=15)
             else:
                 print("Failed to send waypoint %d, %d" % (waypoint.latitude,
                                                           waypoint.longitude))
@@ -81,35 +90,66 @@ class QuadcopterBrain(object):
                 else:
                     print("Retrying. Tries: %d" % (tries))
 
-    def check_reached_waypoint(self, waypoint):
-        wait_time = 0
-        while not self.has_reached_waypoint(waypoint) and wait_time < 50:
+    def check_reached_waypoint(self, waypoint, max_wait_time=50, wait_time=0):
+        rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
+                         self.position_callback)
+        while (not self.has_reached_waypoint(waypoint)) and \
+            wait_time < max_wait_time:
             time.sleep(5)
             wait_time += 5
             print "--> Traveling to waypoint for %d seconds" % (wait_time)
             print "--> Current position is %d, %d" % (self.current_lat,
                                                       self.current_long)
-        if wait_time < 50:  # successfully reached
+        if wait_time < max_wait_time:  # successfully reached
             time.sleep(5)  # stay at waypoint for a few seconds
             return "Reached waypoint"
         else:
-            return "Failed to reach waypoint"
+            return self.waypoint_timeout_choice(waypoint, wait_time)
 
-    def has_reached_waypoint(self, waypoint):
-        wpt_latitude = mavlink_to_gps(waypoint.latitude)
-        wpt_longitude = mavlink_to_gps(waypoint.longitude)
+    def waypoint_timeout_choice(self, waypoint, curr_wait_time):
+        choice = 0
+        print "TIMEOUT: Traveling to waypoint for %d sec." % (curr_wait_time)
+        opt1 = "\t 1 - Continue traveling to waypoint\n" 
+        opt2 = "\t 2 - Continue to next command \n"
+        opt3 = "\t 3 - Terminate \n"
+        options = "\t Choose an option number:\n%s%s%s>>> " % (opt1,opt2,opt3)
+        error_msg = "Invalid choice. Please enter 1, 2, or 3"
+        invalid_flag = False
+        while True:  # I'm sorry. I know, this is terribly ugly
+            time.sleep(0.1)  # there's some weird not getting input thing
+            try:
+                choice = input(options)
+                print"CHOICE: ", choice
+                if choice == 1:
+                    return self.check_reached_waypoint(waypoint,
+                        max_wait_time=curr_wait_time*2, wait_time=curr_wait_time)
+                elif choice == 2:
+                    return "Failed to reach waypoint. Continuing on path"
+                elif choice == 3:
+                    raise FlightError("Timeout going to waypoint", self)
+                else:
+                    invalid_flag = True
+                    print error_msg
+            except SyntaxError, EOFError:
+                invalid_flag = True
+                print error_msg
+            except NameError:  # this doesn't like being in the above except
+                invalid_flag = True
+                print error_msg
 
-        error_margin = 3  # in meters
-        print "Checking reached:"
+    def has_reached_waypoint(self, waypoint, xy_error_margin=3,
+                             alt_error_margin=1):
+        """ Waypoint is roscopter waypoint type
+            error margins are in meters
+
+            returns boolean of whether position is within error margins"""
         try:
-            _, _, dist_from_waypoint = \
-                PositionTools.lat_lon_diff(self.current_lat,
-                                           self.current_long,
-                                           wpt_latitude,
-                                           wpt_longitude)
-            print "Distance to waypoint: " + str(dist_from_waypoint)
-            print "Current pos: %s, %s"%(self.current_lat, self.current_long)
-            return dist_from_waypoint < error_margin
+            _, _, dist = PositionTools.lon_lon_diff(self.current_lat,
+                                                    self.current_lon,
+                                                    waypoint.latitude,
+                                                    waypoint.longitude)
+            alt_diff = math.fabs(self.current_alt - waypoint.altitude)
+            return dist < xy_error_margin and alt_diff < alt_error_margin
         except AttributeError:  # if haven't gotten current position data
             return False
 
@@ -123,7 +163,7 @@ class QuadcopterBrain(object):
     def fly_path(self, waypoint_data):
         self.launch()
         self.go_to_waypoints(waypoint_data)
-        self.land()
+        # self.land()
 
 
 def build_waypoint(data):
@@ -170,19 +210,18 @@ def open_waypoint_file(filename):
 
 def main():
     rospy.init_node("quadcopter_brain")
-
     # In order to set the outside parameter, add _outside:=True to rosrun call
     outside = rospy.get_param("quadcopter_brain/outside", False)
-    print "In outside mode: ", outside, ". If incorrect, add _outside:=True to rosrun"
+    print "Outside = ", outside
     carl = QuadcopterBrain()
     carl.clear_waypoints_service()
-    print "Sleeping for 3 seconds..."
+    print "Sleeping for 3 seconds to prepare system..."
     rospy.sleep(3)
     great_lawn_waypoints = open_waypoint_file(
         "waypoint_data/great_lawn_waypoints.json")
     if outside:
         carl.arm()
-    carl.fly_path([great_lawn_waypoints["A"], great_lawn_waypoints["B"]])
+    carl.fly_path([great_lawn_waypoints["G"], great_lawn_waypoints["D"]])
 
 
 if __name__ == '__main__':
