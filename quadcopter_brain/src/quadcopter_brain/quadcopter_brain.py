@@ -144,7 +144,6 @@ class QuadcopterBrain(object):
 
             returns boolean of whether position is within error margins"""
         try:
-            print "IN HAS REACHED"
             _, _, dist = PositionTools.lon_lon_diff(self.current_lat,
                                                     self.current_lon,
                                                     waypoint.latitude,
