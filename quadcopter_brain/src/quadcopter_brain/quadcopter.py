@@ -31,7 +31,7 @@ class Quadcopter(object):
     def _position_callback(self, data):
         self.current_lat = PositionTools.mavlink_to_gps(data.latitude)
         self.current_long = PositionTools.mavlink_to_gps(data.longitude)
-        self.heading = PositionTools.mavlink_to_heading(data.heading)
+        self.heading = PositionTools.mavlink_to_degrees(data.heading)
         self.current_alt = PositionTools.mavlink_to_altitude(data.altitude)
         self.current_rel_alt =\
             PositionTools.mavlink_to_altitude(data.relative_altitude)
@@ -41,11 +41,28 @@ class Quadcopter(object):
         self._command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
         print('Armed')
 
-    def launch(self, system_wait=5):
+    def launch(self, max_num_tries=5):
         print('Sending launch command...')
-        self._command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
-        print('Launched, waiting for %d seconds' % (system_wait))
-        rospy.sleep(system_wait)
+        successful_launch = False
+        tries = 0
+        while not successful_launch and tries < max_num_tries:
+            res = self._command_service(
+                    roscopter.srv.APMCommandRequest.CMD_LAUNCH)
+            successful_launch = res.result
+            tries += 1
+            self._print_launch_status(successful_launch, tries, max_num_tries)
+            rospy.sleep(0.1)
+        return successful_launch
+
+    def _print_launch_status(self, successful_launch, tries, max_num_tries):
+        if successful_launch:
+            print("Successfully launched")
+        else:
+            print("Launch failed")
+            if tries == max_num_tries:
+                print("Tried %d times and giving up" % (tries))
+            else:
+                print("Retrying. Tries: %d" % (tries))
 
     def land(self):
         print('Sending land command...')
