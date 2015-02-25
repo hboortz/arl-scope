@@ -6,6 +6,7 @@ import roscopter.msg
 
 from position_tools import PositionTools
 
+
 class WaypointTools():
     @staticmethod
     def build_waypoint(data):
@@ -19,7 +20,7 @@ class WaypointTools():
         hold_time = data.get('hold_time', 3.0)
 
         waypoint = roscopter.msg.Waypoint()
-        waypoint.latitude =  PositionTools.gps_to_mavlink(latitude)
+        waypoint.latitude = PositionTools.gps_to_mavlink(latitude)
         waypoint.longitude = PositionTools.gps_to_mavlink(longitude)
         waypoint.altitude = int(altitude * 1000)
         waypoint.hold_time = int(hold_time * 1000)  # in ms

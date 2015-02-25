@@ -47,7 +47,7 @@ class Quadcopter(object):
         tries = 0
         while not successful_launch and tries < max_num_tries:
             res = self._command_service(
-                    roscopter.srv.APMCommandRequest.CMD_LAUNCH)
+                roscopter.srv.APMCommandRequest.CMD_LAUNCH)
             successful_launch = res.result
             tries += 1
             self._print_launch_status(successful_launch, tries, max_num_tries)

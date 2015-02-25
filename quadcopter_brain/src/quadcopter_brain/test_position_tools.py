@@ -20,7 +20,7 @@ class TestPositionTools(unittest.TestCase):
         pointB.northing = 3960
 
         from_lat_long_mock.side_effect = [pointA, pointB]
-        
+
         dX, dY, distance = PositionTools.lat_lon_diff(1, 2, 3, 4)
 
         expected = [mock.call(1, 2), mock.call(3, 4)]
