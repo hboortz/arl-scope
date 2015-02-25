@@ -31,7 +31,7 @@ class Quadcopter(object):
     def _position_callback(self, data):
         self.current_lat = PositionTools.mavlink_to_gps(data.latitude)
         self.current_long = PositionTools.mavlink_to_gps(data.longitude)
-        self.heading = PositionTools.mavlink_to_heading(data.heading)
+        self.heading = PositionTools.mavlink_to_degrees(data.heading)
         self.current_alt = PositionTools.mavlink_to_altitude(data.altitude)
         self.current_rel_alt =\
             PositionTools.mavlink_to_altitude(data.relative_altitude)
