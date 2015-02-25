@@ -1,0 +1,46 @@
+Flight Log
+Great Lawn
+Eric and Kaitlin
+
+
+Malificent RC needs calibration (drifting backwards)
+
+1.
+Went to each waypoint, then immedietly returned to launch. 
+Mode changed to RTL between each waypoint.
+
+2. 
+Removed trigger_auto from each waypoint send, just called at beginning
+After first waypoint, went to RTL and didn't go back to auto. stuck at launch.
+
+
+set geofence RTL to 8m
+changed FS_GCS_ENABLE parameter to "Enable Continue with Mission in Auto Mode" from "Enabled Always RTL". This trigger occurs when we lose contact with the ground station, maybe when the mission finishes?
+3.
+it worked! only launched to 8m, went to all waypoints
+
+
+4
+on launch, went to last waypoint (G)
+this time, let go to land before taking control
+
+5. didn't launch properly, sped off towards E, then changed course for G (after sent waypoint)
+
+6. worked perfectly
+
+7. went straight to E, didn't resond to waypoints sent
+
+8.manually cleared waypoints, still went to E
+
+
+
+LATER IN THE DAY, ALLIE AND ERIC, WITH MALIFICENT, AT THE BASE OF THE GREAT LAWN
+1. Trying a FEG path. Quadcopter says it launched successfully, but instead hovered just above the snow. When we tried to take control the quadcopter continued with its mission successfully. Upon landing, the quadcopter started heading towards East Hall before we took control
+
+2. Armed (throttle at zero), launched (on first time) and flew mission successfully. Took control after sending LAND
+
+3. Armed (throttle at zero). Launched after one retry. Flew mission and landed successfully.
+
+4. Armed (throttle at zero). Launched on first time and flew mission successfully.
+
+5. Armed (throttle at zero). Launched on the second time and flew mission successfully. Allie got video.

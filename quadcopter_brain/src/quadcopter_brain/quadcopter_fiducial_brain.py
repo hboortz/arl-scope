@@ -62,7 +62,7 @@ class QuadcopterFiducialBrain(QuadcopterBrain):
         # Execute flight plan
         self.command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
         print('Launched')
-        time.sleep(5)
+        rospy.sleep(5)
         self.trigger_auto_service()
         self.adjust_throttle_service()              
         for waypoint in waypoints:
