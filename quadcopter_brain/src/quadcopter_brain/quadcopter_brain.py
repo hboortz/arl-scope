@@ -41,7 +41,7 @@ class QuadcopterBrain(object):
         self.heading = 0.0
         rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
                          self.position_callback)
-    
+
     def arm(self):
         self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
         print('Armed')
@@ -93,9 +93,8 @@ class QuadcopterBrain(object):
     def check_reached_waypoint(self, waypoint, max_wait_time=50, wait_time=0):
         rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
                          self.position_callback)
-        while not self.has_reached_waypoint(waypoint) and \
+        while (not self.has_reached_waypoint(waypoint)) and \
             wait_time < max_wait_time:
-
             time.sleep(5)
             wait_time += 5
             print "--> Traveling to waypoint for %d seconds" % (wait_time)
@@ -145,6 +144,7 @@ class QuadcopterBrain(object):
 
             returns boolean of whether position is within error margins"""
         try:
+            print "IN HAS REACHED"
             _, _, dist = PositionTools.lon_lon_diff(self.current_lat,
                                                     self.current_lon,
                                                     waypoint.latitude,
@@ -155,16 +155,16 @@ class QuadcopterBrain(object):
             return False
 
     def position_callback(self, data):
-        self.current_lat = data.latitude
-        self.current_long = data.longitude
-        self.current_rel_alt = data.relative_altitude
-        self.current_alt = data.altitude
+        self.current_lat = mavlink_to_gps(data.latitude)
+        self.current_long = mavlink_to_gps(data.longitude)
+        self.current_rel_alt = data.relative_altitude / 1000.0  # From mm to m
+        self.current_alt = data.altitude / 1000.0  # From mm to m
         self.heading = data.heading
 
     def fly_path(self, waypoint_data):
         self.launch()
         self.go_to_waypoints(waypoint_data)
-        #self.land()
+        # self.land()
 
 
 def build_waypoint(data):
@@ -194,9 +194,9 @@ def gps_to_mavlink(coordinate):
 
 def mavlink_to_gps(coordinate):
     '''
-    coordinate: decimal degrees
+    coordinate: integer representation of degrees
     '''
-    return int(coordinate / 1e7)
+    return coordinate / 1e7
 
 
 def open_waypoint_file(filename):
@@ -211,7 +211,6 @@ def open_waypoint_file(filename):
 
 def main():
     rospy.init_node("quadcopter_brain")
-    outside = rospy.get_param("_outside", False)
     # In order to set the outside parameter, add _outside:=True to rosrun call
     outside = rospy.get_param("quadcopter_brain/outside", False)
     print "Outside = ", outside
