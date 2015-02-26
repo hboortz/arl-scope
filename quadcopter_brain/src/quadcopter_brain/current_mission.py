@@ -19,7 +19,7 @@ def main():
     rospy.sleep(3)
 
     great_lawn_waypoints = WaypointTools.open_waypoint_file(
-        "waypoint_data/great_lawn_waypoints.json")
+        "great_lawn_waypoints.json")
 
     if outside:
         carl.quadcopter.arm()

@@ -22,7 +22,7 @@ class WaypointTools():
         waypoint = roscopter.msg.Waypoint()
         waypoint.latitude = PositionTools.gps_to_mavlink(latitude)
         waypoint.longitude = PositionTools.gps_to_mavlink(longitude)
-        waypoint.altitude = int(altitude * 1000)
+        waypoint.altitude = PositionTools.altitude_to_mavlink(altitude)
         waypoint.hold_time = int(hold_time * 1000)  # in ms
         waypoint.waypoint_type = roscopter.msg.Waypoint.TYPE_NAV
         return waypoint
@@ -31,7 +31,7 @@ class WaypointTools():
     def open_waypoint_file(filename):
         rospack = rospkg.RosPack()
         quadcopter_brain_path = rospack.get_path("quadcopter_brain")
-        source_path = "src"
+        source_path = "src/waypoint_data"
         file_path = os.path.join(quadcopter_brain_path, source_path, filename)
         with open(file_path, "r") as f:
             waypoints = json.load(f)
