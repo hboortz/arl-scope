@@ -17,25 +17,19 @@ class QuadcopterBrain(object):
             WaypointTools.build_waypoint(datum) for datum in waypoint_data]
         for waypoint in waypoints:
             if self.quadcopter.send_waypoint(waypoint):
-                print "Waiting 3 seconds until hover..."            # Remove after testing hover
-                print("Latitude: %.8f" % quadcopter.current_lat)    # Remove after testing hover
-                print("Longitude: %.8f" % quadcopter.current_long)  # Remove after testing hover
-                time.sleep(3.0)                                     # Remove after testing hover
-                print "Hovering"                                    # Remove after testing hover
-                print("Latitude: %.8f" % quadcopter.current_lat)    # Remove after testing hover
-                print("Longitude: %.8f" % quadcopter.current_long)  # Remove after testing hover
-                self.hover_in_place()                               # Remove after testing hover
-                print "Waiting for 15 seconds until resuming..."    # Remove after testing hover
-                print("Latitude: %.8f" % quadcopter.current_lat)    # Remove after testing hover
-                print("Longitude: %.8f" % quadcopter.current_long)  # Remove after testing hover
-                time.sleep(12.0)                                    # Remove after testing hover
-                print "3 seconds until resuming..."                 # Remove after testing hover
-                print("Latitude: %.8f" % quadcopter.current_lat)    # Remove after testing hover
-                print("Longitude: %.8f" % quadcopter.current_long)  # Remove after testing hover
-                time.sleep(3.0)                                     # Remove after testing hover
-                print "Resuming"                                    # Remove after testing hover
-                print("Latitude: %.8f" % quadcopter.current_lat)    # Remove after testing hover
-                print("Longitude: %.8f" % quadcopter.current_long)  # Remove after testing hover
+                print "Waiting 3 seconds until hover..."              # Remove after testing hover
+                rospy.sleep(3.0)                                       # Remove after testing hover
+                print "Hovering"                                      # Remove after testing hover
+                print("Latitude: %.8f" % self.quadcopter.current_lat)      # Remove after testing hover
+                print("Altitude: %.2f" % self.quadcopter.current_rel_alt)  # Remove after testing hover
+                self.hover_in_place()                                 # Remove after testing hover
+                print "Waiting for 15 seconds until resuming..."      # Remove after testing hover
+                rospy.sleep(12.0)                                      # Remove after testing hover
+                print "3 seconds until resuming..."                   # Remove after testing hover
+                rospy.sleep(3.0)                                       # Remove after testing hover
+                print "Resuming"                                      # Remove after testing hover
+                print("Latitude: %.8f" % self.quadcopter.current_lat)      # Remove after testing hover
+                print("Altitude: %.2f" % self.quadcopter.current_rel_alt)  # Remove after testing hover
                 # print("Waypoint sent, sleeping 15 seconds for arrival")   # Uncomment after testing hover
                 # rospy.sleep(15)                                           # Uncomment after testing hover
                 # print("15 seconds passed, moving on")                     # Uncomment after testing hover
@@ -49,15 +43,20 @@ class QuadcopterBrain(object):
     def hover_in_place(self):
         # Test two options for stopping:
         # A - clear waypoints - does it then stop in place?
-        print "Clearing waypoints... am I hovering in place?"
-        self.clear_waypoints_service()
+        # print "Clearing waypoints... am I hovering in place?"
+        # self.quadcopter.clear_waypoints()
         # B - Send the quadcopter to a waypoint at its position
-        # print "Sending WP @ %f lat, %f long, %f alt" %(self.current_lat, self.current_long, self.current_rel_alt)
-        # print "AM I HOVERING?"
-        # waypoint_data = [{"latitude": self.current_lat, "longitude": self.current_long, "altitude": self.current_rel_alt}]
-        # waypoints = [build_waypoint(datum) for datum in waypoint_data]
-        # for waypoint in waypoints:
-        #     self.send_waypoint(waypoint)
+        print "Sending WP @ %f lat, %f long, %f alt"\
+            %(self.quadcopter.current_lat,
+              self.quadcopter.current_long,
+              self.quadcopter.current_rel_alt)
+        print "AM I HOVERING?"
+        waypoint_data = [{"latitude": self.quadcopter.current_lat,
+                          "longitude": self.quadcopter.current_long,
+                          "altitude": self.quadcopter.current_rel_alt}]
+        waypoints = [WaypointTools.build_waypoint(datum) for datum in waypoint_data]
+        for waypoint in waypoints:
+            self.quadcopter.send_waypoint(waypoint)
 
     def check_reached_waypoint(self, waypoint):
         wait_time = 0
