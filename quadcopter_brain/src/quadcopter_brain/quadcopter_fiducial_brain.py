@@ -86,9 +86,9 @@ def main():
     rospy.init_node("fiducial_landing")
     rospy.sleep(2)
     # great_lawn_waypoints = open_waypoint_file(
-        # "waypoint_data/great_lawn_waypoints.json")
+        # "great_lawn_waypoints.json")
     oval_waypoints = open_waypoint_file(
-            "waypoint_data/oval_waypoints.json")
+            "oval_waypoints.json")
     if outside:
         carl.arm()
     carl.dry_run([oval_waypoints['A']])
