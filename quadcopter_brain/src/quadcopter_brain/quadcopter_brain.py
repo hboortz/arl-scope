@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import rospy
 
 from position_tools import PositionTools
@@ -17,32 +19,10 @@ class QuadcopterBrain(object):
             WaypointTools.build_waypoint(datum) for datum in waypoint_data]
         for waypoint in waypoints:
             if self.quadcopter.send_waypoint(waypoint):
-                self.print_position()                               # Remove after testing hover
-                print "Waiting 5 seconds until hover..."            # Remove after testing hover
-                rospy.sleep(5.0)                                    # Remove after testing hover
-                self.print_position()                               # Remove after testing hover
-                print "Hovering"                                    # Remove after testing hover
-                self.hover_in_place()                               # Remove after testing hover
-                print "Waiting for 15 seconds until resuming..."    # Remove after testing hover
-                rospy.sleep(12.0)                                   # Remove after testing hover
-                self.print_position()                               # Remove after testing hover
-                print "3 seconds until resuming..."                 # Remove after testing hover
-                rospy.sleep(3.0)                                    # Remove after testing hover
-                self.print_position()                               # Remove after testing hover
-                print "Resuming"                                    # Remove after testing hover
-                # print("Waypoint sent, sleeping 15 seconds for arrival")   # Uncomment after testing hover
-                # rospy.sleep(15)                                           # Uncomment after testing hover
-                # print("15 seconds passed, moving on")                     # Uncomment after testing hover
-                # # self.check_reached_waypoint(waypoint)                   # Uncomment after testing hover
-
-# Remove this after testing hover
-    def print_position(self):
-        print("Printing position -------------------------------------")
-        print("Latitude: %.8f" % self.quadcopter.current_lat)
-        print("Longitude: %.8f" % self.quadcopter.current_long)
-        print("Altitude: %.2f" % self.quadcopter.current_rel_alt)
-        print "Position in m: ", PositionTools.lat_lon_to_meters([[self.quadcopter.current_lat, self.quadcopter.current_long]])
-
+                print("Waypoint sent, sleeping 15 seconds for arrival")
+                rospy.sleep(15)
+                print("15 seconds passed, moving on")
+                # self.check_reached_waypoint(waypoint)
 
     def fly_path(self, waypoint_data):
         self.quadcopter.launch()
@@ -50,14 +30,12 @@ class QuadcopterBrain(object):
         self.quadcopter.land()
 
     def hover_in_place(self):
-        print "AM I HOVERING?"
         waypoint_data = [{"latitude": self.quadcopter.current_lat,
                           "longitude": self.quadcopter.current_long,
                           "altitude": self.quadcopter.current_rel_alt}]
-        waypoints = [WaypointTools.build_waypoint(datum) for datum in waypoint_data]
-        for waypoint in waypoints:
-            print waypoint
-            self.quadcopter.send_waypoint(waypoint)
+        print("Sending hover command...")
+        self.go_to_waypoints(waypoint_data)
+        print("Hover command sent")
 
     def check_reached_waypoint(self, waypoint):
         wait_time = 0

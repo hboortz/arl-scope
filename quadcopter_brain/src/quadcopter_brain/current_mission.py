@@ -23,9 +23,9 @@ def main():
 
     if outside:
         carl.quadcopter.arm()
-    carl.fly_path([great_lawn_waypoints["G"],
+    carl.fly_path([great_lawn_waypoints["F"],
                    great_lawn_waypoints["E"],
-                   great_lawn_waypoints["F"]])
+                   great_lawn_waypoints["G"]])
 
 
 def print_position_data(quadcopter):
