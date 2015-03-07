@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import rospy
 import roscopter.msg
 import roscopter.srv
@@ -20,13 +22,19 @@ class Quadcopter(object):
         self._adjust_throttle_service = rospy.ServiceProxy(
             'adjust_throttle', std_srvs.srv.Empty)
 
+        rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
+                         self._position_callback)
+        self.rc_pub = rospy.Publisher('/send_rc', roscopter.msg.RC,
+                                      queue_size=10)
+
         self.current_lat = 0.0
         self.current_long = 0.0
         self.current_rel_alt = 0.0
         self.current_alt = 0.0
         self.heading = 0.0
-        rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
-                         self._position_callback)
+        # [side tilt, front tilt, throttle, spin, SOMETHING]
+        self.rc_cmd = [1800 for i in range(8)]
+
 
     def _position_callback(self, data):
         self.current_lat = PositionTools.mavlink_to_gps(data.latitude)
@@ -89,6 +97,10 @@ class Quadcopter(object):
 
         return sent_waypoint
 
+    def fine_control(self, rc_cmd):
+        print "sending rc cmd"
+        self.rc_pub.publish(rc_cmd)
+
     def _set_auto_mode(self):
         '''
             TODO: Explain why it is necessary to trigger_auto and
@@ -109,3 +121,17 @@ class Quadcopter(object):
                 print("Tried %d times and giving up" % (tries))
             else:
                 print("Retrying. Tries: %d" % (tries))
+
+def main():
+    bob = Quadcopter()
+    bob._set_auto_mode()
+    bob.arm()
+    rospy.sleep(10)
+
+    bob.rc_cmd[4] = 1000
+    for i in range(1000, 2000, 10):
+        print bob.rc_cmd
+        bob.fine_control(bob.rc_cmd)
+    rospy.spin()
+
+# main()

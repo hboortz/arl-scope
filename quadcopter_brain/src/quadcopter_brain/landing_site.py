@@ -70,6 +70,12 @@ class LandingSite(object):
                                             absolute_site[0][0],
                                             absolute_site[1][0])
 
+    def error_vector(self, copter):
+        '''
+            position of landing pad reletive to quadcopter
+        '''
+        return self.center
+
 
 def switch_CW_and_CCW(aircraft_heading):
     '''
