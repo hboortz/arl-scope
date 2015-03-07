@@ -2,6 +2,7 @@
 
 import numpy as np
 import geodesy.utm
+import datetime
 import roslib
 import rospy
 roslib.load_manifest('ar_pose')
@@ -15,7 +16,7 @@ class LandingSite(object):
     def __init__(self):
         # TODO: Variables to implement: orientation, is_upright
         self.center = Pose()
-        in_view = False
+        self.in_view = False
         update_sub = rospy.Subscriber('/ar_pose_marker', ARMarkers,
                                       self.on_fiducial_update)
 
@@ -51,7 +52,7 @@ class LandingSite(object):
                                    y=np.mean(y_coords),
                                    z=np.mean(z_coords)))
 
-    def lat_lon(self, copter):
+    def lat_long(self, copter):
         '''
         Latitude, longitude of the landing site
         Note: we use (-y) data from the camera because
@@ -69,6 +70,29 @@ class LandingSite(object):
                                             copter.current_long,
                                             absolute_site[0][0],
                                             absolute_site[1][0])
+
+    def get_average_lat_long(self, copter, time=5.0, time_step=0.1):
+        '''
+        Waits for 'time' seconds and samples landing site position
+        every 'time_step' seconds. Returns the average gps position
+        over that time period.
+        '''
+        landing_site_lat = []
+        landing_site_long = []
+        time_limit = datetime.timedelta(seconds=time)
+        time_end = datetime.datetime.now() + time_limit
+        while datetime.datetime.now() < time_end:
+            print 'called'
+            if self.in_view:
+                print "lat_long", self.lat_long(copter)
+                print "type(lat_long)", type(self.lat_long(copter))
+                current_lat, current_long = self.lat_long(copter)
+                landing_site_lat.append(current_lat)
+                landing_site_long.append(current_long)
+            else:
+                print("Averaging landing site GPS, couldn't see fiducial")
+            rospy.sleep(time_step)
+        return (np.mean(landing_site_lat), np.mean(landing_site_long))
 
 
 def switch_CW_and_CCW(aircraft_heading):

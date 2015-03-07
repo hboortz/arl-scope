@@ -3,7 +3,7 @@ import geodesy.utm
 
 class PositionTools():
     @staticmethod
-    def lat_lon_diff(latA, lonA, latB, lonB):
+    def lat_long_diff(latA, lonA, latB, lonB):
         '''
         (latA, lonA): first coordinate
         (latB, lonB): second coordinate
