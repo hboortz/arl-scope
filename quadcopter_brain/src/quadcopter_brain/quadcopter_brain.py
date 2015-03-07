@@ -14,6 +14,12 @@ class QuadcopterBrain(object):
     def __init__(self):
         self.quadcopter = quadcopter.Quadcopter()
 
+    def arm(self):
+        self.quadcopter.arm()
+
+    def launch(self):
+        self.quadcopter.launch()
+
     def go_to_waypoints(self, waypoint_data):
         waypoints = [
             WaypointTools.build_waypoint(datum) for datum in waypoint_data]
@@ -23,6 +29,12 @@ class QuadcopterBrain(object):
                 rospy.sleep(15)
                 print("15 seconds passed, moving on")
                 # self.check_reached_waypoint(waypoint)
+
+    def land(self):
+        self.quadcopter.land()
+
+    def fiducal_land(self):
+        self.quadcopter.land()
 
     def fly_path(self, waypoint_data):
         self.quadcopter.launch()

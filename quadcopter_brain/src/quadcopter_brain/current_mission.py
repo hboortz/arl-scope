@@ -22,10 +22,12 @@ def main():
         "great_lawn_waypoints.json")
 
     if outside:
-        carl.quadcopter.arm()
-    carl.fly_path([great_lawn_waypoints["F"],
-                   great_lawn_waypoints["E"],
-                   great_lawn_waypoints["G"]])
+        carl.arm()
+    carl.launch()
+    carl.go_to_waypoints([great_lawn_waypoints["F"],
+                          great_lawn_waypoints["E"],
+                          great_lawn_waypoints["G"]])
+    carl.land()
 
 
 def print_position_data(quadcopter):
