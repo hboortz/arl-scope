@@ -93,13 +93,13 @@ class TestLandingSite(unittest.TestCase):
 
     @mock.patch('rospy.sleep')
     @mock.patch('landing_site.LandingSite.lat_long')
-    def test_landing_site_get_avg_lat_long(self, sleep_mock, lat_lon_mock):
+    def test_landing_site_get_avg_lat_long(self, lat_long_mock, sleep_mock):
         sleep_mock.side_effect = time.sleep(0.1)
         self.landing_site.in_view = True
         # No worky?
-        # lat_lon_mock.side_effect = [(1, -1), (3, -3), (6, -6)]
+        # lat_long_mock.side_effect = [(1, -1), (3, -3), (6, -6)]
         # Also no worky?
-        lat_lon_mock.return_value = (0.0, 0.0)
+        lat_long_mock.return_value = (0.0, 0.0)
         lat, lon = self.landing_site.get_average_lat_long(self.copter,
                                                           time=0.2)
         print type(lat), type(lon)
