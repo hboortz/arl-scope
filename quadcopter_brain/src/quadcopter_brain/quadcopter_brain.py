@@ -42,6 +42,14 @@ class QuadcopterBrain(object):
         self.go_to_waypoints(waypoint_data)
         self.quadcopter.land()
 
+    def hover_in_place(self):
+        waypoint_data = [{"latitude": self.quadcopter.current_lat,
+                          "longitude": self.quadcopter.current_long,
+                          "altitude": self.quadcopter.current_rel_alt}]
+        print("Sending hover command...")
+        self.go_to_waypoints(waypoint_data)
+        print("Hover command sent")
+
     def check_reached_waypoint(self, waypoint):
         wait_time = 0
         while not self.has_reached_waypoint and wait_time < 50:
