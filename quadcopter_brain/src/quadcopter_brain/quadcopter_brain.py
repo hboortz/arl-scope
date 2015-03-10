@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import rospy
 
 from position_tools import PositionTools
@@ -32,9 +30,6 @@ class QuadcopterBrain(object):
                 # self.check_reached_waypoint(waypoint)
 
     def land(self):
-        self.quadcopter.land()
-
-    def fiducal_land(self):
         self.quadcopter.land()
 
     def fly_path(self, waypoint_data):
