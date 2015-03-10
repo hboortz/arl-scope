@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import rospy
 
 from position_tools import PositionTools
