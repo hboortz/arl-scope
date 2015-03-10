@@ -24,9 +24,9 @@ def main():
     if outside:
         carl.arm()
     carl.launch()
-    carl.go_to_waypoints([great_lawn_waypoints["F"],
-                          great_lawn_waypoints["E"],
-                          great_lawn_waypoints["G"]])
+    carl.go_to_waypoints([great_lawn_waypoints["B"],
+                          great_lawn_waypoints["A"],
+                          great_lawn_waypoints["C"]])
     carl.land()
 
 
