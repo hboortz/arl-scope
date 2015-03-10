@@ -23,6 +23,17 @@ channel: [1501, 1209, 1515, 1507, 1146, 992, 993, 1503]
 backward:
 channel: [1501, 1603, 1515, 1507, 1146, 992, 993, 1504]
 
+#Iris aliases
+alias killtheIris='rosservice call /command 4'
+alias takeControl='rosservice call /command 12'
+alias nothrottle='rostopic pub send_rc roscopter/RC "channel: [1504, 1420, 1987, 1509, 1146, 992, 992, 1504]"'
+alias staystill='rostopic pub send_rc roscopter/RC "channel: [1504, 1424, 1516, 1508, 1146, 992, 993, 1503]"'
+alias throttleup='rostopic pub send_rc roscopter/RC "channel: [1504, 1420, 1987, 1509, 1146, 992, 992, 1504]"'
+alias throttledown='rostopic pub send_rc roscopter/RC "channel: [1504, 1431, 1177, 1509, 1146, 992, 992, 1504]"'
+alias forward='rostopic pub send_rc roscopter/RC "channel: [1501, 1209, 1515, 1507, 1146, 992, 993, 1503]"'
+alias backward='rostopic pub send_rc roscopter/RC "channel: [1501, 1603, 1515, 1507, 1146, 992, 993, 1504]"'
+
+
 
 
 
