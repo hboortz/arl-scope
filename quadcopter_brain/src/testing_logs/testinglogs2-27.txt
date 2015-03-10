@@ -1,0 +1,18 @@
+Base of Great Lawn, with Malificent, testing hover in place. Sunny and cold
+  - The plan is to fly a GEF path and, after sending each waypoint, tell the quad to hover in place after 3 seconds
+
+1. The quadcopter launched successfully, headed towards G, then after 3-4 seconds lurched and came back the launch point
+
+2. Commented out hover in place to see whether current_lat/long looked correct over time. The quadcopter correctly flew GEF and the positions looked correct
+
+3. Same as flight 1. Took control and flew back after LAND command sent
+
+4. Added more print statements, but there was a typo. Sent G waypoint and errored out, landed by hand
+
+5. Same as flight 1. When trying to fly a GEF point the quadcopter will send a waypoint, head to that waypoint, jerk after 3-4 seconds and head back to where it was a couple of seconds ago. HYPOTHESIS: the Hover waypoint is lagging a couple seconds, so if we wait 3s between the first waypoint sent and the hover waypoint sent the quadcopter appears to go back to the launch point.
+
+6. Increased the wait between waypoint sent and hover waypoint sent from 3s to 5s. The quadcopter
+		a. Gets sent to a waypoint (e.g. G)
+		b. 5 seconds later, sends a hover waypoint. The hover waypoint is behind the quadcopter by a couple seconds, according to where the quadcopter went
+
+Conclusion: The GPS and compass data appear to be laggy. We should measure by how much they lag.

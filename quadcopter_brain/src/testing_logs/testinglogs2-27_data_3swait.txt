@@ -1,0 +1,130 @@
+Base of Great Lawn, with Malificent, testing hover in place. Sunny and cold
+  - The plan is to fly a GEF path and, after sending each waypoint, tell the quad to hover in place after 3 seconds
+
+Terminal printout
+
+rosrun quadcopter_brain current_mission.py _outside:=True
+('In outside mode: True.', 'If incorrect, add _outside:=True to the rosrun call')
+Sending clear waypoints command...
+Cleared waypoints
+Sleeping for 3 seconds...
+Sending arm command...
+Armed
+Sending launch command...
+Successfully launched
+Sent waypoint 422924040, -712627180
+Printing position -------------------------------------
+Latitude: 42.29215940
+Longitude: -71.26253910
+Altitude: 9.99
+Position in m:  ([4684694.043651471], [313476.79352739034])
+Waiting 3 seconds until hover...
+Printing position -------------------------------------
+Latitude: 42.29217990
+Longitude: -71.26255350
+Altitude: 9.99
+Position in m:  ([4684696.351592926], [313475.66685641883])
+Hovering
+AM I HOVERING?
+latitude: 422921799
+longitude: -712625535
+altitude: 9990
+pos_acc: 0
+speed_to: 0
+hold_time: 3000
+yaw_from: 0
+pan_angle: 0
+tilt_angle: 0
+waypoint_type: 1
+Sent waypoint 422921799, -712625535
+Waiting for 15 seconds until resuming...
+Printing position -------------------------------------
+Latitude: 42.29217730
+Longitude: -71.26254670
+Altitude: 8.94
+Position in m:  ([4684696.047976672], [313476.21979883825])
+3 seconds until resuming...
+Printing position -------------------------------------
+Latitude: 42.29218020
+Longitude: -71.26254820
+Altitude: 9.11
+Position in m:  ([4684696.37328875], [313476.10469453054])
+Resuming
+Sent waypoint 422925520, -712626490
+Printing position -------------------------------------
+Latitude: 42.29218010
+Longitude: -71.26254920
+Altitude: 9.13
+Position in m:  ([4684696.364376356], [313476.0219554512])
+Waiting 3 seconds until hover...
+Printing position -------------------------------------
+Latitude: 42.29221900
+Longitude: -71.26256550
+Altitude: 9.20
+Position in m:  ([4684700.7196709], [313474.7929634624])
+Hovering
+AM I HOVERING?
+latitude: 422922190
+longitude: -712625654
+altitude: 9200
+pos_acc: 0
+speed_to: 0
+hold_time: 3000
+yaw_from: 0
+pan_angle: 0
+tilt_angle: 0
+waypoint_type: 1
+Sent waypoint 422922190, -712625654
+Waiting for 15 seconds until resuming...
+Printing position -------------------------------------
+Latitude: 42.29221400
+Longitude: -71.26256740
+Altitude: 9.07
+Position in m:  ([4684700.168621308], [313474.62155891943])
+3 seconds until resuming...
+Printing position -------------------------------------
+Latitude: 42.29221880
+Longitude: -71.26256810
+Altitude: 9.12
+Position in m:  ([4684700.703161293], [313474.57801911497])
+Resuming
+Sent waypoint 422925230, -712628590
+Printing position -------------------------------------
+Latitude: 42.29221910
+Longitude: -71.26256730
+Altitude: 9.10
+Position in m:  ([4684700.7347206175], [313474.64485983824])
+Waiting 3 seconds until hover...
+Printing position -------------------------------------
+Latitude: 42.29225090
+Longitude: -71.26259170
+Altitude: 9.17
+Position in m:  ([4684704.31936591], [313472.7271139651])
+Hovering
+AM I HOVERING?
+latitude: 422922509
+longitude: -712625917
+altitude: 9170
+pos_acc: 0
+speed_to: 0
+hold_time: 3000
+yaw_from: 0
+pan_angle: 0
+tilt_angle: 0
+waypoint_type: 1
+Sent waypoint 422922509, -712625917
+Waiting for 15 seconds until resuming...
+Printing position -------------------------------------
+Latitude: 42.29225260
+Longitude: -71.26258190
+Altitude: 9.06
+Position in m:  ([4684704.486657854], [313473.54008173686])
+3 seconds until resuming...
+Printing position -------------------------------------
+Latitude: 42.29225350
+Longitude: -71.26258880
+Altitude: 9.07
+Position in m:  ([4684704.601720706], [313472.97387684183])
+Resuming
+Sending land command...
+Landing

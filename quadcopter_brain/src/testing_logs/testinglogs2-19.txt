@@ -1,0 +1,16 @@
+AT THE LOWER CORNER OF THE GREAT LAWN, KAITLIN AND ERIC
+IN THE SNOW
+
+We are trying to test hover_in_place on the feature/hover_in_place branch. There
+are two possibilities we're testing:
+	1) Does just clearing the waypoints make it hover? (Tried on 2/16)
+	2) If not, can we send a waypoint at the current point to make it stop?
+
+
+CAN WE SEND WP TO THE CURRENT POSITION?
+Trying to head towards E5, hover, F5, hover, and land.
+
+1. Malificent armed on the pad, then launched several second later. Kaitlin thought it might be crashing and took control. When landing, we found that holding the throttle all the way down makes the quadcopter want to flip. Instead, hold it just below the midpoint for a while until the motors spin down, then disarm
+2. Malificent armed on the pad (this is different than Carl/Paul), then launched sideways and up. It started to the first WP (E5) and then tried to send the hover waypoint, but for some reason the current_lat and curent_long were (0.0, 0.0). We took over and landed the quadcopter, it flipped into the snow again
+3. I took out the _outside:=True line from the rosrun call so that we could look at the GPS data, but the quadcopter took off anyway, and Kaitlin took control. WHEN YOU'VE BEEN OUTSIDE TESTING, YOU HAVE TO SAY _outside:=False INSTEAD OF LEAVING THE PARAMETER OUT B/C "True" GETS SAVED FROM THE LAST TIME YOU RUN
+4. Ran Malificent in inside mode, the position wasn't updating. This should hopefully be fixed with the refactoring going on inside of testing/quadcopter_brain branch?
