@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import datetime
 import time
 import unittest
@@ -13,12 +11,30 @@ from position_tools import PositionTools
 
 
 class TestLandingSite(unittest.TestCase):
-    def setUp(self):
+    @mock.patch('rospy.init_node')
+    @mock.patch('rospy.ServiceProxy')
+    @mock.patch('rospy.Subscriber')
+    def setUp(self, sub_mock, service_mock, init_node_mock):
         self.landing_site = LandingSite()
         self.copter = Quadcopter()
         self.copter.current_lat = 42.0
         self.copter.current_long = -71.0
         self.copter.heading = 0
+
+    # on_fiducial_update and clean_fiducials currently not tested because of
+    # the way they interact with ROS components
+
+    def test_find_fiducial_center(self):
+        x_coords = [1.5, 4.5, 0.5, -2.5]
+        y_coords = [0.75, 3.75, -3.5, 0]
+        z_coords = [1, 3, -3, -5]
+        pose = self.landing_site.find_fiducial_center(x_coords,
+                                                      y_coords,
+                                                      z_coords,
+                                                      None)
+        self.assertAlmostEqual(pose.position.x, 1.0)
+        self.assertAlmostEqual(pose.position.y, 0.25)
+        self.assertAlmostEqual(pose.position.z, -1.0)
 
     def test_landing_site_lat_long_same_position(self):
         self.landing_site.center = Pose(position=Point(x=0, y=0, z=6))
@@ -41,8 +57,8 @@ class TestLandingSite(unittest.TestCase):
             lat, lon = self.landing_site.lat_long(self.copter)
             xErr, yErr, dist =\
                 PositionTools.lat_long_diff(self.copter.current_lat,
-                                           self.copter.current_long,
-                                           lat, lon)
+                                            self.copter.current_long,
+                                            lat, lon)
             # 1 mm (3 decimals) is a reasonable margin of error
             self.assertAlmostEqual(xErr, test[3], 3)
             self.assertAlmostEqual(yErr, test[4], 3)
@@ -94,19 +110,19 @@ class TestLandingSite(unittest.TestCase):
     @mock.patch('rospy.sleep')
     @mock.patch('landing_site.LandingSite.lat_long')
     def test_landing_site_get_avg_lat_long(self, lat_long_mock, sleep_mock):
-        sleep_mock.side_effect = time.sleep(0.1)
+        sleep_mock.side_effect = time.sleep
         self.landing_site.in_view = True
-        # No worky?
-        # lat_long_mock.side_effect = [(1, -1), (3, -3), (6, -6)]
-        # Also no worky?
-        lat_long_mock.return_value = (0.0, 0.0)
+        lat_long_mock.side_effect = [(1, -1), (3, -3), (6, -6)]
         lat, lon = self.landing_site.get_average_lat_long(self.copter,
-                                                          time=0.2)
-        print type(lat), type(lon)
+                                                          total_time=0.3)
         self.assertAlmostEqual(lat, 10.0/3)
-        self.assertAlmostEqual(lon, 10.0/3)
+        self.assertAlmostEqual(lon, -10.0/3)
 
-
+        self.landing_site.in_view = False
+        lat, lon = self.landing_site.get_average_lat_long(self.copter,
+                                                          total_time=0.3)
+        self.assertEqual(None, lat)
+        self.assertEqual(None, lon)
 
 
 if __name__ == '__main__':
