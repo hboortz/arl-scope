@@ -20,9 +20,9 @@ class RCCommand(object):
         self._throttle_max_pwm = 1900
         
         self._apm_mode = 1146
-        self._gimbal_yaw = -1
-        self._gimbal_tilt = -1
-        self._gimbal_roll = -1
+        self._gimbal_yaw = 1000
+        self._gimbal_tilt = 1000
+        self._gimbal_roll = 1000
 
     def compute_pwm_signal(self, percent, minimum, maximum):
         if (percent < 0.0) or (percent > 1.0):
@@ -47,7 +47,12 @@ class RCCommand(object):
             percent, self._yaw_min_pwm, self._yaw_max_pwm)
 
     def to_roscopter(self):
-        return "command: [%d, %d, %d, %d, %d, %d, %d, %d]" % (
+        print "[%d, %d, %d, %d, %d, %d, %d, %d]" % (
             self._roll, self._pitch, self._yaw,
             self._throttle, self._apm_mode, self._gimbal_yaw,
             self._gimbal_tilt, self._gimbal_roll)
+        blah = "[%d, %d, %d, %d, %d, %d, %d, %d]" % (
+            self._roll, self._pitch, self._yaw,
+            self._throttle, self._apm_mode, self._gimbal_yaw,
+            self._gimbal_tilt, self._gimbal_roll)
+        return str(blah)
