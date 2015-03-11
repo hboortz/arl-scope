@@ -49,32 +49,30 @@ def main():
 
     r = rospy.Rate(0.5)
 
+    print "going forward"
+    forward(q)
+    r.sleep()
+    print "still"
     still(q)
-
-    # print "going forward"
-    # forward(q)
-    # r.sleep()
-    # print "still"
-    # still(q)
-    # r.sleep()
-    # print "going right"
-    # right(q)
-    # r.sleep()
-    # print "still"
-    # still(q)
-    # r.sleep()
-    # print "going backward"
-    # backward(q)
-    # r.sleep()
-    # print "still"
-    # still(q)
-    # r.sleep()
-    # print "going left"
-    # left(q)
-    # r.sleep()
-    # print "still"
-    # still(q)
-    # r.sleep()
+    r.sleep()
+    print "going right"
+    right(q)
+    r.sleep()
+    print "still"
+    still(q)
+    r.sleep()
+    print "going backward"
+    backward(q)
+    r.sleep()
+    print "still"
+    still(q)
+    r.sleep()
+    print "going left"
+    left(q)
+    r.sleep()
+    print "still"
+    still(q)
+    r.sleep()
 
     print "landing"
     q.land()

@@ -47,12 +47,6 @@ class RCCommand(object):
             percent, self._yaw_min_pwm, self._yaw_max_pwm)
 
     def to_roscopter(self):
-        print "[%d, %d, %d, %d, %d, %d, %d, %d]" % (
-            self._roll, self._pitch, self._yaw,
-            self._throttle, self._apm_mode, self._gimbal_yaw,
-            self._gimbal_tilt, self._gimbal_roll)
-        blah = "[%d, %d, %d, %d, %d, %d, %d, %d]" % (
-            self._roll, self._pitch, self._yaw,
-            self._throttle, self._apm_mode, self._gimbal_yaw,
-            self._gimbal_tilt, self._gimbal_roll)
-        return str(blah)
+        return [self._roll, self._pitch, self._yaw,
+                self._throttle, self._apm_mode, self._gimbal_yaw, 
+                self._gimbal_tilt, self._gimbal_roll]
