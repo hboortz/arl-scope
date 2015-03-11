@@ -3,65 +3,80 @@
 import rospy
 
 from quadcopter import Quadcopter
+from rc_command import RCCommand
 
-def rc_up():
+def rc_up(q):
     rc_command = RCCommand()
     rc_command.set_throttle(0.55)
     q.send_rc_command(rc_command)
 
-def rc_down():
+def rc_down(q):
     rc_command = RCCommand()
     rc_command.set_throttle(0.45)
     q.send_rc_command(rc_command)
 
 
-def forward():
+def forward(q):
     rc_command = RCCommand()
-    rc_command.pitch(0.55)
+    rc_command.set_pitch(0.55)
     q.send_rc_command(rc_command)
 
-def backward():
+def backward(q):
     rc_command = RCCommand()
-    rc_command.pitch(0.45)
+    rc_command.set_pitch(0.45)
     q.send_rc_command(rc_command)
 
-def right():
+def right(q):
     rc_command = RCCommand()
-    rc_command.roll(0.55)
+    rc_command.set_roll(0.55)
     q.send_rc_command(rc_command)
 
-def left():
+def left(q):
     rc_command = RCCommand()
-    rc_command.roll(0.45)
+    rc_command.set_roll(0.45)
     q.send_rc_command(rc_command)
 
-def still():
+def still(q):
     rc_command = RCCommand()
     q.send_rc_command(rc_command)
 
 def main():
     q = Quadcopter()
+    outside = rospy.get_param("Quadcopter/outside", False)
+    if outside:
+        q.arm()
     q.launch()
 
     r = rospy.Rate(0.5)
 
-    forward()
-    r.sleep()
-    still()
-    r.sleep()
-    right()
-    r.sleep()
-    still()
-    r.sleep()
-    backward()
-    r.sleep()
-    still()
-    r.sleep()
-    left()
-    r.sleep()
-    still()
-    r.sleep()
+    still(q)
 
+    # print "going forward"
+    # forward(q)
+    # r.sleep()
+    # print "still"
+    # still(q)
+    # r.sleep()
+    # print "going right"
+    # right(q)
+    # r.sleep()
+    # print "still"
+    # still(q)
+    # r.sleep()
+    # print "going backward"
+    # backward(q)
+    # r.sleep()
+    # print "still"
+    # still(q)
+    # r.sleep()
+    # print "going left"
+    # left(q)
+    # r.sleep()
+    # print "still"
+    # still(q)
+    # r.sleep()
+
+    print "landing"
     q.land()
 
 
