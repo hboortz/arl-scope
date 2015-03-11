@@ -42,6 +42,8 @@ run_tests() {
         echo "Printing results from $test_file"
         python $test_file
     done
+
+    rm -f *.pyc
 }
 # ============================================================" > ~/.bash_aliases
 
