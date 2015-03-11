@@ -37,10 +37,11 @@ class QuadcopterBrain(object):
         self.go_to_waypoints(waypoint_data)
         self.quadcopter.land()
 
-    def hover_in_place(self):
-        waypoint_data = [{"latitude": self.quadcopter.current_lat,
-                          "longitude": self.quadcopter.current_long,
-                          "altitude": self.quadcopter.current_rel_alt}]
+    def hover_in_place(self, extrapolate=False):
+        location = self.quadcopter.pose_at(time.time())
+        waypoint_data = [{"latitude": location.latitude,
+                          "longitude": location.longitude,
+                          "altitude": location.altitude}]
         print("Sending hover command...")
         self.go_to_waypoints(waypoint_data)
         print("Hover command sent")
@@ -50,9 +51,9 @@ class QuadcopterBrain(object):
         while not self.has_reached_waypoint and wait_time < 50:
             rospy.sleep(5)
             wait_time += 5
+            location = self.quadcopter.pose_at(time.time())
             print "--> Traveling to waypoint for %d seconds" % (wait_time)
-            print "--> Current position is %d, %d" % (self.current_lat,
-                                                      self.current_long)
+            print "--> Current position is %s" % (location, )
         if wait_time < 50:  # successfully reached
             rospy.sleep(5)  # stay at waypoint for a few seconds
             return "Reached waypoint"
@@ -66,13 +67,14 @@ class QuadcopterBrain(object):
         error_margin = 3  # in meters
         print "Checking reached:"
         try:
+            location = self.quadcopter.pose_at(time.time())
             _, _, dist_from_waypoint = \
-                PositionTools.lat_lon_diff(self.current_lat,
-                                           self.current_long,
+                PositionTools.lat_lon_diff(location.latitude,
+                                           location.longitude,
                                            wpt_latitude,
                                            wpt_longitude)
             print "Distance to waypoint: " + str(dist_from_waypoint)
-            print "Current pos: %s, %s" % (self.current_lat, self.current_long)
+            print "Current pos: %s" % (location, )
             return dist_from_waypoint < error_margin
         except AttributeError:  # if haven't gotten current position data
             return False

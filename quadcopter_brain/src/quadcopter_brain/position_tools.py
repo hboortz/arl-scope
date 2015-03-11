@@ -1,4 +1,4 @@
-import geodesy.utm
+#import geodesy.utm
 
 
 class PositionTools():
@@ -91,3 +91,66 @@ class PositionTools():
         returns decimal degrees, 0-360
         '''
         return int_heading / 1e2
+
+
+class QuadcopterPose(object):
+    def __init__(self, latitude, longitude, altitude, relative_altitude, heading):
+        self.latitude = latitude
+        self.longitude = longitude
+        self.altitude = altitude
+        self.relative_altitude = relative_altitude
+        self.heading = heading
+
+    @classmethod
+    def from_mavlink(cls, msg):
+        return QuadcopterPose(
+            PositionTools.mavlink_to_gps(msg.latitude),
+            PositionTools.mavlink_to_gps(msg.longitude),
+            PositionTools.mavlink_to_altitude(msg.altitude),
+            PositionTools.mavlink_to_altitude(msg.relative_altitude),
+            PositionTools.mavlink_to_degrees(msg.heading))
+
+    def __add__(self, rhs):
+        assert(isinstance(rhs, QuadcopterPoseOffset))
+        return QuadcopterPose(
+            self.latitude + rhs.latitude,
+            self.longitude + rhs.longitude,
+            self.altitude + rhs.altitude,
+            self.relative_altitude + rhs.relative_altitude,
+            self.heading + rhs.heading)
+    def __sub__(self, rhs):
+        assert(isinstance(rhs, QuadcopterPose))
+        return QuadcopterPoseOffset(
+            self.latitude - rhs.latitude,
+            self.longitude - rhs.longitude,
+            self.altitude - rhs.altitude,
+            self.relative_altitude - rhs.relative_altitude,
+            self.heading - rhs.heading)
+
+    def __str__(self):
+        return "({0}, {1}) z={2} theta={3}".format(self.latitude, self.longitude, self.relative_altitude, self.heading)
+    __repr__ = __str__
+
+
+class QuadcopterPoseOffset(QuadcopterPose):
+    def __add__(self, rhs):
+        if isinstance(rhs, QuadcopterPoseOffset):
+            return QuadcopterPoseOffset(
+                self.latitude + rhs.latitude,
+                self.longitude + rhs.longitude,
+                self.altitude + rhs.altitude,
+                self.relative_altitude + rhs.relative_altitude,
+                self.heading + rhs.heading)
+        return QuadcopterPose(
+            self.latitude + rhs.latitude,
+            self.longitude + rhs.longitude,
+            self.altitude + rhs.altitude,
+            self.relative_altitude + rhs.relative_altitude,
+            self.heading + rhs.heading)
+    def __mul__(self, rhs):
+        return QuadcopterPoseOffset(
+            self.latitude * rhs,
+            self.longitude * rhs,
+            self.altitude * rhs,
+            self.relative_altitude * rhs,
+            self.heading * rhs)

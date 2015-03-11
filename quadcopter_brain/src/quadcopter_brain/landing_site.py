@@ -12,17 +12,20 @@ from position_tools import PositionTools
 
 
 class LandingSite(object):
-    def __init__(self):
+    def __init__(self, fiducial_delay=0.3):
         # TODO: Variables to implement: orientation, is_upright
         self.center = Pose()
+        self.timestamp = -1
         in_view = False
         update_sub = rospy.Subscriber('/ar_pose_marker', ARMarkers,
                                       self.on_fiducial_update)
+        self.fiducial_delay = fiducial_delay
 
     def on_fiducial_update(self, data):
         '''
         Sets the in_view and center variables when given new data
         '''
+        self.timestamp = time.time() - self.fiducial_delay
         x_coords, y_coords, z_coords, visible = self.clean_fiducials(data)
         self.in_view = len(visible) > 0
         if self.in_view:
@@ -65,8 +68,9 @@ class LandingSite(object):
                                   [-self.center.position.y]])
         absolute_site = np.dot(rotation, relative_site)
 
-        return PositionTools.metered_offset(copter.current_lat,
-                                            copter.current_long,
+        location = copter.pose_at(self.timestamp)
+        return PositionTools.metered_offset(location.latitude,
+                                            location.longitude,
                                             absolute_site[0][0],
                                             absolute_site[1][0])
 

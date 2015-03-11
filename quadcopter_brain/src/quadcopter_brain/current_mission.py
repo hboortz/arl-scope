@@ -32,11 +32,12 @@ def main():
 
 def print_position_data(quadcopter):
     print("Position data:")
-    print("\tLatitude: %.8f" % quadcopter.current_lat)
-    print("\tLongitude: %.8f" % quadcopter.current_long)
-    print("\tRelative Altitude: %.2f" % quadcopter.current_rel_alt)
-    print("\tAltitude: %.2f" % quadcopter.current_alt)
-    print("\tHeading: %.2f" % quadcopter.heading)
+    location = quadcopter.last_known_pose()
+    print("\tLatitude: %.8f" % location.latitude)
+    print("\tLongitude: %.8f" % location.longitude)
+    print("\tRelative Altitude: %.2f" % location.relative_altitude)
+    print("\tAltitude: %.2f" % location.altitude)
+    print("\tHeading: %.2f" % location.heading)
 
 
 if __name__ == '__main__':

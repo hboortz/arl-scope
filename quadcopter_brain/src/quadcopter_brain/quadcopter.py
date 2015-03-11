@@ -1,13 +1,15 @@
+import time
 import rospy
 import roscopter.msg
 import roscopter.srv
 import std_srvs.srv
 
-from position_tools import PositionTools
+from position_tools import PositionTools, QuadcopterPose
+from latency_tools import TemporalBuffer
 
 
 class Quadcopter(object):
-    def __init__(self):
+    def __init__(self, telemetry_delay=0.3):
         rospy.init_node("Quadcopter")
         self._clear_waypoints_service = rospy.ServiceProxy(
             'clear_waypoints', std_srvs.srv.Empty)
@@ -20,21 +22,21 @@ class Quadcopter(object):
         self._adjust_throttle_service = rospy.ServiceProxy(
             'adjust_throttle', std_srvs.srv.Empty)
 
-        self.current_lat = 0.0
-        self.current_long = 0.0
-        self.current_rel_alt = 0.0
-        self.current_alt = 0.0
-        self.heading = 0.0
+        self.pose_buffer = TemporalBuffer()
+        self.telemetry_delay = telemetry_delay
         rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
                          self._position_callback)
 
+    def last_known_pose(self):
+        return self.pose_buffer.last()
+
+    def pose_at(self, timestamp):
+        return self.pose_buffer.query(timestamp)
+
     def _position_callback(self, data):
-        self.current_lat = PositionTools.mavlink_to_gps(data.latitude)
-        self.current_long = PositionTools.mavlink_to_gps(data.longitude)
-        self.heading = PositionTools.mavlink_to_degrees(data.heading)
-        self.current_alt = PositionTools.mavlink_to_altitude(data.altitude)
-        self.current_rel_alt =\
-            PositionTools.mavlink_to_altitude(data.relative_altitude)
+        t = time.time()
+        pose = QuadcopterPose.from_mavlink(data)
+        self.pose_buffer.add(pose, t)
 
     def arm(self):
         print('Sending arm command...')

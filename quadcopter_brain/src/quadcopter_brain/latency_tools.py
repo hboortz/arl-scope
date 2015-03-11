@@ -80,3 +80,9 @@ class TemporalBuffer(object):
 
         # First-order hold
         return self.samples[idx][1]
+
+    def last(self):
+        '''
+        Return the latest received sample.
+        '''
+        return self.samples[-1][1]
