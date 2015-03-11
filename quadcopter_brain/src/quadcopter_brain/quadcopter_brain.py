@@ -100,7 +100,7 @@ class QuadcopterBrain(object):
             rospy.sleep(0.1)
         if seen:
             print "Landing site FOUND: ", site.center
-            return True, site.lat_long(self)
+            return (True,) + site.lat_long(self.quadcopter)
         else:
             print "Landing site was NOT FOUND"
             return False, 0, 0
@@ -108,9 +108,9 @@ class QuadcopterBrain(object):
     def land_on_fiducial_simple(self):
         found, goal_lat, goal_long = self.find_landing_site()
         if found:
-            waypt = WaypointTools.build_waypoint({'latitude': goal_lat,
-                                                  'longitude': goal_long,
-                                                  'altitude': 1.0})
+            waypt = {'latitude': goal_lat,
+                     'longitude': goal_long,
+                     'altitude': 1.0}
             self.go_to_waypoints([waypt], 5.0)
         self.land()
 
@@ -121,9 +121,9 @@ class QuadcopterBrain(object):
             while alt > 2.0:
                 goal_lat, goal_long = \
                     self.landing_site.get_average_lat_long(self.quadcopter)
-                waypt = WaypointTools.build_waypoint({'latitude': goal_lat,
-                                                      'longitude': goal_long,
-                                                      'altitude': alt - 1.0})
+                waypt = {'latitude': goal_lat,
+                         'longitude': goal_long,
+                         'altitude': alt - 1.0}
                 self.go_to_waypoints([waypt], 5.0)
                 alt = self.quadcopter.current_rel_alt
         self.land()
