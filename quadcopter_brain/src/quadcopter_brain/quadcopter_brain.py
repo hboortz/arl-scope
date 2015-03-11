@@ -40,10 +40,28 @@ class QuadcopterBrain(object):
     def hover_in_place(self):
         waypoint_data = [{"latitude": self.quadcopter.current_lat,
                           "longitude": self.quadcopter.current_long,
-                          "altitude": self.quadcopter.current_rel_alt}]
+                          "altitude": self.quadcopter.altitude}]
         print("Sending hover command...")
         self.go_to_waypoints(waypoint_data)
         print("Hover command sent")
+
+    def go_to_faux_relative_waypoint(self, dEast, dNorth, dAlt=0,
+                                     time_to_sleep=15):
+        '''
+        Given a displacement in meters, this function calculates the desired
+        waypoint and tells the quadcopter to go there
+        '''
+        assert(isinstance(dEast, (int, float, long)))
+        assert(isinstance(dNorth, (int, float, long)))
+        wpLat, wpLong = \
+            PositionTools.metered_offset(self.quadcopter.current_lat,
+                                         self.quadcopter.current_long,
+                                         dEast, dNorth)
+        waypoint_data = [{"latitude": wpLat, "longitude": wpLong,
+                          "altitude": self.quadcopter.altitude + dAlt}]
+        print("Sending relative waypoint...")
+        self.go_to_waypoints(waypoint_data, time_to_sleep)
+        print("Relative waypoint sent")
 
     def check_reached_waypoint(self, waypoint):
         wait_time = 0
