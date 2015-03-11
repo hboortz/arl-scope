@@ -24,6 +24,8 @@ class Quadcopter(object):
 
         rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
                          self._position_callback)
+        rospy.Subscriber("/send_rc", roscopter.msg.RC,
+                         self._send_rc_callback)
         self.rc_pub = rospy.Publisher('/send_rc', roscopter.msg.RC,
                                       queue_size=10)
 
@@ -43,6 +45,9 @@ class Quadcopter(object):
         self.current_alt = PositionTools.mavlink_to_altitude(data.altitude)
         self.current_rel_alt =\
             PositionTools.mavlink_to_altitude(data.relative_altitude)
+
+    def _send_rc_callback(self, data):
+        pass
 
     def arm(self):
         print('Sending arm command...')
@@ -99,7 +104,7 @@ class Quadcopter(object):
 
     def fine_control(self, rc_cmd):
         print "sending rc cmd"
-        self.rc_pub.publish(rc_cmd)
+        self.rc_pub.publish(rc_cmd.to_roscopter())
 
     def _set_auto_mode(self):
         '''
@@ -121,17 +126,3 @@ class Quadcopter(object):
                 print("Tried %d times and giving up" % (tries))
             else:
                 print("Retrying. Tries: %d" % (tries))
-
-def main():
-    bob = Quadcopter()
-    bob._set_auto_mode()
-    bob.arm()
-    rospy.sleep(10)
-
-    bob.rc_cmd[4] = 1000
-    for i in range(1000, 2000, 10):
-        print bob.rc_cmd
-        bob.fine_control(bob.rc_cmd)
-    rospy.spin()
-
-# main()
