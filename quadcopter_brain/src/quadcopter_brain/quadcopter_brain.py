@@ -1,3 +1,8 @@
+# Suggested filename change - base_station.py or mission_controller.py
+
+from copy import deepcopy
+import datetime
+
 import rospy
 
 from position_tools import PositionTools
@@ -13,7 +18,6 @@ class QuadcopterBrain(object):
     def __init__(self):
         self.quadcopter = quadcopter.Quadcopter()
         self.landing_site = landing_site.LandingSite()
-
 
     def arm(self):
         self.quadcopter.arm()
@@ -83,7 +87,7 @@ class QuadcopterBrain(object):
     def find_landing_site(self):
         '''
         Executes a search behavior for the fiducial, return its placement of
-        the fiducial it has, in lat, lon form
+        the fiducial it has, in tuple lat, lon form
         TODO: Make a behavior that takes more data to place the site
         '''
         time_limit = datetime.timedelta(minutes=1)
@@ -95,10 +99,32 @@ class QuadcopterBrain(object):
             seen = site.in_view
             rospy.sleep(0.1)
         if seen:
-            print "Landing site info: ", site.center
-            return True, site.latlon(self)
+            print "Landing site FOUND: ", site.center
+            return (True,) + site.lat_long(self.quadcopter)
         else:
             print "Landing site was NOT FOUND"
             return False, 0, 0
 
-    
+    def land_on_fiducial_simple(self):
+        found, goal_lat, goal_long = self.find_landing_site()
+        if found:
+            waypt = {'latitude': goal_lat,
+                     'longitude': goal_long,
+                     'altitude': 1.0}
+            self.go_to_waypoints([waypt], 5.0)
+        self.land()
+
+    def land_on_fiducial_incremental(self):
+        found, _, _ = self.find_landing_site()
+        if found:
+            alt = self.quadcopter.current_rel_alt
+            while alt > 2.0:
+                goal_lat, goal_long = \
+                    self.landing_site.get_average_lat_long(self.quadcopter)
+                waypt = {'latitude': goal_lat,
+                         'longitude': goal_long,
+                         'altitude': alt - 1.0}
+                self.go_to_waypoints([waypt], 5.0)
+                alt = self.quadcopter.current_rel_alt
+        self.land()
+

@@ -1,0 +1,10 @@
+captain's log stardate 3-11-15
+these are the voyages of the quadcopter Malefecent
+
+
+Loosing control at 50-60 feet when lightbrige is on (data recorded)
+
+Lost /filtered_pos several times for unknown reasons. restarting roscopter fixed it.
+
+
+data: {25:s, 50s, 75:f, 67:f, 50:s, 58:s, 67:f, 62:f, 58:f, 50:s, 58:f, 54:s, 67:f}
