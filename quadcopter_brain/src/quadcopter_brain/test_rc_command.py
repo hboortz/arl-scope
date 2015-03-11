@@ -9,7 +9,7 @@ class TestRCCommand(unittest.TestCase):
 
     def test_to_roscopter(self):
         roscopter_command = self.rc_command.to_roscopter()
-        true_command = "command: [1500, 1500, 1500, 1500, 1146, -1, -1, -1]"
+        true_command = [1500, 1500, 1500, 1500, 1146, 65535, 65535, 65535]
         self.assertEqual(roscopter_command, true_command)
 
     def test_compute_pwm_signal(self):
@@ -68,8 +68,6 @@ class TestRCCommand(unittest.TestCase):
         roscopter_command = self.rc_command.to_roscopter()
         true_command = [1500, 1500, 1100, 1500, 1146, 65535, 65535, 65535]
         self.assertEqual(roscopter_command, true_command)
-
-
 
 
 if __name__ == '__main__':

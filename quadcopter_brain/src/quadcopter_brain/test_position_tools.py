@@ -10,7 +10,7 @@ from position_tools import PositionTools
 
 class TestPositionTools(unittest.TestCase):
     @mock.patch('geodesy.utm.fromLatLong')
-    def test_lat_lon_diff(self, from_lat_long_mock):
+    def test_lat_long_diff(self, from_lat_long_mock):
         pointA = mock.MagicMock()
         pointA.easting = 3000
         pointA.northing = 4000
@@ -21,7 +21,7 @@ class TestPositionTools(unittest.TestCase):
 
         from_lat_long_mock.side_effect = [pointA, pointB]
 
-        dX, dY, distance = PositionTools.lat_lon_diff(1, 2, 3, 4)
+        dX, dY, distance = PositionTools.lat_long_diff(1, 2, 3, 4)
 
         expected = [mock.call(1, 2), mock.call(3, 4)]
         self.assertEqual(from_lat_long_mock.call_args_list, expected)

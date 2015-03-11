@@ -33,6 +33,16 @@ cpplint() {
     ./cpplint.py "$current_dir/$1"
     cd $current_dir
 }
+
+run_tests() {
+    test_files=( $(ls | grep 'test_.*\.py$') )
+
+    for test_file in "${test_files[@]}"
+    do
+        echo "Printing results from $test_file"
+        python $test_file
+    done
+}
 # ============================================================" > ~/.bash_aliases
 
 
