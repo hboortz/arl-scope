@@ -3,6 +3,8 @@ import numpy
 
 class RCCommand(object):
     def __init__(self):
+        self._NO_CHANGE = 65535
+        
         self._roll = 1500
         self._roll_min_pwm = 1100
         self._roll_max_pwm = 1900
@@ -20,9 +22,9 @@ class RCCommand(object):
         self._throttle_max_pwm = 1900
         
         self._apm_mode = 1146
-        self._gimbal_yaw = 1000
-        self._gimbal_tilt = 1000
-        self._gimbal_roll = 1000
+        self._gimbal_yaw = self._NO_CHANGE
+        self._gimbal_tilt = self._NO_CHANGE
+        self._gimbal_roll = self._NO_CHANGE
 
     def compute_pwm_signal(self, percent, minimum, maximum):
         if (percent < 0.0) or (percent > 1.0):
