@@ -102,9 +102,9 @@ class Quadcopter(object):
 
         return sent_waypoint
 
-    def fine_control(self, rc_cmd):
-        print "sending rc cmd"
-        self.rc_pub.publish(rc_cmd.to_roscopter())
+    def send_rc_command(self, rc_command):
+        print "sending rc command"
+        self.rc_pub.publish(rc_command.to_roscopter())
 
     def _set_auto_mode(self):
         '''
