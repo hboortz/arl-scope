@@ -37,50 +37,6 @@ class TestRCCommand(unittest.TestCase):
         pwm_signal = command.compute_pwm(1.0, 1100, 1900)
         self.assertEqual(pwm_signal, 1900)
 
-    # def test_set_throttle(self):
-    #     self.rc_command.set_throttle(0.0)
-    #     roscopter_command = self.rc_command.to_roscopter()
-    #     true_command = [1500, 1500, 1500, 1100, 1146, 65535, 65535, 65535]
-    #     self.assertEqual(roscopter_command, true_command)
-
-    #     self.rc_command.set_throttle(1.0)
-    #     roscopter_command = self.rc_command.to_roscopter()
-    #     true_command = [1500, 1500, 1500, 1900, 1146, 65535, 65535, 65535]
-    #     self.assertEqual(roscopter_command, true_command)
-
-    # def test_set_roll(self):
-    #     self.rc_command.set_roll(1.0)
-    #     roscopter_command = self.rc_command.to_roscopter()
-    #     true_command = [1900, 1500, 1500, 1500, 1146, 65535, 65535, 65535]
-    #     self.assertEqual(roscopter_command, true_command)
-
-    #     self.rc_command.set_roll(0.0)
-    #     roscopter_command = self.rc_command.to_roscopter()
-    #     true_command = [1100, 1500, 1500, 1500, 1146, 65535, 65535, 65535]
-    #     self.assertEqual(roscopter_command, true_command)
-
-    # def test_set_pitch(self):
-    #     self.rc_command.set_pitch(1.0)
-    #     roscopter_command = self.rc_command.to_roscopter()
-    #     true_command = [1500, 1900, 1500, 1500, 1146, 65535, 65535, 65535]
-    #     self.assertEqual(roscopter_command, true_command)
-
-    #     self.rc_command.set_pitch(0.0)
-    #     roscopter_command = self.rc_command.to_roscopter()
-    #     true_command = [1500, 1100, 1500, 1500, 1146, 65535, 65535, 65535]
-    #     self.assertEqual(roscopter_command, true_command)
-
-    # def test_set_yaw(self):
-    #     self.rc_command.set_yaw(1.0)
-    #     roscopter_command = self.rc_command.to_roscopter()
-    #     true_command = [1500, 1500, 1900, 1500, 1146, 65535, 65535, 65535]
-    #     self.assertEqual(roscopter_command, true_command)
-
-    #     self.rc_command.set_yaw(0.0)
-    #     roscopter_command = self.rc_command.to_roscopter()
-    #     true_command = [1500, 1500, 1100, 1500, 1146, 65535, 65535, 65535]
-    #     self.assertEqual(roscopter_command, true_command)
-
 
 if __name__ == '__main__':
     unittest.main()
