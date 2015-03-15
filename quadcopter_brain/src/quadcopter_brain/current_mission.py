@@ -24,9 +24,9 @@ def main():
     if outside:
         carl.arm()
     carl.launch()
-    carl.go_to_waypoints([great_lawn_waypoints["B"],
-                          great_lawn_waypoints["A"],
-                          great_lawn_waypoints["C"]])
+    for i in range(5):
+        print("About to send quadcopter 1m East")
+        carl.go_to_faux_relative_waypoint(1, 0)
     carl.land()
 
 

@@ -51,26 +51,39 @@ class TestQuadcopterBrain(unittest.TestCase):
         self.quadcopter_brain.go_to_faux_relative_waypoint(dEast, dNorth)
 
         called_waypoint = go_to_waypoint_mock.call_args[0][0][0]
-        actual_waypoint = {"latitude": 42.0002612, "longitude": -71.0000939,
-                            "altitude": 4.5}  # Taken from google maps
+        actual_waypoint = {"latitude": 41.999912, "longitude": -70.999877,
+                           "altitude": 4.5}  # Taken from google maps
 
         self.assertAlmostEqual(called_waypoint["latitude"],
-                               actual_waypoint["latitude"])
+                               actual_waypoint["latitude"], 6)
         self.assertAlmostEqual(called_waypoint["longitude"],
-                               actual_waypoint["longitude"])
+                               actual_waypoint["longitude"], 6)
         self.assertAlmostEqual(called_waypoint["altitude"],
                                actual_waypoint["altitude"])
 
         wait_time = go_to_waypoint_mock.call_args[0][1]
         self.assertAlmostEqual(wait_time, 15)
-        
 
-        # expected = [mock.call(0), mock.call(1)]
-        # self.assertEqual(build_waypoint_mock.call_args_list, expected)
+        dEast = -10  # Meters
+        dNorth = 10  # Meters
+        dAlt = 2  # Meters
+        time_to_sleep = 10  # Seconds
+        self.quadcopter_brain.go_to_faux_relative_waypoint(dEast, dNorth,
+                                                           dAlt, time_to_sleep)
 
-        # expected = [mock.call(10), mock.call(11)]
-        # self.assertEqual(
-        #     self.quadcopter_mock.send_waypoint.call_args_list, expected)
+        called_waypoint = go_to_waypoint_mock.call_args[0][0][0]
+        actual_waypoint = {"latitude": 42, "longitude": -71,
+                           "altitude": 6.5}  # Taken from google maps
+
+        self.assertNotEqual(called_waypoint["latitude"],
+                            actual_waypoint["latitude"], 6)
+        self.assertNotEqual(called_waypoint["longitude"],
+                            actual_waypoint["longitude"], 6)
+        self.assertAlmostEqual(called_waypoint["altitude"],
+                               actual_waypoint["altitude"])
+
+        wait_time = go_to_waypoint_mock.call_args[0][1]
+        self.assertAlmostEqual(wait_time, 10)
 
 
 if __name__ == '__main__':
