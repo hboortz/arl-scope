@@ -24,9 +24,12 @@ def main():
     if outside:
         carl.arm()
     carl.launch()
-    carl.go_to_waypoints([great_lawn_waypoints["B"],
-                          great_lawn_waypoints["A"],
-                          great_lawn_waypoints["C"]])
+    carl.go_to_faux_relative_waypoint(0.0, 0.0, -4.0)
+    for i in range(2):
+        carl.go_to_faux_relative_waypoint(3.0, 0.0, time_to_sleep=10)
+        carl.go_to_faux_relative_waypoint(0.0, 3.0, time_to_sleep=10)
+        carl.go_to_faux_relative_waypoint(-3.0, 0.0, time_to_sleep=10)
+        carl.go_to_faux_relative_waypoint(0.0, -3.0, time_to_sleep=10)
     carl.land()
 
 
