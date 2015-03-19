@@ -47,7 +47,7 @@ class TestQuadcopterBrain(unittest.TestCase):
         dNorth = -10  # Meters
         self.quadcopter_brain.quadcopter.current_lat = 42.0
         self.quadcopter_brain.quadcopter.current_long = -71.0
-        self.quadcopter_brain.quadcopter.altitude = 4.5
+        self.quadcopter_brain.quadcopter.current_rel_alt = 4.5
         self.quadcopter_brain.go_to_faux_relative_waypoint(dEast, dNorth)
 
         called_waypoint = go_to_waypoint_mock.call_args[0][0][0]
