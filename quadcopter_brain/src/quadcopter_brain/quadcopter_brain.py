@@ -40,7 +40,7 @@ class QuadcopterBrain(object):
     def hover_in_place(self):
         waypoint_data = [{"latitude": self.quadcopter.current_lat,
                           "longitude": self.quadcopter.current_long,
-                          "altitude": self.quadcopter.altitude}]
+                          "altitude": self.quadcopter.current_rel_alt}]
         print("Sending hover command...")
         self.go_to_waypoints(waypoint_data)
         print("Hover command sent")
@@ -58,7 +58,7 @@ class QuadcopterBrain(object):
                                          self.quadcopter.current_long,
                                          dEast, dNorth)
         waypoint_data = [{"latitude": wpLat, "longitude": wpLong,
-                          "altitude": self.quadcopter.altitude + dAlt}]
+                          "altitude": self.quadcopter.current_rel_alt + dAlt}]
         print("Sending relative waypoint...")
         self.go_to_waypoints(waypoint_data, time_to_sleep)
         print("Relative waypoint sent")
