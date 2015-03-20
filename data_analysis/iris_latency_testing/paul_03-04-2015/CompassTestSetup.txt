@@ -1,0 +1,6 @@
+Video is reviewed in Windows MovieMaker to get hundreth of a second values and frame steps
+
+1. Quadcopter on the ground
+2. Reading /filtered_pos on the screen
+3. Film the screen and the Quadcopter
+4. Try to turn the quadcopter in a step angle change as quickly as possible
