@@ -1,0 +1,12 @@
+OUT ON THE GREAT LAWN IN FRONT OF WH
+CLOUDY, COLD, LIGHTLY WINDY
+ERIC WITH CARL
+
+Just doing a triangle waypoint test (ABC) with a slightly changed command structure
+On the feature/simple_commands branch
+
+1. Carl failed to launch with the throttle down, then launched with the throttle up. Took off down the great lawn farther than I thought A was, so I took control. After taking control and landing I realized A and B are midway down the great lawn, not at the top where I was, so it was reasonable.
+
+2. Launched wildly sideways with the throttle half up, will try launching with the throttle down and then moving the throttle up
+
+3. IMPORTANT: Launch failed the first time, I kept the throttle down. 3-5 seconds after the first launch failure raised the throttle and Carl launched perfectly. Then did a triangle run perfectly.
