@@ -21,7 +21,7 @@ def main():
     if outside:
         carl.arm()
     carl.launch()
-    carl.land_on_fiducial_simple()
+    carl.land_on_fiducial_incremental()
 
 
 def print_position_data(quadcopter):

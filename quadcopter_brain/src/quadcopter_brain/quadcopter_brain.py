@@ -94,7 +94,8 @@ class QuadcopterBrain(object):
         time_end = datetime.datetime.now() + time_limit
         seen = False
         print "Searching for landing site..."
-        while not seen and datetime.datetime.now() < time_end:
+        while not seen and datetime.datetime.now() < time_end and\
+              not rospy.is_shutdown():
             site = deepcopy(self.landing_site)
             seen = site.in_view
             rospy.sleep(0.1)

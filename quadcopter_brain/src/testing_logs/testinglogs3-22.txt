@@ -1,0 +1,9 @@
+Eric
+On the soccer field, with Malificent + GoPro + Lightbridge, testing GPS fiducial landing
+Cold, sunny, and windy (internet says 20mph, but it comes in waves)
+
+The test is launch, do land_fiducial_simple()
+  1-4) The quadcopter launched successfully, traveled sideways and down until it was above the fiducial and within 1-2 meters, then would try to land. The quadcopter was always a bit wobbly in its descent and landing would always go sideways and flip. Every time.
+
+Running land_fiducial_incremental()
+  1) The quadcopter went up, traveled generally towards the fiducial in two awkward steps, drifting around the whole time. Distinctly saw the quadcopter drift sideways at a 45-60 degree angle when told to land, caught its legs on the ground, and crashed. This was NOT in the direction of the wind. Need to figure out what happens when land command is sent. During the step when the quadcopter tries to average the fiducial's position it would sometimes see the fiducial and sometimes not, but from the operator perspective it was very hard to tell what was going on
