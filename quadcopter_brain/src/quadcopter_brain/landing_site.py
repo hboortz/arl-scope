@@ -75,24 +75,34 @@ class LandingSite(object):
         '''
         Waits for 'time' seconds and samples landing site position
         every 'time_step' seconds. Returns the average gps position
-        over that time period. Returns None if fiducial never seen
+        and vertical distance to the fiducial over that time period.
+        Returns None if fiducial never seen
         '''
         landing_site_lat = []
         landing_site_long = []
+        landing_site_altitude = []
         time_limit = datetime.timedelta(seconds=total_time)
         time_end = datetime.datetime.now() + time_limit
+        counter = 0
+        num_tries = total_time / time_step
         while datetime.datetime.now() < time_end:
             if self.in_view:
                 current_lat, current_long = self.lat_long(copter)
                 landing_site_lat.append(current_lat)
                 landing_site_long.append(current_long)
+                landing_site_altitude.append(self.center.position.z)
+                print("Fiducial seen, appending to list")
             else:
                 print("Averaging landing site GPS, couldn't see fiducial")
+            print("\tTries: %d / %d" %(counter, num_tries))
+            counter += 1
             rospy.sleep(time_step)
         if len(landing_site_lat) > 0:
-            return (np.mean(landing_site_lat), np.mean(landing_site_long))
+            return (np.mean(landing_site_lat),
+                    np.mean(landing_site_long),
+                    np.mean(landing_site_altitude))
         else:
-            return None, None
+            return None, None, None
 
 
 def switch_CW_and_CCW(aircraft_heading):

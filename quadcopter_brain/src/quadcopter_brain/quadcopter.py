@@ -100,11 +100,11 @@ class Quadcopter(object):
     def _print_send_waypoint_status(self, waypoint, sent_waypoint,
                                     tries, max_num_tries):
         if sent_waypoint:
-            print('Sent waypoint %d, %d' % (waypoint.latitude,
-                                            waypoint.longitude))
+            print('Sent waypoint\n\tlat: %d\n\tlon: %d\n\talt: %d' %
+                  (waypoint.latitude, waypoint.longitude, waypoint.altitude))
         else:
-            print("Failed to send waypoint %d, %d" % (waypoint.latitude,
-                                                      waypoint.longitude))
+            print('Failed to send waypoint\n\tlat: %d\n\tlon: %d\n\talt: %d' %
+                  (waypoint.latitude, waypoint.longitude, waypoint.altitude))
             if tries == max_num_tries:
                 print("Tried %d times and giving up" % (tries))
             else:
