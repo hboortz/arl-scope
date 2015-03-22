@@ -57,6 +57,5 @@ class TestQuadcopterBrain(unittest.TestCase):
         go_to_waypoints_mock.assert_called_once_with(waypoint)
 
 
-
 if __name__ == '__main__':
     unittest.main()

@@ -18,10 +18,16 @@ def main():
     print("Sleeping for 3 seconds...")
     rospy.sleep(3)
 
+    great_lawn_waypoints = WaypointTools.open_waypoint_file(
+        "great_lawn_waypoints.json")
+
     if outside:
         carl.arm()
     carl.launch()
-    carl.land_on_fiducial_simple()
+    carl.go_to_waypoints([great_lawn_waypoints["B"],
+                          great_lawn_waypoints["A"],
+                          great_lawn_waypoints["C"]])
+    carl.land()
 
 
 def print_position_data(quadcopter):

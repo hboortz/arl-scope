@@ -113,17 +113,3 @@ class QuadcopterBrain(object):
                      'altitude': 1.0}
             self.go_to_waypoints([waypt])
         self.land()
-
-    def land_on_fiducial_incremental(self):
-        found, _, _ = self.find_landing_site()
-        if found:
-            alt = self.quadcopter.current_rel_alt
-            while alt > 2.0:
-                goal_lat, goal_long = \
-                    self.landing_site.get_average_lat_long(self.quadcopter)
-                waypt = {'latitude': goal_lat,
-                         'longitude': goal_long,
-                         'altitude': alt - 1.0}
-                self.go_to_waypoints([waypt])
-                alt = self.quadcopter.current_rel_alt
-        self.land()
