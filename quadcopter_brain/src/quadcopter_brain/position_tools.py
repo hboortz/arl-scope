@@ -21,7 +21,7 @@ class PositionTools():
     def metered_offset(lat, lon, dX, dY):
         '''
         (lat, lon): Starting coordinate
-        (dX, dY): offset from starting point in meters
+        (dX, dY): offset from starting point in meters (East, North)
         returns: latitude and longitude of resulting position
         '''
         given_utm = geodesy.utm.fromLatLong(lat, lon)
