@@ -45,8 +45,8 @@ class QuadcopterBrain(object):
         self.go_to_waypoints(waypoint_data)
         print("Hover command sent")
 
-    def go_to_faux_relative_waypoint(self, delta_east, delta_north, dAlt=0,
-                                     time_to_sleep=15):
+    def go_to_waypoint_given_metered_offset(self, delta_east, delta_north,
+                                            dAlt=0, time_to_sleep=15):
         '''
         Given a displacement in meters, this function calculates the desired
         waypoint and tells the quadcopter to go there
