@@ -45,19 +45,17 @@ class QuadcopterBrain(object):
         self.go_to_waypoints(waypoint_data)
         print("Hover command sent")
 
-    def go_to_faux_relative_waypoint(self, dEast, dNorth, dAlt=0,
+    def go_to_faux_relative_waypoint(self, delta_east, delta_north, dAlt=0,
                                      time_to_sleep=15):
         '''
         Given a displacement in meters, this function calculates the desired
         waypoint and tells the quadcopter to go there
         '''
-        assert(isinstance(dEast, (int, float, long)))
-        assert(isinstance(dNorth, (int, float, long)))
-        wpLat, wpLong = \
+        wp_lat, wp_long = \
             PositionTools.metered_offset(self.quadcopter.current_lat,
                                          self.quadcopter.current_long,
-                                         dEast, dNorth)
-        waypoint_data = [{"latitude": wpLat, "longitude": wpLong,
+                                         delta_east, delta_north)
+        waypoint_data = [{"latitude": wp_lat, "longitude": wp_long,
                           "altitude": self.quadcopter.current_rel_alt + dAlt}]
         print("Sending relative waypoint...")
         self.go_to_waypoints(waypoint_data, time_to_sleep)
