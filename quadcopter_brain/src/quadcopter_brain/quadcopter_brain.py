@@ -111,7 +111,7 @@ class QuadcopterBrain(object):
             waypt = {'latitude': goal_lat,
                      'longitude': goal_long,
                      'altitude': 1.0}
-            self.go_to_waypoints([waypt], 5.0)
+            self.go_to_waypoints([waypt])
         self.land()
 
     def land_on_fiducial_incremental(self):
@@ -124,6 +124,6 @@ class QuadcopterBrain(object):
                 waypt = {'latitude': goal_lat,
                          'longitude': goal_long,
                          'altitude': alt - 1.0}
-                self.go_to_waypoints([waypt], 5.0)
+                self.go_to_waypoints([waypt])
                 alt = self.quadcopter.current_rel_alt
         self.land()
