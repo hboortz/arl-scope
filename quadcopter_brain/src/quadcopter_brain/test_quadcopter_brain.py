@@ -37,12 +37,6 @@ class TestQuadcopterBrain(unittest.TestCase):
 
     @mock.patch('quadcopter_brain.QuadcopterBrain.go_to_waypoints')
     def test_go_to_faux_relative_waypoints(self, go_to_waypoint_mock):
-        with self.assertRaises(AssertionError) as cm:
-            self.quadcopter_brain.go_to_faux_relative_waypoint('a', 1)
-
-        with self.assertRaises(AssertionError) as cm:
-            self.quadcopter_brain.go_to_faux_relative_waypoint(1, 'f')
-
         dEast = 10  # Meters
         dNorth = -10  # Meters
         self.quadcopter_brain.quadcopter.current_lat = 42.0
