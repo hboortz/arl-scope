@@ -133,6 +133,7 @@ class QuadcopterBrain(object):
 
     def land_on_fiducial_incremental(self):
         found, _, _ = self.find_landing_site()
+        alt = -1.0
         if found:
             alt = self.quadcopter.current_rel_alt
             while alt > 2.0:
@@ -147,4 +148,5 @@ class QuadcopterBrain(object):
                 else:
                     print("Couldn't see fiducial for averaging, landing")
                     break  # Get out of the approach while loop
+        print("Fiducial found: %s, altitude %f" %(found, alt))
         self.land()

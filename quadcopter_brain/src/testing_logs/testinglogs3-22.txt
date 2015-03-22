@@ -7,3 +7,10 @@ The test is launch, do land_fiducial_simple()
 
 Running land_fiducial_incremental()
   1) The quadcopter went up, traveled generally towards the fiducial in two awkward steps, drifting around the whole time. Distinctly saw the quadcopter drift sideways at a 45-60 degree angle when told to land, caught its legs on the ground, and crashed. This was NOT in the direction of the wind. Need to figure out what happens when land command is sent. During the step when the quadcopter tries to average the fiducial's position it would sometimes see the fiducial and sometimes not, but from the operator perspective it was very hard to tell what was going on
+
+
+WENT INSIDE TO MAKE CODE EDITS AND PUT NEW BATTERIES IN TRANSMITTER
+1) Launched fine, couldn't see fiducial at first. Rose a couple meters after launch, don't know why. Saw fiducial and stepped down to 9m, 7.7m, 5.7m, then ran out of batteries
+
+2) Quadcopter launched, found the fdiducial, and landed immediately. I think this is because filtered_pos wasn't updAted afte trhe bAtteries were switched. RelAunched roscopter, filtetred pos satarted updating. Think figurewd out land drift problem - it's b/c Malificxent's contreolletr is not centetred, affects the lAnd process.
+
