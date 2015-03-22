@@ -74,10 +74,10 @@ class QuadcopterBrain(object):
         print "Checking reached:"
         try:
             _, _, dist_from_waypoint = \
-                PositionTools.lat_lon_diff(self.current_lat,
-                                           self.current_long,
-                                           wpt_latitude,
-                                           wpt_longitude)
+                PositionTools.lat_long_diff(self.current_lat,
+                                            self.current_long,
+                                            wpt_latitude,
+                                            wpt_longitude)
             print "Distance to waypoint: " + str(dist_from_waypoint)
             print "Current pos: %s, %s" % (self.current_lat, self.current_long)
             return dist_from_waypoint < error_margin
