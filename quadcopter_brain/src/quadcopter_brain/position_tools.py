@@ -3,7 +3,7 @@ import geodesy.utm
 
 class PositionTools():
     @staticmethod
-    def lat_lon_diff(latA, lonA, latB, lonB):
+    def lat_long_diff(latA, lonA, latB, lonB):
         '''
         (latA, lonA): first coordinate
         (latB, lonB): second coordinate
@@ -27,13 +27,13 @@ class PositionTools():
         given_utm = geodesy.utm.fromLatLong(lat, lon)
         given_utm.easting += dX
         given_utm.northing += dY
-        return_lat_lon = given_utm.toMsg()
-        return return_lat_lon.latitude, return_lat_lon.longitude
+        return_lat_long = given_utm.toMsg()
+        return return_lat_long.latitude, return_lat_long.longitude
 
     @staticmethod
-    def lat_lon_to_meters(gps_points):
+    def lat_long_to_meters(gps_points):
         '''
-        Takes a list of (lat, lon) GPS points and returns a list of (x, y)
+        Takes a list of (lat, long) GPS points and returns a list of (x, y)
         points in meters (UTM)
         '''
         utm_points = \

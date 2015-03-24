@@ -1,7 +1,13 @@
+# Suggested filename change - base_station.py or mission_controller.py
+
+from copy import deepcopy
+import datetime
+
 import rospy
 
 from position_tools import PositionTools
 from waypoint_tools import WaypointTools
+from landing_site import LandingSite
 import quadcopter
 
 
@@ -11,6 +17,7 @@ class QuadcopterBrain(object):
     '''
     def __init__(self):
         self.quadcopter = quadcopter.Quadcopter()
+        self.landing_site = LandingSite()
 
     def arm(self):
         self.quadcopter.arm()
@@ -76,19 +83,51 @@ class QuadcopterBrain(object):
             return "Failed to reach waypoint"
 
     def has_reached_waypoint(self, waypoint):
-        wpt_latitude = PositionTools.mavlink_to_gps(waypoint.latitude)
-        wpt_longitude = PositionTools.mavlink_to_gps(waypoint.longitude)
+        wp_lat = PositionTools.mavlink_to_gps(waypoint.latitude)
+        wp_long = PositionTools.mavlink_to_gps(waypoint.longitude)
 
         error_margin = 3  # in meters
         print "Checking reached:"
         try:
             _, _, dist_from_waypoint = \
-                PositionTools.lat_lon_diff(self.current_lat,
-                                           self.current_long,
-                                           wpt_latitude,
-                                           wpt_longitude)
+                PositionTools.lat_long_diff(self.current_lat,
+                                            self.current_long,
+                                            wp_lat,
+                                            wp_long)
             print "Distance to waypoint: " + str(dist_from_waypoint)
             print "Current pos: %s, %s" % (self.current_lat, self.current_long)
             return dist_from_waypoint < error_margin
         except AttributeError:  # if haven't gotten current position data
             return False
+
+    def find_landing_site(self):
+        '''
+        Executes a search behavior for the fiducial, return its placement of
+        the fiducial it has, in (latitude, longitude) form
+        TODO: Make a behavior that takes more data to place the site
+        '''
+        time_limit = datetime.timedelta(minutes=1)
+        time_end = datetime.datetime.now() + time_limit
+        seen = False
+        print "Searching for landing site..."
+        while not seen and datetime.datetime.now() < time_end and\
+              not rospy.is_shutdown():
+            site = deepcopy(self.landing_site)
+            seen = site.in_view
+            rospy.sleep(0.1)
+        if seen:
+            print "Landing site FOUND: ", site.center
+            return (True,) + \
+                   site.lat_long(self.quadcopter)  # Returns (bool, int, int)
+        else:
+            print "Landing site was NOT FOUND"
+            return False, 0, 0  # Returns (bool, int, int)
+
+    def land_on_fiducial_simple(self):
+        found, goal_lat, goal_long = self.find_landing_site()
+        if found:
+            waypt = {'latitude': goal_lat,
+                     'longitude': goal_long,
+                     'altitude': 1.0}
+            self.go_to_waypoints([waypt])
+        self.land()

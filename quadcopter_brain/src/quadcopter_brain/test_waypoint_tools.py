@@ -21,7 +21,7 @@ class TestWaypointTools(unittest.TestCase):
 
         waypoint_data = {"latitude": 42.12345,
                          "longitude": -71.98765,
-                         "altitude": 1.0, 
+                         "altitude": 1.0,
                          "hold_time": 10.0}
         waypoint = WaypointTools.build_waypoint(waypoint_data)
         self.assertEqual(type(waypoint), roscopter.msg.Waypoint)
