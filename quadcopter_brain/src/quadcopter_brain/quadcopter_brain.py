@@ -83,8 +83,8 @@ class QuadcopterBrain(object):
             return "Failed to reach waypoint"
 
     def has_reached_waypoint(self, waypoint):
-        wpt_latitude = PositionTools.mavlink_to_gps(waypoint.latitude)
-        wpt_longitude = PositionTools.mavlink_to_gps(waypoint.longitude)
+        wp_lat = PositionTools.mavlink_to_gps(waypoint.latitude)
+        wp_long = PositionTools.mavlink_to_gps(waypoint.longitude)
 
         error_margin = 3  # in meters
         print "Checking reached:"
@@ -92,8 +92,8 @@ class QuadcopterBrain(object):
             _, _, dist_from_waypoint = \
                 PositionTools.lat_long_diff(self.current_lat,
                                             self.current_long,
-                                            wpt_latitude,
-                                            wpt_longitude)
+                                            wp_lat,
+                                            wp_long)
             print "Distance to waypoint: " + str(dist_from_waypoint)
             print "Current pos: %s, %s" % (self.current_lat, self.current_long)
             return dist_from_waypoint < error_margin
@@ -103,7 +103,7 @@ class QuadcopterBrain(object):
     def find_landing_site(self):
         '''
         Executes a search behavior for the fiducial, return its placement of
-        the fiducial it has, in tuple lat, lon form
+        the fiducial it has, in (latitude, longitude) form
         TODO: Make a behavior that takes more data to place the site
         '''
         time_limit = datetime.timedelta(minutes=1)
@@ -117,10 +117,11 @@ class QuadcopterBrain(object):
             rospy.sleep(0.1)
         if seen:
             print "Landing site FOUND: ", site.center
-            return (True,) + site.lat_long(self.quadcopter)
+            return (True,) + \
+                   site.lat_long(self.quadcopter)  # Returns (bool, int, int)
         else:
             print "Landing site was NOT FOUND"
-            return False, 0, 0
+            return False, 0, 0  # Returns (bool, int, int)
 
     def land_on_fiducial_simple(self):
         found, goal_lat, goal_long = self.find_landing_site()
