@@ -46,8 +46,6 @@ class LandingSite(object):
         Finds the center of the fiducial, in meters, from the camera
         TODO: Incorporate which fiducials are seen to find the center
         '''
-        assert(len(x_coords) == len(y_coords))
-        assert(len(x_coords) == len(z_coords))
         return Pose(position=Point(x=np.mean(x_coords),
                                    y=np.mean(y_coords),
                                    z=np.mean(z_coords)))
