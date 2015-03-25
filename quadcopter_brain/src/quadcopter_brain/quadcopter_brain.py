@@ -131,3 +131,23 @@ class QuadcopterBrain(object):
                      'altitude': 1.0}
             self.go_to_waypoints([waypt])
         self.land()
+
+    def land_on_fiducial_incremental(self):
+        found, _, _ = self.find_landing_site()
+        alt = -1.0
+        if found:
+            alt = self.quadcopter.current_rel_alt
+            while alt > 4.0:
+                goal_lat, goal_long, goal_vertical_dist = \
+                    self.landing_site.get_average_lat_long(self.quadcopter)
+                if goal_lat != None:
+                    waypt = {'latitude': goal_lat,
+                             'longitude': goal_long,
+                             'altitude': alt - 2.0}
+                    self.go_to_waypoints([waypt],time_to_sleep=8)
+                    alt = self.quadcopter.current_rel_alt
+                else:
+                    print("Couldn't see fiducial for averaging, landing")
+                    break  # Get out of the approach while loop
+        print("Fiducial found: %s, altitude %f" %(found, alt))
+        self.land()
