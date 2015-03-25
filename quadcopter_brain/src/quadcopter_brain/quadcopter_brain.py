@@ -121,7 +121,7 @@ class QuadcopterBrain(object):
                    site.lat_long(self.quadcopter)  # Returns (bool, int, int)
         else:
             print "Landing site was NOT FOUND"
-            return False, 0, 0  # Returns (bool, int, int)
+            return False, 0, 0
 
     def land_on_fiducial_simple(self):
         found, goal_lat, goal_long = self.find_landing_site()
