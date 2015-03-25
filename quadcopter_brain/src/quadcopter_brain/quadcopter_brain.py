@@ -80,7 +80,7 @@ class QuadcopterBrain(object):
             if successfully_sent_waypoint:
                 print('Sent waypoint %d, %d' % (waypoint.latitude,
                                                 waypoint.longitude))
-                print self.check_reached_waypoint(waypoint, max_wait_time=15)
+                print self.check_reached_waypoint(waypoint, max_wait_time=10)
             else:
                 print("Failed to send waypoint %d, %d" % (waypoint.latitude,
                                                           waypoint.longitude))
@@ -98,7 +98,7 @@ class QuadcopterBrain(object):
             time.sleep(5)
             wait_time += 5
             print "--> Traveling to waypoint for %d seconds" % (wait_time)
-            print "--> Current position is %d, %d" % (self.current_lat,
+            print "--> Current position is %f, %f" % (self.current_lat,
                                                       self.current_long)
         if wait_time < max_wait_time:  # successfully reached
             time.sleep(5)  # stay at waypoint for a few seconds
@@ -139,12 +139,19 @@ class QuadcopterBrain(object):
 
             returns boolean of whether position is within error margins"""
         try:
-            _, _, dist = PositionTools.lon_lon_diff(self.current_lat,
-                                                    self.current_lon,
-                                                    waypoint.latitude,
-                                                    waypoint.longitude)
-            alt_diff = math.fabs(self.current_alt - waypoint.altitude)
-            return dist < xy_error_margin and alt_diff < alt_error_margin
+            waypoint_lat = mavlink_to_gps(waypoint.latitude)
+            waypoint_long = mavlink_to_gps(waypoint.longitude)
+            waypoint_alt = waypoint.altitude / 1000.0  # mm to m
+            _, _, dist = PositionTools.lat_lon_diff(self.current_lat,
+                                                    self.current_long,
+                                                    waypoint_lat,
+                                                    waypoint_long)
+            alt_diff = math.fabs(self.current_rel_alt - waypoint_alt)
+            print "REL ALT", self.current_rel_alt
+            print "WAYPT ALT", waypoint_alt
+            res = dist < xy_error_margin and alt_diff < alt_error_margin
+            print "Close enough? DIST:", dist, "ALT", alt_diff, res
+            return res
         except AttributeError:  # if haven't gotten current position data
             return False
 
@@ -216,7 +223,7 @@ def main():
         "waypoint_data/great_lawn_waypoints.json")
     if outside:
         carl.arm()
-    carl.fly_path([great_lawn_waypoints["G"], great_lawn_waypoints["D"]])
+    carl.fly_path([great_lawn_waypoints["B"], great_lawn_waypoints["G"]])
 
 
 if __name__ == '__main__':
