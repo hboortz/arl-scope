@@ -43,7 +43,7 @@ class TestPositionTools(unittest.TestCase):
         self.assertAlmostEqual(new_position[1], -71.261616, places=4)
 
     @mock.patch('geodesy.utm.fromLatLong')
-    def test_lat_lon_to_meters(self, from_lat_long_mock):
+    def test_lat_long_to_meters(self, from_lat_long_mock):
         gps_points = [(0, 0), (1, 1)]
         pointA = mock.MagicMock()
         pointA.easting = 2
@@ -54,7 +54,7 @@ class TestPositionTools(unittest.TestCase):
         pointB.northing = 5
 
         from_lat_long_mock.side_effect = [pointA, pointB]
-        metered_positions = PositionTools.lat_lon_to_meters(gps_points)
+        metered_positions = PositionTools.lat_long_to_meters(gps_points)
         self.assertEqual(metered_positions, ([3, 5], [2, 4]))
 
     def test_gps_to_mavlink(self):

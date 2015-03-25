@@ -1,0 +1,6 @@
+Video is reviewed in Windows MovieMaker to get hundreth of a second values and frame steps
+
+1. Hold quadcopter in the air
+2. Reading /filtered_pos on the screen
+3. Film the screen and the Quadcopter
+4. Try to drop the quadcopter in altitude as quickly as possible and film the reaction
