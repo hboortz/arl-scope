@@ -17,23 +17,19 @@ def rc_down(q):
 
 
 def forward(q):
-    rc_command = RCCommand()
-    rc_command.set_pitch(0.55)
+    rc_command = RCCommand({'pitch': 0.55})
     q.send_rc_command(rc_command)
 
 def backward(q):
-    rc_command = RCCommand()
-    rc_command.set_pitch(0.45)
+    rc_command = RCCommand({'pitch': 0.45})
     q.send_rc_command(rc_command)
 
 def right(q):
-    rc_command = RCCommand()
-    rc_command.set_roll(0.55)
+    rc_command = RCCommand({'roll': 0.55})
     q.send_rc_command(rc_command)
 
 def left(q):
-    rc_command = RCCommand()
-    rc_command.set_roll(0.45)
+    rc_command = RCCommand({'roll': 0.45})
     q.send_rc_command(rc_command)
 
 def still(q):
