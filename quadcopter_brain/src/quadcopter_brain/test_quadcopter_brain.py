@@ -62,8 +62,10 @@ class TestQuadcopterBrain(unittest.TestCase):
         dNorth = 10  # Meters
         dAlt = 2  # Meters
         time_to_sleep = 10  # Seconds
-        self.quadcopter_brain.go_to_waypoint_given_metered_offset(dEast, dNorth,
-                                                           dAlt, time_to_sleep)
+        self.quadcopter_brain.go_to_waypoint_given_metered_offset(dEast,
+                                                                  dNorth,
+                                                                  dAlt,
+                                                                  time_to_sleep)
 
         called_waypoint = go_to_waypoint_mock.call_args[0][0][0]
         actual_waypoint = {"latitude": 42, "longitude": -71,
