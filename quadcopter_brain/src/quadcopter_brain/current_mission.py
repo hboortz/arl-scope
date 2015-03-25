@@ -24,13 +24,7 @@ def main():
     if outside:
         carl.arm()
     carl.launch()
-    carl.go_to_waypoint_given_metered_offset(0.0, 0.0, -4.0)
-    for i in range(2):
-        carl.go_to_waypoint_given_metered_offset(3.0, 0.0, time_to_sleep=10)
-        carl.go_to_waypoint_given_metered_offset(0.0, 3.0, time_to_sleep=10)
-        carl.go_to_waypoint_given_metered_offset(-3.0, 0.0, time_to_sleep=10)
-        carl.go_to_waypoint_given_metered_offset(0.0, -3.0, time_to_sleep=10)
-    carl.land()
+    carl.land_on_fiducial_incremental()
 
 
 def print_position_data(quadcopter):

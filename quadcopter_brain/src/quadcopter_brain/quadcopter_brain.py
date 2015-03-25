@@ -137,14 +137,14 @@ class QuadcopterBrain(object):
         alt = -1.0
         if found:
             alt = self.quadcopter.current_rel_alt
-            while alt > 2.0:
+            while alt > 4.0:
                 goal_lat, goal_long, goal_vertical_dist = \
                     self.landing_site.get_average_lat_long(self.quadcopter)
                 if goal_lat != None:
                     waypt = {'latitude': goal_lat,
                              'longitude': goal_long,
-                             'altitude': alt - 1.0}
-                    self.go_to_waypoints([waypt])
+                             'altitude': alt - 2.0}
+                    self.go_to_waypoints([waypt],time_to_sleep=8)
                     alt = self.quadcopter.current_rel_alt
                 else:
                     print("Couldn't see fiducial for averaging, landing")
