@@ -1,6 +1,7 @@
 # Suggested filename change - base_station.py or mission_controller.py
 
 from copy import deepcopy
+from math import floor
 import datetime
 
 import rospy
@@ -138,12 +139,15 @@ class QuadcopterBrain(object):
         if found:
             alt = self.quadcopter.current_rel_alt
             seen = True
-            while seen and alt > 4.0:
+            while seen and alt > 2.0:
+                step = floor((alt - 2.0)/2.0)
+                if step == 0: 
+                    step = 1
                 goal_lat, goal_long, goal_vertical_dist = \
                     self.landing_site.get_average_lat_long(self.quadcopter)
                 waypt = {'latitude': goal_lat,
                          'longitude': goal_long,
-                         'altitude': alt - 2.0}
+                         'altitude': alt - step}
                 self.go_to_waypoints([waypt], time_to_sleep=8)
                 alt = self.quadcopter.current_rel_alt
                 seen = goal_lat not None
