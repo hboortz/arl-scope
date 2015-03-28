@@ -92,7 +92,7 @@ class LandingSite(object):
                 print("Fiducial seen, appending to list")
             else:
                 print("Averaging landing site GPS, couldn't see fiducial")
-            print("\tTries: %d / %d" %(counter, num_tries))
+            print("\tTries: %d / %d" % (counter, num_tries))
             counter += 1
             rospy.sleep(time_step)
         if len(landing_site_lat) > 0:
