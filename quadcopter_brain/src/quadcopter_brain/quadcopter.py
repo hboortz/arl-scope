@@ -41,21 +41,40 @@ class Quadcopter(object):
         self._command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
         print('Armed')
 
-    def launch(self, max_num_tries=5):
+    def launch(self):
         print('Sending launch command...')
-        successful_launch = False
-        tries = 0
-        while not successful_launch and tries < max_num_tries:
-            res = self._command_service(
-                roscopter.srv.APMCommandRequest.CMD_LAUNCH)
-            successful_launch = res.result
-            tries += 1
-            self._print_launch_status(successful_launch, tries, max_num_tries)
-            rospy.sleep(0.1)
-        return successful_launch
+        self._send_cmd_and_check_for_success("Launch",
+            roscopter.srv.APMCommandRequest.CMD_LAUNCH)
+        print('Landing')
 
-    def _print_launch_status(self, successful_launch, tries, max_num_tries):
-        if successful_launch:
+    def land(self):
+        print('Sending land command...')
+        self._send_cmd_and_check_for_success("Land",
+            roscopter.srv.APMCommandRequest.CMD_LAND)
+        print('Landing')
+
+    def _send_cmd_and_check_for_success(self, launch=False, land=False,
+                                        max_num_tries=5):
+        if launch or land:
+            if launch:
+                cmd_to_send = roscopter.srv.APMCommandRequest.CMD_LAUNCH
+            elif land:
+                cmd_to_send = roscopter.srv.APMCommandRequest.CMD_LAND
+            successful_cmd_send = False
+            tries = 0
+            while not successful_cmd_send and tries < max_num_tries:
+                res = self._command_service(cmd_to_send)
+                successful_cmd_send = res.result
+                tries += 1
+                self._print_launch_status(successful_cmd_send, tries,
+                                          max_num_tries)
+                rospy.sleep(0.1)
+            return successful_cmd_send
+        else:
+            return False
+
+    def _print_launch_status(self, successful_cmd_send, tries, max_num_tries):
+        if successful_cmd_send:
             print("Successfully launched")
         else:
             print("Launch failed")
@@ -63,11 +82,6 @@ class Quadcopter(object):
                 print("Tried %d times and giving up" % (tries))
             else:
                 print("Retrying. Tries: %d" % (tries))
-
-    def land(self):
-        print('Sending land command...')
-        self._command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
-        print('Landing')
 
     def clear_waypoints(self):
         print('Sending clear waypoints command...')
