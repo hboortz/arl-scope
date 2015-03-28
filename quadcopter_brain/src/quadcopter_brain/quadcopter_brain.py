@@ -111,14 +111,14 @@ class QuadcopterBrain(object):
         seen = False
         print "Searching for landing site..."
         while not seen and datetime.datetime.now() < time_end \
-              and not rospy.is_shutdown():
+                and not rospy.is_shutdown():
             site = deepcopy(self.landing_site)
             seen = site.in_view
             rospy.sleep(0.1)
         if seen:
             print "Landing site FOUND: ", site.center
-            return (True,) + \
-                   site.lat_long(self.quadcopter)  # Returns (bool, int, int)
+            return (True, ) + \
+                site.lat_long(self.quadcopter)  # Returns (bool, int, int)
         else:
             print "Landing site was NOT FOUND"
             return False, 0, 0
@@ -137,17 +137,13 @@ class QuadcopterBrain(object):
         alt = -1.0
         if found:
             alt = self.quadcopter.current_rel_alt
-            while alt > 4.0:
+            while goal_lat and alt > 4.0:
                 goal_lat, goal_long, goal_vertical_dist = \
                     self.landing_site.get_average_lat_long(self.quadcopter)
-                if goal_lat is not None:
-                    waypt = {'latitude': goal_lat,
-                             'longitude': goal_long,
-                             'altitude': alt - 2.0}
-                    self.go_to_waypoints([waypt], time_to_sleep=8)
-                    alt = self.quadcopter.current_rel_alt
-                else:
-                    print("Couldn't see fiducial for averaging, landing")
-                    break  # Get out of the approach while loop
+                waypt = {'latitude': goal_lat,
+                         'longitude': goal_long,
+                         'altitude': alt - 2.0}
+                self.go_to_waypoints([waypt], time_to_sleep=8)
+                alt = self.quadcopter.current_rel_alt
         print("Fiducial found: %s, altitude %f" % (found, alt))
         self.land()
