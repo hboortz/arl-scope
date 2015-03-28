@@ -42,9 +42,12 @@ class RCCommand(object):
         if (percent < 0.0) or (percent > 1.0):
             raise ValueError
 
-        return numpy.interp(percent, [0, 1.0], [minimum, maximum])
+        return int(numpy.interp(percent, [0, 1.0], [minimum, maximum]))
 
     def to_roscopter(self):
+        print [self._roll, self._pitch, self._yaw,
+                self._throttle, self._apm_mode, self._gimbal_yaw, 
+                self._gimbal_tilt, self._gimbal_roll]
         return [self._roll, self._pitch, self._yaw,
                 self._throttle, self._apm_mode, self._gimbal_yaw, 
                 self._gimbal_tilt, self._gimbal_roll]
