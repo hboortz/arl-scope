@@ -36,42 +36,50 @@ def still(q):
     rc_command = RCCommand()
     q.send_rc_command(rc_command)
 
+def throttle_up(q):
+    rc_command = RCCommand({"throttle": 0.9})
+    q.send_rc_command(rc_command)
+
+def throttle_down(q):
+    rc_command = RCCommand({"throttle": 0.1})
+    q.send_rc_command(rc_command)
+
 def main():
     q = Quadcopter()
     outside = rospy.get_param("Quadcopter/outside", False)
     if outside:
         q.arm()
-    q.launch()
+    # q.launch()
 
     r = rospy.Rate(0.5)
 
-    print "going forward"
-    forward(q)
+    print "throttle down"
+    throttle_down(q)
+    r.sleep()
+    # print "still"
+    # still(q)
+    # r.sleep()
+    print "throttle up"
+    throttle_up(q)
     r.sleep()
     print "still"
     still(q)
     r.sleep()
-    print "going right"
-    right(q)
-    r.sleep()
-    print "still"
-    still(q)
-    r.sleep()
-    print "going backward"
-    backward(q)
-    r.sleep()
-    print "still"
-    still(q)
-    r.sleep()
-    print "going left"
-    left(q)
-    r.sleep()
-    print "still"
-    still(q)
-    r.sleep()
+    # print "going backward"
+    # backward(q)
+    # r.sleep()
+    # print "still"
+    # still(q)
+    # r.sleep()
+    # print "going left"
+    # left(q)
+    # r.sleep()
+    # print "still"
+    # still(q)
+    # r.sleep()
 
-    print "landing"
-    q.land()
+    # print "landing"
+    # q.land()
 
 
 
