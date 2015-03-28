@@ -37,7 +37,6 @@ class Quadcopter(object):
         # [side tilt, front tilt, throttle, spin, SOMETHING]
         self.rc_cmd = [1800 for i in range(8)]
 
-
     def _position_callback(self, data):
         self.current_lat = PositionTools.mavlink_to_gps(data.latitude)
         self.current_long = PositionTools.mavlink_to_gps(data.longitude)
@@ -53,6 +52,11 @@ class Quadcopter(object):
         print('Sending arm command...')
         self._command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
         print('Armed')
+
+    def return_rc_control(self):
+        print('Returning RC Control...')
+        self._command_service(roscopter.srv.APMCommandRequest.CMD_SET_LOITER)
+        print('RC in control')
 
     def launch(self, max_num_tries=5):
         print('Sending launch command...')
