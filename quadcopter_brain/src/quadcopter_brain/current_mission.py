@@ -15,7 +15,6 @@ def rc_down(q):
     rc_command.set_throttle(0.45)
     q.send_rc_command(rc_command)
 
-
 def forward(q):
     rc_command = RCCommand({'pitch': 0.55})
     q.send_rc_command(rc_command)

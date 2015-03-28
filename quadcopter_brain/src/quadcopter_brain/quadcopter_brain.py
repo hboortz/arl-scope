@@ -64,6 +64,22 @@ class QuadcopterBrain(object):
         self.go_to_waypoints(waypoint_data)
         print("Hover command sent")
 
+    def go_to_waypoint_given_metered_offset(self, delta_east, delta_north,
+                                            dAlt=0, time_to_sleep=15):
+        '''
+        Given a displacement in meters, this function calculates the desired
+        waypoint and tells the quadcopter to go there
+        '''
+        wp_lat, wp_long = \
+            PositionTools.metered_offset(self.quadcopter.current_lat,
+                                         self.quadcopter.current_long,
+                                         delta_east, delta_north)
+        waypoint_data = [{"latitude": wp_lat, "longitude": wp_long,
+                          "altitude": self.quadcopter.current_rel_alt + dAlt}]
+        print("Sending relative waypoint...")
+        self.go_to_waypoints(waypoint_data, time_to_sleep)
+        print("Relative waypoint sent")
+
     def check_reached_waypoint(self, waypoint):
         wait_time = 0
         while not self.has_reached_waypoint and wait_time < 50:
@@ -79,17 +95,17 @@ class QuadcopterBrain(object):
             return "Failed to reach waypoint"
 
     def has_reached_waypoint(self, waypoint):
-        wpt_latitude = PositionTools.mavlink_to_gps(waypoint.latitude)
-        wpt_longitude = PositionTools.mavlink_to_gps(waypoint.longitude)
+        wp_lat = PositionTools.mavlink_to_gps(waypoint.latitude)
+        wp_long = PositionTools.mavlink_to_gps(waypoint.longitude)
 
         error_margin = 3  # in meters
         print "Checking reached:"
         try:
             _, _, dist_from_waypoint = \
-                PositionTools.lat_lon_diff(self.current_lat,
-                                           self.current_long,
-                                           wpt_latitude,
-                                           wpt_longitude)
+                PositionTools.lat_long_diff(self.current_lat,
+                                            self.current_long,
+                                            wp_lat,
+                                            wp_long)
             print "Distance to waypoint: " + str(dist_from_waypoint)
             print "Current pos: %s, %s" % (self.current_lat, self.current_long)
             return dist_from_waypoint < error_margin
@@ -99,23 +115,25 @@ class QuadcopterBrain(object):
     def find_landing_site(self, m_or_lat_lon_preference="lat_lon"):
         '''
         Executes a search behavior for the fiducial, return its placement of
-        the fiducial it has, in tuple lat, lon form
+        the fiducial it has, in (latitude, longitude) form
         TODO: Make a behavior that takes more data to place the site
         '''
         time_limit = datetime.timedelta(minutes=1)
         time_end = datetime.datetime.now() + time_limit
         seen = False
         print "Searching for landing site..."
-        while not seen and datetime.datetime.now() < time_end:
+        while not seen and datetime.datetime.now() < time_end and\
+              not rospy.is_shutdown():
             site = deepcopy(self.landing_site)
             seen = site.in_view
             rospy.sleep(0.1)
         if seen:
             print "Landing site FOUND: ", site.center
-            return (True,) + site.lat_long(self.quadcopter)
+            return (True,) + \
+                   site.lat_long(self.quadcopter)  # Returns (bool, int, int)
         else:
             print "Landing site was NOT FOUND"
-            return False, 0, 0
+            return False, 0, 0  # Returns (bool, int, int)
 
     def land_on_fiducial_simple(self):
         found, goal_lat, goal_long = self.find_landing_site()
@@ -123,20 +141,6 @@ class QuadcopterBrain(object):
             waypt = {'latitude': goal_lat,
                      'longitude': goal_long,
                      'altitude': 1.0}
-            self.go_to_waypoints([waypt], 5.0)
-        self.land()
-
-    def land_on_fiducial_incremental(self):
-        found, _, _ = self.find_landing_site()
-        if found:
-            alt = self.quadcopter.current_rel_alt
-            while alt > 2.0:
-                goal_lat, goal_long = \
-                    self.landing_site.get_average_lat_long(self.quadcopter)
-                waypt = {'latitude': goal_lat,
-                         'longitude': goal_long,
-                         'altitude': alt - 1.0}
-                self.go_to_waypoints([waypt], 5.0)
-                alt = self.quadcopter.current_rel_alt
+            self.go_to_waypoints([waypt])
         self.land()
 
