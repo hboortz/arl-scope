@@ -138,18 +138,29 @@ class QuadcopterBrain(object):
         alt = -1.0
         if found:
             alt = self.quadcopter.current_rel_alt
-            seen = True
-            while seen and alt > 2.0:
-                step = floor((alt - 2.0)/2.0)
-                if step == 0: 
-                    step = 1
-                goal_lat, goal_long, goal_vertical_dist = \
-                    self.landing_site.get_average_lat_long(self.quadcopter)
+            goal_lat, goal_long, goal_vertical_dist = \
+                self.landing_site.get_average_lat_long(self.quadcopter)
+            seen = goal_lat not None
+            while seen:
+                step = floor(alt/2.0)
                 waypt = {'latitude': goal_lat,
                          'longitude': goal_long,
                          'altitude': alt - step}
                 self.go_to_waypoints([waypt], time_to_sleep=8)
                 alt = self.quadcopter.current_rel_alt
+                goal_lat, goal_long, goal_vertical_dist = \
+                    self.landing_site.get_average_lat_long(self.quadcopter)
                 seen = goal_lat not None
+                if not seen and alt > 2.0: # ascend 2 meters and check again
+                    waypt = {'latitude':self.quadcopter.current_lat,
+                             'longitude': self.quadcopter.current_long,
+                             'altitude': alt + 2.0}
+                    self.go_to_waypoints([waypt], time_to_sleep=8)
+                    goal_lat, goal_long, goal_vertical_dist = \
+                        self.landing_site.get_average_lat_long(self.quadcopter)
+                    seen = goal_lat not None
+                    alt = self.quadcopter.current_rel_alt
+
+
         print("Fiducial found: %s, altitude %f" % (found, alt))
         self.land()
