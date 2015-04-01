@@ -1,7 +1,7 @@
 # Suggested filename change - base_station.py or mission_controller.py
 
 from copy import deepcopy
-from math import floor
+from math import ceil
 import datetime
 
 import rospy
@@ -156,6 +156,6 @@ class QuadcopterBrain(object):
                     self.landing_site.get_average_lat_long(self.quadcopter)
                 seen = goal_lat != None
                 alt = self.quadcopter.current_rel_alt
-                
+
         print("Fiducial found: %s, altitude %f" % (found, alt))
         self.land()
