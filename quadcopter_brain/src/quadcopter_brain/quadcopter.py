@@ -36,6 +36,11 @@ class Quadcopter(object):
         self.current_rel_alt =\
             PositionTools.mavlink_to_altitude(data.relative_altitude)
 
+    def clear_waypoints(self):
+        print('Sending clear waypoints command...')
+        self._clear_waypoints_service()
+        print('Cleared waypoints')
+
     def arm(self):
         print('Sending arm command...')
         self._command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
@@ -43,36 +48,41 @@ class Quadcopter(object):
 
     def launch(self, max_num_tries=5):
         print('Sending launch command...')
-        successful_launch = False
-        tries = 0
-        while not successful_launch and tries < max_num_tries:
-            res = self._command_service(
-                roscopter.srv.APMCommandRequest.CMD_LAUNCH)
-            successful_launch = res.result
-            tries += 1
-            self._print_launch_status(successful_launch, tries, max_num_tries)
-            rospy.sleep(0.1)
-        return successful_launch
+        self._send_cmd_and_check_for_success("Launch",
+                                    roscopter.srv.APMCommandRequest.CMD_LAUNCH,
+                                    max_num_tries=max_num_tries)
+        print('Landing')
 
-    def _print_launch_status(self, successful_launch, tries, max_num_tries):
-        if successful_launch:
-            print("Successfully launched")
+    def land(self, max_num_tries=5):
+        print('Sending land command...')
+        self._send_cmd_and_check_for_success("Land",
+                                    roscopter.srv.APMCommandRequest.CMD_LAND,
+                                    max_num_tries=max_num_tries)
+        print('Landing')
+
+    def _send_cmd_and_check_for_success(self, name_of_cmd, cmd_to_send,
+                                        max_num_tries):
+        successful_cmd_send = False
+        tries = 0
+        while not successful_cmd_send and tries < max_num_tries:
+            res = self._command_service(cmd_to_send)
+            successful_cmd_send = res.result
+            tries += 1
+            self._print_cmd_send_status(name_of_cmd, successful_cmd_send,
+                                        tries, max_num_tries)
+            rospy.sleep(0.1)
+        return successful_cmd_send
+
+    def _print_cmd_send_status(self, name_of_cmd, successful_cmd_send, tries,
+                               max_num_tries):
+        if successful_cmd_send:
+            print("Successfully %sed" % (name_of_cmd.lower()))
         else:
-            print("Launch failed")
+            print("%s failed" % (name_of_cmd))
             if tries == max_num_tries:
                 print("Tried %d times and giving up" % (tries))
             else:
                 print("Retrying. Tries: %d" % (tries))
-
-    def land(self):
-        print('Sending land command...')
-        self._command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
-        print('Landing')
-
-    def clear_waypoints(self):
-        print('Sending clear waypoints command...')
-        self._clear_waypoints_service()
-        print('Cleared waypoints')
 
     def send_waypoint(self, waypoint, max_num_tries=5):
         self._set_auto_mode()
@@ -89,14 +99,6 @@ class Quadcopter(object):
 
         return sent_waypoint
 
-    def _set_auto_mode(self):
-        '''
-            TODO: Explain why it is necessary to trigger_auto and
-            adjust_throttle - b/c ROSCOPTER is dumb
-        '''
-        self._trigger_auto_service()
-        self._adjust_throttle_service()
-
     def _print_send_waypoint_status(self, waypoint, sent_waypoint,
                                     tries, max_num_tries):
         if sent_waypoint:
@@ -109,3 +111,11 @@ class Quadcopter(object):
                 print("Tried %d times and giving up" % (tries))
             else:
                 print("Retrying. Tries: %d" % (tries))
+
+    def _set_auto_mode(self):
+        '''
+            TODO: Explain why it is necessary to trigger_auto and
+            adjust_throttle - b/c ROSCOPTER is dumb
+        '''
+        self._trigger_auto_service()
+        self._adjust_throttle_service()
