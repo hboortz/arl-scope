@@ -6,6 +6,8 @@
 # Python extraneous crap
 *.pyc
 *.py~
+apriltags/src/__pycache__
+
 # Compiled Object files
 *.slo
 *.lo
