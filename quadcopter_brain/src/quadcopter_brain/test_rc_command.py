@@ -22,6 +22,9 @@ class TestRCCommand(unittest.TestCase):
         true_command = [1900, 1900, 1900, 1900, 1146, 65535, 65535, 65535]
         self.assertEqual(roscopter_command, true_command)
 
+        for pwm in roscopter_command:
+            self.assertEqual(type(pwm), int)
+
     def test_compute_pwm(self):
         command = rc_command.RCCommand()
 
