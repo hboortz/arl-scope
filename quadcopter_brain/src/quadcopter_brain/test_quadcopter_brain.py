@@ -35,6 +35,10 @@ class TestQuadcopterBrain(unittest.TestCase):
         go_to_waypoints_mock.assert_called_once_with(waypoint_data)
         self.quadcopter_mock.land.assert_called_once_with()
 
+    def test_hover_in_place(self):
+        # TODO(Eric) Put a test here
+        pass
+
     @mock.patch('quadcopter_brain.QuadcopterBrain.go_to_waypoints')
     def test_go_to_waypoint_given_metered_offset(self, go_to_waypoint_mock):
         delta_east = 10  # Meters
@@ -79,6 +83,18 @@ class TestQuadcopterBrain(unittest.TestCase):
 
         wait_time = go_to_waypoint_mock.call_args[0][1]
         self.assertAlmostEqual(wait_time, 10)
+
+    def test_find_landing_site(self):
+        # TODO(Eric) Put a test here
+        pass
+
+    def test_land_on_fiducial_simple(self):
+        # TODO(Eric) Put a test here
+        pass
+
+    def test_land_on_fiducial_incremental(self):
+        # TODO(Eric) Put a test here
+        pass
 
 
 if __name__ == '__main__':
