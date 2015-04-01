@@ -16,19 +16,19 @@ def rc_down(q):
     q.send_rc_command(rc_command)
 
 def forward(q):
-    rc_command = RCCommand({'pitch': 0.55})
+    rc_command = RCCommand({'pitch': 0.6})
     q.send_rc_command(rc_command)
 
 def backward(q):
-    rc_command = RCCommand({'pitch': 0.45})
+    rc_command = RCCommand({'pitch': 0.4})
     q.send_rc_command(rc_command)
 
 def right(q):
-    rc_command = RCCommand({'roll': 0.55})
+    rc_command = RCCommand({'roll': 0.6})
     q.send_rc_command(rc_command)
 
 def left(q):
-    rc_command = RCCommand({'roll': 0.45})
+    rc_command = RCCommand({'roll': 0.4})
     q.send_rc_command(rc_command)
 
 def still(q):
@@ -36,81 +36,55 @@ def still(q):
     q.send_rc_command(rc_command)
 
 def throttle_up(q):
-    rc_command = RCCommand({"throttle": 0.9})
+    rc_command = RCCommand({"throttle": 0.6})
     q.send_rc_command(rc_command)
 
 def throttle_down(q):
-    rc_command = RCCommand({"throttle": 0.1})
+    rc_command = RCCommand({"throttle": 0.4})
     q.send_rc_command(rc_command)
 
 def main():
+
+    import time
+
     q = Quadcopter()
     outside = rospy.get_param("Quadcopter/outside", False)
     if outside:
         q.arm()
-    # q.launch()
+    q.launch()
 
     r = rospy.Rate(0.5)
 
-    print "throttle down"
-    throttle_down(q)
-    r.sleep()
-    # print "still"
-    # still(q)
-    # r.sleep()
-    print "throttle up"
-    throttle_up(q)
+    print "forward"
+    backward(q)
     r.sleep()
     print "still"
     still(q)
+    time.sleep(2)
+
+    print "right"
+    right(q)
     r.sleep()
-    # print "going backward"
-    # backward(q)
-    # r.sleep()
-    # print "still"
-    # still(q)
-    # r.sleep()
-    # print "going left"
-    # left(q)
-    # r.sleep()
-    # print "still"
-    # still(q)
-    # r.sleep()
+    print "still"
+    still(q)
+    time.sleep(2)
 
-    # print "landing"
-    # q.land()
+    print "backward"
+    forward(q)
+    r.sleep()
+    print "still"
+    still(q)
+    time.sleep(2)
 
+    print "left"
+    left(q)
+    r.sleep()
+    print "still"
+    still(q)
+    time.sleep(2)
+   
 
-
-    # carl = QuadcopterBrain()
-
-    # # Quadcopter node (carl) must be initialized before get_param will work
-    # outside = rospy.get_param("Quadcopter/outside", False)
-    # print("In outside mode: %s." % (outside),
-    #       "If incorrect, add _outside:=True to the rosrun call")
-
-    # carl.quadcopter.clear_waypoints()
-    # print("Sleeping for 3 seconds...")
-    # rospy.sleep(3)
-
-    # landing_waypoints = WaypointTools.open_waypoint_file(
-    #     "landing_waypoints_2-11-15.json")
-    # great_lawn_waypoints = WaypointTools.open_waypoint_file(
-    #     "great_lawn_waypoints.json")
-
-    # if outside:
-    #     carl.arm()
-    # carl.launch()
-    # # carl.go_to_waypoints([great_lawn_waypoints["B"],
-    # #                       great_lawn_waypoints["A"],
-    # #                       great_lawn_waypoints["C"]])
-    # # carl.rc_land_on_fiducial()
-
-
-
-    # rc
-
-    # carl.land()
+    q.return_rc_control()
 
 
 def print_position_data(quadcopter):
