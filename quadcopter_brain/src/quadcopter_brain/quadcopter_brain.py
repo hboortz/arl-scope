@@ -1,7 +1,7 @@
 # Suggested filename change - base_station.py or mission_controller.py
 
 from copy import deepcopy
-from math import floor
+from math import ceil
 import datetime
 
 import rospy
@@ -137,21 +137,22 @@ class QuadcopterBrain(object):
         found, _, _ = self.find_landing_site()
         alt = -1.0
         if found:
-            alt = self.quadcopter.current_rel_alt
             goal_lat, goal_long, goal_vertical_dist = \
                 self.landing_site.get_average_lat_long(self.quadcopter)
             seen = goal_lat != None
-            while seen:
-                step = floor(alt/2.0)
+            alt = self.quadcopter.current_rel_alt
+            while seen and alt>2.5:
+                step = alt/2.0
                 waypt = {'latitude': goal_lat,
                          'longitude': goal_long,
-                         'altitude': alt - step}
+                         'altitude': ceil(alt - step)}
                 self.go_to_waypoints([waypt], time_to_sleep=8)
-                alt = self.quadcopter.current_rel_alt
                 goal_lat, goal_long, goal_vertical_dist = \
                     self.landing_site.get_average_lat_long(self.quadcopter)
                 seen = goal_lat != None
-                if not seen and alt > 2.0: # ascend 2 meters and check again
+                alt = self.quadcopter.current_rel_alt
+                if not seen and alt > 2.5: # ascend 2 meters and check again
+                    print "fiducial not seen, reascending"
                     waypt = {'latitude':self.quadcopter.current_lat,
                              'longitude': self.quadcopter.current_long,
                              'altitude': alt + 2.0}
@@ -160,6 +161,7 @@ class QuadcopterBrain(object):
                         self.landing_site.get_average_lat_long(self.quadcopter)
                     seen = goal_lat != None
                     alt = self.quadcopter.current_rel_alt
+
 
 
         print("Fiducial found: %s, altitude %f" % (found, alt))
