@@ -140,7 +140,7 @@ class QuadcopterBrain(object):
             alt = self.quadcopter.current_rel_alt
             goal_lat, goal_long, goal_vertical_dist = \
                 self.landing_site.get_average_lat_long(self.quadcopter)
-            seen = goal_lat not None
+            seen = goal_lat != None
             while seen:
                 step = floor(alt/2.0)
                 waypt = {'latitude': goal_lat,
@@ -150,7 +150,7 @@ class QuadcopterBrain(object):
                 alt = self.quadcopter.current_rel_alt
                 goal_lat, goal_long, goal_vertical_dist = \
                     self.landing_site.get_average_lat_long(self.quadcopter)
-                seen = goal_lat not None
+                seen = goal_lat != None
                 if not seen and alt > 2.0: # ascend 2 meters and check again
                     waypt = {'latitude':self.quadcopter.current_lat,
                              'longitude': self.quadcopter.current_long,
@@ -158,7 +158,7 @@ class QuadcopterBrain(object):
                     self.go_to_waypoints([waypt], time_to_sleep=8)
                     goal_lat, goal_long, goal_vertical_dist = \
                         self.landing_site.get_average_lat_long(self.quadcopter)
-                    seen = goal_lat not None
+                    seen = goal_lat != None
                     alt = self.quadcopter.current_rel_alt
 
 
