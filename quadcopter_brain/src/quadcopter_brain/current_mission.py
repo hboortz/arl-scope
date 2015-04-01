@@ -5,30 +5,21 @@ import rospy
 from quadcopter import Quadcopter
 from rc_command import RCCommand
 
-def rc_up(q):
-    rc_command = RCCommand()
-    rc_command.set_throttle(0.55)
-    q.send_rc_command(rc_command)
-
-def rc_down(q):
-    rc_command = RCCommand()
-    rc_command.set_throttle(0.45)
-    q.send_rc_command(rc_command)
 
 def forward(q):
-    rc_command = RCCommand({'pitch': 0.6})
+    rc_command = RCCommand({'pitch': 0.9})
     q.send_rc_command(rc_command)
 
 def backward(q):
-    rc_command = RCCommand({'pitch': 0.4})
+    rc_command = RCCommand({'pitch': 0.1})
     q.send_rc_command(rc_command)
 
 def right(q):
-    rc_command = RCCommand({'roll': 0.6})
+    rc_command = RCCommand({'roll': 0.9})
     q.send_rc_command(rc_command)
 
 def left(q):
-    rc_command = RCCommand({'roll': 0.4})
+    rc_command = RCCommand({'roll': 0.1})
     q.send_rc_command(rc_command)
 
 def still(q):
@@ -36,52 +27,55 @@ def still(q):
     q.send_rc_command(rc_command)
 
 def throttle_up(q):
-    rc_command = RCCommand({"throttle": 0.6})
+    rc_command = RCCommand({"throttle": 0.9})
     q.send_rc_command(rc_command)
 
 def throttle_down(q):
-    rc_command = RCCommand({"throttle": 0.4})
+    rc_command = RCCommand({"throttle": 0.1})
     q.send_rc_command(rc_command)
 
 def main():
-
     import time
 
     q = Quadcopter()
     outside = rospy.get_param("Quadcopter/outside", False)
     if outside:
         q.arm()
-    q.launch()
+    #q.launch()
 
     r = rospy.Rate(0.5)
 
     print "forward"
     backward(q)
-    r.sleep()
-    print "still"
-    still(q)
-    time.sleep(2)
+    # r.sleep()
+    # print "still"
+    # still(q)
+    time.sleep(3)
 
     print "right"
     right(q)
-    r.sleep()
-    print "still"
-    still(q)
-    time.sleep(2)
+    # r.sleep()
+    # print "still"
+    # still(q)
+    time.sleep(3)
 
     print "backward"
     forward(q)
-    r.sleep()
-    print "still"
-    still(q)
-    time.sleep(2)
+    # r.sleep()
+    # print "still"
+    # still(q)
+    time.sleep(3)
 
     print "left"
     left(q)
-    r.sleep()
+    # r.sleep()
+    # print "still"
+    # still(q)
+    time.sleep(3)
+
     print "still"
     still(q)
-    time.sleep(2)
+    time.sleep(3)
    
 
     q.return_rc_control()

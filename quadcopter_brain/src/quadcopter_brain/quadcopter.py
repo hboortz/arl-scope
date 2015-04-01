@@ -27,7 +27,7 @@ class Quadcopter(object):
         rospy.Subscriber("/send_rc", roscopter.msg.RC,
                          self._send_rc_callback)
         self.rc_pub = rospy.Publisher('/send_rc', roscopter.msg.RC,
-                                      queue_size=10)
+                                      queue_size=10, latch=True)
 
         self.current_lat = 0.0
         self.current_long = 0.0
