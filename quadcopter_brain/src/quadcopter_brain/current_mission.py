@@ -24,7 +24,10 @@ def main():
     if outside:
         carl.arm()
     carl.launch()
-    carl.land_on_fiducial_incremental()
+    carl.go_to_waypoints([great_lawn_waypoints['A'],
+                          great_lawn_waypoints['B5'],
+                          great_lawn_waypoints['C10']])
+    carl.land()
 
 
 def print_position_data(quadcopter):
