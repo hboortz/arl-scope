@@ -37,13 +37,13 @@ class TestQuadcopterBrain(unittest.TestCase):
 
     @mock.patch('quadcopter_brain.QuadcopterBrain.go_to_waypoints')
     def test_go_to_waypoint_given_metered_offset(self, go_to_waypoint_mock):
-        dEast = 10  # Meters
-        dNorth = -10  # Meters
+        delta_east = 10  # Meters
+        delta_north = -10  # Meters
         self.quadcopter_brain.quadcopter.current_lat = 42.0
         self.quadcopter_brain.quadcopter.current_long = -71.0
         self.quadcopter_brain.quadcopter.current_rel_alt = 4.5
-        self.quadcopter_brain.go_to_waypoint_given_metered_offset(dEast, dNorth)
-
+        self.quadcopter_brain.go_to_waypoint_given_metered_offset(delta_east,
+                                                                  delta_north)
         called_waypoint = go_to_waypoint_mock.call_args[0][0][0]
         actual_waypoint = {"latitude": 41.999912, "longitude": -70.999877,
                            "altitude": 4.5}  # Taken from google maps
@@ -58,13 +58,14 @@ class TestQuadcopterBrain(unittest.TestCase):
         wait_time = go_to_waypoint_mock.call_args[0][1]
         self.assertAlmostEqual(wait_time, 15)
 
-        dEast = -10  # Meters
-        dNorth = 10  # Meters
-        dAlt = 2  # Meters
-        time_to_sleep = 10  # Seconds
-        self.quadcopter_brain.go_to_waypoint_given_metered_offset(dEast, dNorth,
-                                                           dAlt, time_to_sleep)
-
+        delta_east = -10  # Meters
+        delta_north = 10  # Meters
+        delta_alt = 2  # Meters
+        sleep_time = 10  # Seconds
+        self.quadcopter_brain.go_to_waypoint_given_metered_offset(delta_east,
+                                                                  delta_north,
+                                                                  delta_alt,
+                                                                  sleep_time)
         called_waypoint = go_to_waypoint_mock.call_args[0][0][0]
         actual_waypoint = {"latitude": 42, "longitude": -71,
                            "altitude": 6.5}  # Taken from google maps

@@ -7,9 +7,9 @@ import matplotlib.pyplot as plt
 test_data = ['1-HighBandwidthCompassResults.json',
              '2-HighBandwidthAltitudeResults.json',
              '3-LowLatencyCompassResults.json']
-ylabels = {test_data[0]: 'Compass (Degrees)',
-           test_data[1]: 'Relative altitude (mm)',
-           test_data[2]: 'Compass (Degrees)'}
+ylabels = {test_data[0]: 'Reported Compass (Degrees)',
+           test_data[1]: 'Reported Relative altitude (mm)',
+           test_data[2]: 'Reported Compass (Degrees)'}
 titles = {test_data[0]: 'High Bandwidth Compass Lag (Paul in the O)',
           test_data[1]: 'High Bandwidth Altitude Lag (Paul in the O)',
           test_data[2]: 'Low-Latency Compass Lag (Paul in the O)'}
@@ -23,7 +23,7 @@ def plot_data(data, index, dataset, compass):
     plt.plot(time, actual, '.', markersize=15, color=colors[index])
     plt.plot(time, actual, color=colors[index])
     plt.xlabel('Time (seconds)')
-    plt.ylabel(ylabels[dataset])
+    plt.ylabel('Actual Motion (0: start, 1: end of travel)')
     plt.axis([0, 3, -0.1, 1.1])
     plt.subplot(2, 1, 2)
     plt.plot(time, measured, '.', markersize=15, color=colors[index])
