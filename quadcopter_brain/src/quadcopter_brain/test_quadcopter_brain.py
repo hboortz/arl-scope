@@ -131,10 +131,10 @@ class TestQuadcopterBrain(unittest.TestCase):
     def test_land_on_fiducial_incremental(self, find_mock, go_to_mock):
         pass
         # Tests not found case
-        # find_mock.return_value = False, 0, 0
-        # self.quadcopter_brain.land_on_fiducial_incremental()
-        # assert not self.landing_site_mock.get_average_lat_long.called
-        # self.quadcopter_mock.land.assert_called_once_with()
+        find_mock.return_value = False, 0, 0
+        self.quadcopter_brain.land_on_fiducial_incremental()
+        assert not self.landing_site_mock.get_average_lat_long.called
+        self.quadcopter_mock.land.assert_called_once_with()
 
         # Tests found, not seen AND too high case
 
