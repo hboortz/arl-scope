@@ -158,6 +158,6 @@ class QuadcopterBrain(object):
                          'altitude': alt - 2.0}
                 self.go_to_waypoints([waypt], time_to_sleep=8)
                 alt = self.quadcopter.current_rel_alt
-                seen = goal_lat not None
+                seen = goal_lat != None
         print("Fiducial found: %s, altitude %f" % (found, alt))
         self.land()

@@ -2,6 +2,7 @@
 
 import unittest
 
+import mock
 from geometry_msgs.msg import Pose, Point
 
 from quadcopter import Quadcopter
@@ -10,7 +11,8 @@ from position_tools import PositionTools
 
 
 class TestLandingSite(unittest.TestCase):
-    def setUp(self):
+    @mock.patch('rospy.init_node')
+    def setUp(self, init_node_mock):
         self.landing_site = LandingSite()
         self.quadcopter = Quadcopter()
         self.quadcopter.current_lat = 42.0
@@ -24,7 +26,7 @@ class TestLandingSite(unittest.TestCase):
         self.assertAlmostEqual(self.quadcopter.current_lat, lat)
         self.assertAlmostEqual(self.quadcopter.current_long, lon)
 
-    def test_landing_site_lat_lon_different_position(self):
+    def test_landing_site_lat_long_different_position(self):
         # Format used is [centerX, centerY, heading, dX, dY]
         tests = [[6, -9, 0, 6, 9],
                  [6, -9, 180, -6, -9],
