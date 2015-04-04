@@ -82,7 +82,7 @@ class TestQuadcopterBrain(unittest.TestCase):
         wait_time = go_to_waypoint_mock.call_args[0][1]
         self.assertAlmostEqual(wait_time, 10)
 
-    # KYLLLLLLEEEEEE
+    # # Ask Kyle what's up
     # @mock.patch('rospy.sleep')
     # def test_find_landing_site(self, sleep_mock):
     #     # Test what happens when seen
