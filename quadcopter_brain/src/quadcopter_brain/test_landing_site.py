@@ -2,6 +2,7 @@
 
 import unittest
 
+import mock
 from geometry_msgs.msg import Pose, Point
 
 from quadcopter import Quadcopter
@@ -10,7 +11,8 @@ from position_tools import PositionTools
 
 
 class TestLandingSite(unittest.TestCase):
-    def setUp(self):
+    @mock.patch('rospy.init_node')
+    def setUp(self, init_node_mock):
         self.landing_site = LandingSite()
         self.quadcopter = Quadcopter()
         self.quadcopter.current_lat = 42.0
@@ -20,11 +22,11 @@ class TestLandingSite(unittest.TestCase):
     def test_landing_site_lat_lon_same_position(self):
         self.landing_site.center = Pose(position=Point(x=0, y=0, z=6))
         self.quadcopter.heading = 0
-        lat, lon = self.landing_site.lat_lon(self.quadcopter)
+        lat, lon = self.landing_site.lat_long(self.quadcopter)
         self.assertAlmostEqual(self.quadcopter.current_lat, lat)
         self.assertAlmostEqual(self.quadcopter.current_long, lon)
 
-    def test_landing_site_lat_lon_different_position(self):
+    def test_landing_site_lat_long_different_position(self):
         # Format used is [centerX, centerY, heading, dX, dY]
         tests = [[6, -9, 0, 6, 9],
                  [6, -9, 180, -6, -9],
@@ -35,9 +37,9 @@ class TestLandingSite(unittest.TestCase):
                                                            y=test[1],
                                                            z=6))
             self.quadcopter.heading = test[2]
-            lat, lon = self.landing_site.lat_lon(self.quadcopter)
+            lat, lon = self.landing_site.lat_long(self.quadcopter)
             xErr, yErr, dist =\
-                PositionTools.lat_lon_diff(self.quadcopter.current_lat,
+                PositionTools.lat_long_diff(self.quadcopter.current_lat,
                                            self.quadcopter.current_long,
                                            lat, lon)
             # 1 mm (3 decimals) is a reasonable margin of error
@@ -51,7 +53,7 @@ class TestLandingSite(unittest.TestCase):
         '''
         self.landing_site.center = Pose(position=Point(x=1000, y=0, z=6))
 
-        lat, lon = self.landing_site.lat_lon(self.quadcopter)
+        lat, lon = self.landing_site.lat_long(self.quadcopter)
         self.assertAlmostEqual(self.quadcopter.current_lat, lat, 3)
         self.assertGreater(lon, self.quadcopter.current_long)
 
@@ -62,7 +64,7 @@ class TestLandingSite(unittest.TestCase):
         '''
         self.landing_site.center = Pose(position=Point(x=0, y=1000, z=6))
 
-        lat, lon = self.landing_site.lat_lon(self.quadcopter)
+        lat, lon = self.landing_site.lat_long(self.quadcopter)
         self.assertLess(lat, self.quadcopter.current_lat)
         self.assertAlmostEqual(self.quadcopter.current_long, lon, 3)
 
@@ -73,7 +75,7 @@ class TestLandingSite(unittest.TestCase):
         '''
         self.landing_site.center = Pose(position=Point(x=-1000, y=0, z=6))
 
-        lat, lon = self.landing_site.lat_lon(self.quadcopter)
+        lat, lon = self.landing_site.lat_long(self.quadcopter)
         self.assertAlmostEqual(self.quadcopter.current_lat, lat, 3)
         self.assertLess(lon, self.quadcopter.current_long)
 
@@ -84,7 +86,7 @@ class TestLandingSite(unittest.TestCase):
         '''
         self.landing_site.center = Pose(position=Point(x=0, y=-1000, z=6))
 
-        lat, lon = self.landing_site.lat_lon(self.quadcopter)
+        lat, lon = self.landing_site.lat_long(self.quadcopter)
         self.assertGreater(lat, self.quadcopter.current_lat)
         self.assertAlmostEqual(lon, self.quadcopter.current_long, 3)
 
