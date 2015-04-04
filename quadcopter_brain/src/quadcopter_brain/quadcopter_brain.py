@@ -7,8 +7,8 @@ import rospy
 
 from position_tools import PositionTools
 from waypoint_tools import WaypointTools
-from landing_site import LandingSite
 import quadcopter
+import landing_site
 
 
 class QuadcopterBrain(object):
@@ -17,7 +17,7 @@ class QuadcopterBrain(object):
     '''
     def __init__(self):
         self.quadcopter = quadcopter.Quadcopter()
-        self.landing_site = LandingSite()
+        self.landing_site = landing_site.LandingSite()
 
     def arm(self):
         self.quadcopter.arm()
@@ -67,13 +67,13 @@ class QuadcopterBrain(object):
         self.go_to_waypoints(waypoint_data, time_to_sleep)
         rospy.loginfo("Relative waypoint sent")
 
-    def find_landing_site(self):
+    def find_landing_site(self, wait_seconds=60):
         '''
         Executes a search behavior for the fiducial, return its placement of
         the fiducial it has, in (latitude, longitude) form
         TODO: Make a behavior that takes more data to place the site
         '''
-        time_limit = datetime.timedelta(minutes=1)
+        time_limit = datetime.timedelta(minutes=wait_seconds)
         time_end = datetime.datetime.now() + time_limit
         seen = False
         rospy.loginfo("Searching for landing site, 1 min...")
