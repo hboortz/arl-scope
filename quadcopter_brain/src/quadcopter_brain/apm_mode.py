@@ -1,3 +1,3 @@
 class APMMode(object):
-    LOITER = 1551
+    LOITER = 1581
     STABILIZE = 1146
