@@ -83,5 +83,24 @@ class TestQuadcopterBrain(unittest.TestCase):
         self.assertAlmostEqual(wait_time, 10)
 
 
+    @mock.patch('quadcopter_brain.QuadcopterBrain.go_to_waypoints')
+    @mock.patch('quadcopter_brain.QuadcopterBrain.find_landing_site')
+    def test_land_on_fiducial_incremental(self, find_mock, go_to_mock):
+        pass
+        # Tests not found case
+        # find_mock.return_value = False, 0, 0
+        # self.quadcopter_brain.land_on_fiducial_incremental()
+        # assert not self.landing_site_mock.get_average_lat_long.called
+        # self.quadcopter_mock.land.assert_called_once_with()
+
+        # Tests found, not seen AND too high case
+
+        # Tests found, not seen AND low enough case
+
+        # Tests a successful run
+
+        # Tests an unsuccessful run
+
+
 if __name__ == '__main__':
     unittest.main()
