@@ -1,5 +1,7 @@
 import numpy
 
+from apm_mode import APMMode
+
 
 class RCCommand(object):
     def __init__(self, parameters={}):
@@ -33,7 +35,7 @@ class RCCommand(object):
             self._throttle_min_pwm,
             self._throttle_max_pwm)
 
-        self._apm_mode = 1146
+        self._apm_mode = APMMode.LOITER
         self._gimbal_yaw = self._NO_CHANGE
         self._gimbal_tilt = self._NO_CHANGE
         self._gimbal_roll = self._NO_CHANGE
@@ -45,9 +47,6 @@ class RCCommand(object):
         return int(numpy.interp(percent, [0, 1.0], [minimum, maximum]))
 
     def to_roscopter(self):
-        print [self._roll, self._pitch, self._throttle,
-               self._yaw, self._apm_mode, self._gimbal_yaw, 
-               self._gimbal_tilt, self._gimbal_roll]
         return [self._roll, self._pitch, self._throttle, 
                 self._yaw, self._apm_mode, self._gimbal_yaw,
                 self._gimbal_tilt, self._gimbal_roll]
