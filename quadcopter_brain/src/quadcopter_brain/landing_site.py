@@ -50,6 +50,7 @@ class LandingSite(object):
                                    y=np.mean(y_coords),
                                    z=np.mean(z_coords)))
 
+
     def lat_long(self, copter):
         '''
         Latitude, longitude of the landing site
@@ -89,10 +90,10 @@ class LandingSite(object):
                 landing_site_lat.append(current_lat)
                 landing_site_long.append(current_long)
                 landing_site_altitude.append(self.center.position.z)
-                print("Fiducial seen, appending to list")
+                rospy.loginfo("Fiducial seen, appending to list")
             else:
-                print("Averaging landing site GPS, couldn't see fiducial")
-            print("\tTries: %d / %d" %(counter, num_tries))
+                rospy.loginfo("Average land site GPS, couldn't see fiducial")
+            rospy.loginfo("\tTries: %d / %d", counter, num_tries)
             counter += 1
             rospy.sleep(time_step)
         if len(landing_site_lat) > 0:
