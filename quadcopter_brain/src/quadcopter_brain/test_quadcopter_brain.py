@@ -82,28 +82,28 @@ class TestQuadcopterBrain(unittest.TestCase):
         wait_time = go_to_waypoint_mock.call_args[0][1]
         self.assertAlmostEqual(wait_time, 10)
 
-    # # Ask Kyle what's up
-    # @mock.patch('rospy.sleep')
-    # def test_find_landing_site(self, sleep_mock):
-    #     # Test what happens when seen
-    #     self.landing_site_mock.in_view = True
-    #     self.landing_site_mock.lat_long.result = (-42, 71)
-    #     res = self.quadcopter_brain.find_landing_site()
-    #     self.assertEqual(res, (True, -42, 71))
+    @mock.patch('rospy.sleep')
+    def test_find_landing_site(self, sleep_mock):
+        # Test what happens when seen
+        self.landing_site_mock.in_view = True
+        self.landing_site_mock.lat_long.return_value = (-42, 71)
+        res = self.quadcopter_brain.find_landing_site()
+        self.assertEqual(res, (True, -42, 71))
 
-    #     # Test what happens when not seen
-    #     self.landing_site_mock.in_view = False
-    #     self.landing_site_mock.lat_long.result = (-42, 71)
-    #     res = self.quadcopter_brain.find_landing_site()
-    #     self.assertEqual(res, (False, 0, 0))
+        # Test what happens when not seen
+        self.landing_site_mock.in_view = False
+        self.landing_site_mock.lat_long.return_value = (-42, 71)
+        res = self.quadcopter_brain.find_landing_site(1)
+        self.assertEqual(res, (False, 0, 0))
 
-    #     # Test what happens when seen after a few tries
-    #     in_view_mock = mock.PropertyMock(side_effect=[False, False, True])
-    #     type(self.landing_site).in_view = in_view_mock
-    #     res = self.quadcopter_brain.find_landing_site()
-    #     expected = [mock.call(0.1), mock.call(0.1)]
-    #     self.assertEqual(res, (True, -42, 71))
-    #     self.assertEqual(sleep_mock.call_args_list, expected)
+        # Test what happens when seen after a few tries
+        # in_view_mock = mock.PropertyMock(side_effect=[False, False, True])
+        # type(self.landing_site_mock).in_view = in_view_mock
+        # self.landing_site_mock.lat_long.return_value = (-42, 71)
+        # res = self.quadcopter_brain.find_landing_site()
+        # expected_sleep_calls = [mock.call(0.1), mock.call(0.1)]
+        # self.assertEqual(sleep_mock.call_args_list, expected_sleep_calls)
+        # self.assertEqual(res, (True, -42, 71))
 
     @mock.patch('quadcopter_brain.QuadcopterBrain.go_to_waypoints')
     @mock.patch('quadcopter_brain.QuadcopterBrain.find_landing_site')

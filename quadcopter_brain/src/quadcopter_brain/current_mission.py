@@ -3,7 +3,9 @@
 import rospy
 
 from quadcopter import Quadcopter
+from quadcopter_brain import QuadcopterBrain
 from rc_command import RCCommand
+from waypoint_tools import WaypointTools
 
 
 def print_position_data(quadcopter):
@@ -30,14 +32,15 @@ def main():
     great_lawn_waypoints = WaypointTools.open_waypoint_file(
         "great_lawn_waypoints.json")
 
-    if outside:
-        carl.arm()
-    carl.launch()
-    # carl.rc_square_dance()
-    carl.go_to_waypoints([great_lawn_waypoints['A'],
-                          great_lawn_waypoints['B5'],
-                          great_lawn_waypoints['C10']])
-    carl.land()
+    # if outside:
+    #     carl.arm()
+    # carl.launch()
+    carl.rc_square_dance()
+    carl.rc_land_on_fiducial()
+    # carl.go_to_waypoints([great_lawn_waypoints['A'],
+    #                       great_lawn_waypoints['B5'],
+    #                       great_lawn_waypoints['C10']])
+    # carl.land()
 
 
 if __name__ == '__main__':

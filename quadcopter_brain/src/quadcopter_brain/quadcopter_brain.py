@@ -169,7 +169,7 @@ class QuadcopterBrain(object):
         the fiducial it has, in (latitude, longitude) form
         TODO: Make a behavior that takes more data to place the site
         '''
-        time_limit = datetime.timedelta(minutes=wait_seconds)
+        time_limit = datetime.timedelta(seconds=wait_seconds)
         time_end = datetime.datetime.now() + time_limit
         seen = False
         rospy.loginfo("Searching for landing site, 1 min...")
@@ -178,6 +178,7 @@ class QuadcopterBrain(object):
             site = deepcopy(self.landing_site)
             seen = site.in_view
             rospy.sleep(0.1)
+
         if seen:
             rospy.loginfo("Landing site FOUND: %s", str(site.center))
             return (True, ) + \
