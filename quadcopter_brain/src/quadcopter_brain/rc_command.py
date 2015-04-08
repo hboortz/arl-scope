@@ -14,8 +14,8 @@ class RCCommand(object):
             self._roll_min_pwm,
             self._roll_max_pwm)
 
-        self._pitch_min_pwm = 1100
-        self._pitch_max_pwm = 1900
+        self._pitch_min_pwm = 1900
+        self._pitch_max_pwm = 1100
         self._pitch = self.compute_pwm(
             parameters.get("pitch", 0.5),
             self._pitch_min_pwm,
