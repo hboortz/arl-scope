@@ -70,12 +70,13 @@ class QuadcopterBrain(object):
         Given a displacement in meters, this function calculates the desired
         waypoint and tells the quadcopter to go there
         '''
+        location = self.quadcopter.pose_at(time.time())
         wp_lat, wp_long = \
-            PositionTools.metered_offset(self.quadcopter.current_lat,
-                                         self.quadcopter.current_long,
+            PositionTools.metered_offset(location.latitude,
+                                         location.longitude,
                                          delta_east, delta_north)
         waypoint_data = [{"latitude": wp_lat, "longitude": wp_long,
-                          "altitude": self.quadcopter.current_rel_alt + dAlt}]
+                          "altitude": location.relative_altitude + dAlt}]
         rospy.loginfo("Sending relative waypoint...")
         self.go_to_waypoints(waypoint_data, time_to_sleep)
         rospy.loginfo("Relative waypoint sent")
@@ -136,7 +137,8 @@ class QuadcopterBrain(object):
         found, _, _ = self.find_landing_site()
         alt = -1.0
         if found:
-            alt = self.quadcopter.current_rel_alt
+            location = self.quadcopter.pose_at(time.time())
+            alt = location.relative_altitude
             seen = True
             while seen and alt > 4.0:
                 goal_lat, goal_long, goal_vertical_dist = \
@@ -145,7 +147,8 @@ class QuadcopterBrain(object):
                          'longitude': goal_long,
                          'altitude': alt - 2.0}
                 self.go_to_waypoints([waypt], time_to_sleep=8)
-                alt = self.quadcopter.current_rel_alt
+                location = self.quadcopter.pose_at(time.time())
+                alt = location.relative_altitude
                 seen = goal_lat is not None
         rospy.loginfo("Fiducial found: %s, altitude %f", found, alt)
         self.land()
