@@ -93,7 +93,6 @@ class QuadcopterBrain(object):
                 dz = self.landing_site.center.position.z
                 dx = self.landing_site.center.position.x
                 dy = self.landing_site.center.position.y
-                print("dx: ", dx, "\tdy: ", dy, "\tdz: ", dz)
                 self.rc_proportionally_navigate(dx, dy, dz)
 
             rc_command = RCCommand({"throttle": 0.25})
@@ -119,9 +118,8 @@ class QuadcopterBrain(object):
         y_range = 7
 
         x_diff = self.rc_conversion(dx)
-        y_diff = self.rc_conversion(-dy)
-        z_diff = self.descent_rc_conversion(dx, -dy)
-        print("x_diff: ", x_diff, "\ty_diff: ", y_diff, "\tz_diff: ", z_diff)
+        y_diff = self.rc_conversion(dy)
+        z_diff = self.descent_rc_conversion(dx, dy)
 
         self.rc_proportional_command(x_diff, y_diff, z_diff)
 
