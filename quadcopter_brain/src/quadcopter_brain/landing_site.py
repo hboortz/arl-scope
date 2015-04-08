@@ -50,6 +50,7 @@ class LandingSite(object):
                                    y=np.mean(y_coords),
                                    z=np.mean(z_coords)))
 
+
     def lat_long(self, copter):
         '''
         Latitude, longitude of the landing site

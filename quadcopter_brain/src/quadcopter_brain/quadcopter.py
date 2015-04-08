@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import rospy
 import roscopter.msg
 import roscopter.srv
@@ -20,13 +22,20 @@ class Quadcopter(object):
         self._adjust_throttle_service = rospy.ServiceProxy(
             'adjust_throttle', std_srvs.srv.Empty)
 
+        rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
+                         self._position_callback)
+        rospy.Subscriber("/send_rc", roscopter.msg.RC,
+                         self._send_rc_callback)
+        self.rc_pub = rospy.Publisher('/send_rc', roscopter.msg.RC,
+                                      queue_size=10, latch=True)
+
         self.current_lat = 0.0
         self.current_long = 0.0
         self.current_rel_alt = 0.0
         self.current_alt = 0.0
         self.heading = 0.0
-        rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
-                         self._position_callback)
+        # [side tilt, front tilt, throttle, spin, SOMETHING]
+        self.rc_cmd = [1800 for i in range(8)]
 
     def _position_callback(self, data):
         self.current_lat = PositionTools.mavlink_to_gps(data.latitude)
@@ -35,6 +44,9 @@ class Quadcopter(object):
         self.current_alt = PositionTools.mavlink_to_altitude(data.altitude)
         self.current_rel_alt =\
             PositionTools.mavlink_to_altitude(data.relative_altitude)
+
+    def _send_rc_callback(self, data):
+        pass
 
     def clear_waypoints(self):
         rospy.loginfo('Sending clear waypoints command...')
@@ -45,6 +57,11 @@ class Quadcopter(object):
         rospy.loginfo('Sending arm command...')
         self._command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
         rospy.loginfo('Armed')
+
+    def return_rc_control(self):
+        print('Returning RC Control...')
+        self._command_service(roscopter.srv.APMCommandRequest.CMD_SET_LOITER)
+        print('RC in control')
 
     def launch(self, max_num_tries=5):
         rospy.loginfo('Sending launch command...')
@@ -98,6 +115,10 @@ class Quadcopter(object):
             rospy.sleep(0.1)
 
         return sent_waypoint
+
+    def send_rc_command(self, rc_command):
+        print "sending rc command"
+        self.rc_pub.publish(rc_command.to_roscopter())
 
     def _print_send_waypoint_status(self, waypoint, sent_waypoint,
                                     tries, max_num_tries):

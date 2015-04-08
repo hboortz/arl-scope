@@ -38,6 +38,18 @@ class QuadcopterBrain(object):
     def land(self):
         self.quadcopter.land()
 
+    def rc_land_on_fiducial(self):
+        dz = self.landing_site.center.position.z
+        while dz > 1:
+            dx = self.landing_site.center.position.x
+            dy = self.landing_site.center.position.y
+            rc_proportionally_navigate(dx, dy, dz)
+
+        self.land()
+
+    def rc_proportionally_navigate(dx, dy, dz):
+        pass
+
     def fly_path(self, waypoint_data):
         self.quadcopter.launch()
         self.go_to_waypoints(waypoint_data)
