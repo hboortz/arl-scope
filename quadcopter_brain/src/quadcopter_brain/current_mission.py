@@ -35,7 +35,7 @@ def main():
     # if outside:
     #     carl.arm()
     # carl.launch()
-    carl.rc_square_dance()
+    # carl.rc_square_dance()
     carl.rc_land_on_fiducial()
     # carl.go_to_waypoints([great_lawn_waypoints['A'],
     #                       great_lawn_waypoints['B5'],

@@ -41,7 +41,7 @@ class QuadcopterBrain(object):
     def land(self):
         self.quadcopter.land()
 
-    def rc_proportional_command(x_diff, y_diff, z_diff):
+    def rc_proportional_command(self, x_diff, y_diff, z_diff):
         #Diff must be a value between 0 and 1
         rc_command = RCCommand({'roll': x_diff,
                                 'pitch': y_diff,
@@ -89,11 +89,12 @@ class QuadcopterBrain(object):
         found, _, _ = self.find_landing_site()
         if found:
             dz = self.landing_site.center.position.z
-            while dz > 1:
+            while dz > 1 and not rospy.is_shutdown():
                 dz = self.landing_site.center.position.z
                 dx = self.landing_site.center.position.x
                 dy = self.landing_site.center.position.y
-                rc_proportionally_navigate(dx, dy, dz)
+                print("dx: ", dx, "\tdy: ", dy, "\tdz: ", dz)
+                self.rc_proportionally_navigate(dx, dy, dz)
 
             rc_command = RCCommand({"throttle": 0.25})
             self.quadcopter.send_rc_command(rc_command)
@@ -110,17 +111,19 @@ class QuadcopterBrain(object):
         min_throttle = 0.25
         tolerance = 0.5
         distance = numpy.linalg.norm([dx, dy])
-        return max_throttle - min_throttle * exp(-tolerance * (distance ^ 2))
+        return max_throttle - \
+               min_throttle * numpy.exp(-tolerance * (distance ** 2))
 
-    def rc_proportionally_navigate(dx, dy, dz):
+    def rc_proportionally_navigate(self, dx, dy, dz):
         x_range = 10
         y_range = 7
 
         x_diff = self.rc_conversion(dx)
         y_diff = self.rc_conversion(-dy)
-        z_diff = descent_rc_conversion(dx, -dy)
+        z_diff = self.descent_rc_conversion(dx, -dy)
+        print("x_diff: ", x_diff, "\ty_diff: ", y_diff, "\tz_diff: ", z_diff)
 
-        rc_proportional_command(x_diff, y_diff, z_diff)
+        self.rc_proportional_command(x_diff, y_diff, z_diff)
 
     def fly_path(self, waypoint_data):
         self.quadcopter.launch()
