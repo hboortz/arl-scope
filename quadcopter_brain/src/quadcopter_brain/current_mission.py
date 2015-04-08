@@ -6,82 +6,6 @@ from quadcopter import Quadcopter
 from rc_command import RCCommand
 
 
-def backward(q):
-    rc_command = RCCommand({'pitch': 0.9})
-    q.send_rc_command(rc_command)
-
-
-def forward(q):
-    rc_command = RCCommand({'pitch': 0.1})
-    q.send_rc_command(rc_command)
-
-
-def right(q):
-    rc_command = RCCommand({'roll': 0.9})
-    q.send_rc_command(rc_command)
-
-
-def left(q):
-    rc_command = RCCommand({'roll': 0.1})
-    q.send_rc_command(rc_command)
-
-
-def still(q):
-    rc_command = RCCommand()
-    q.send_rc_command(rc_command)
-
-
-def throttle_up(q):
-    rc_command = RCCommand({"throttle": 0.8})
-    q.send_rc_command(rc_command)
-
-
-def throttle_down(q):
-    rc_command = RCCommand({"throttle": 0.2})
-    q.send_rc_command(rc_command)
-
-
-def rc_square_dance():
-    import time
-
-    q = Quadcopter()
-    outside = rospy.get_param("Quadcopter/outside", False)
-    if outside:
-        q.arm()
-    q.launch()
-
-    print "forward"
-    forward(q)
-    time.sleep(2)
-    print "still"
-    still(q)
-    time.sleep(2)
-
-    print "right"
-    right(q)
-    time.sleep(2)
-    print "still"
-    still(q)
-    time.sleep(2)
-
-    print "backward"
-    backward(q)
-    time.sleep(2)
-    print "still"
-    still(q)
-    time.sleep(2)
-
-    print "left"
-    left(q)
-    time.sleep(2)
-    print "still"
-    still(q)
-    time.sleep(2)
-
-    throttle_down(q)
-    time.sleep(20)
-
-
 def print_position_data(quadcopter):
     rospy.loginfo("Position data:")
     rospy.loginfo("\tLatitude: %.8f" % quadcopter.current_lat)
@@ -109,6 +33,7 @@ def main():
     if outside:
         carl.arm()
     carl.launch()
+    # carl.rc_square_dance()
     carl.go_to_waypoints([great_lawn_waypoints['A'],
                           great_lawn_waypoints['B5'],
                           great_lawn_waypoints['C10']])

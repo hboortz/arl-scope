@@ -2,11 +2,13 @@
 
 from copy import deepcopy
 import datetime
+import time 
 
 import rospy
 
 from position_tools import PositionTools
 from waypoint_tools import WaypointTools
+from rc_command import RCCommand
 import quadcopter
 import landing_site
 
@@ -38,17 +40,106 @@ class QuadcopterBrain(object):
     def land(self):
         self.quadcopter.land()
 
-    def rc_land_on_fiducial(self):
-        dz = self.landing_site.center.position.z
-        while dz > 1:
-            dx = self.landing_site.center.position.x
-            dy = self.landing_site.center.position.y
-            rc_proportionally_navigate(dx, dy, dz)
 
-        self.land()
+    def backward(self):
+        rc_command = RCCommand({'pitch': 0.9})
+        self.quadcopter.send_rc_command(rc_command)
+
+
+    def forward(self):
+        rc_command = RCCommand({'pitch': 0.1})
+        self.quadcopter.send_rc_command(rc_command)
+
+    def right(self):
+        rc_command = RCCommand({'roll': 0.9})
+        self.quadcopter.send_rc_command(rc_command)
+
+
+    def left(self):
+        rc_command = RCCommand({'roll': 0.1})
+        self.quadcopter.send_rc_command(rc_command)
+
+    def rc_proportional_command(x_diff, y_diff, z_diff):
+        #Diff must be a value between 0 and 1
+        rc_command = RCCommand({'roll': x_diff, 
+                                'pitch': y_diff, 
+                                'throttle': z_diff})
+        self.quadcopter.send_rc_command(rc_command)
+
+
+    def still(self):
+        rc_command = RCCommand()
+        self.quadcopter.send_rc_command(rc_command)
+
+
+    def throttle_up(self):
+        rc_command = RCCommand({"throttle": 0.8})
+        self.quadcopter.send_rc_command(rc_command)
+
+
+    def throttle_down(self):
+        rc_command = RCCommand({"throttle": 0.2})
+        self.quadcopter.send_rc_command(rc_command)
+        # Currently enters RTL mode after script ends
+        # Wait 20 seconds to ensure landing
+        # TODO: change to a smarter land check
+        time.sleep(20)
+
+    def rc_square_dance(self):
+
+        rospy.loginfo("forward")
+        self.forward()
+        time.sleep(2)
+        rospy.loginfo("still")
+        self.still()
+        time.sleep(2)
+
+        rospy.loginfo("right")
+        self.right()
+        time.sleep(2)
+        rospy.loginfo("still")
+        self.still()
+        time.sleep(2)
+
+        rospy.loginfo("backward")
+        self.backward()
+        time.sleep(2)
+        rospy.loginfo("still")
+        self.still()
+        time.sleep(2)
+
+        rospy.loginfo("left")
+        self.left()
+        time.sleep(2)
+        rospy.loginfo("still")
+        self.still()
+        time.sleep(2)
+
+
+    def rc_land_on_fiducial(self):
+        found, _, _ = self.find_landing_site()
+        if found:
+            dz = self.landing_site.center.position.z
+            while dz > 1:
+                dz = self.landing_site.center.position.z
+                dx = self.landing_site.center.position.x
+                dy = self.landing_site.center.position.y
+                rc_proportionally_navigate(dx, dy, dz)
+
+            self.throttle_down()
+
+    def rc_conversion(spread, current):
+        return (((current + spread) * 0.4) / spread) + 0.1
 
     def rc_proportionally_navigate(dx, dy, dz):
-        pass
+        x_range = 10
+        y_range = 7
+
+        x_diff =  rc_conversion(x_range, dx)
+        y_diff = rc_conversion(y_range, -dy)
+        z_diff = .25
+
+        rc_proportional_command(x_diff, y_diff, z_diff)
 
     def fly_path(self, waypoint_data):
         self.quadcopter.launch()
