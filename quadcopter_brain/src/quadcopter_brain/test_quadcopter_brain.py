@@ -134,7 +134,7 @@ class TestQuadcopterBrain(unittest.TestCase):
             self.quadcopter_brain.find_landing_site_at_waypoints(waypoint_data)
         go_to_expected = [mock.call([pt]) for pt in waypoint_data]
         self.assertEqual(go_to_mock.call_args_list, go_to_expected)
-        find_site_expected = [mock.call(15) for i in range(len(waypoint_data))]
+        find_site_expected = [mock.call(15) for point in waypoint_data]
         self.assertEqual(find_site_mock.call_args_list, find_site_expected)
         self.assertEqual(res, (False, 0, 0))
 
