@@ -3,6 +3,9 @@ class FlightError(Exception):
         self.msg = message
         if copter:
             self.hover_in_place(copter)
+        # shutdown rospy node
+        # gc literally everything
+        # kill forked processes
 
     def __str__(self):
         return self.msg

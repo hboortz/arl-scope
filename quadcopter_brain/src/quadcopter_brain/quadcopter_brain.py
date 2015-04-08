@@ -1,22 +1,17 @@
-#!/usr/bin/env python
+# Suggested filename change - base_station.py or mission_controller.py
 
+from copy import deepcopy
+import datetime
 import time
-import json
 import math
-import os
 
-import rospkg
 import rospy
-import rosbag
-import roscopter
-import roscopter.msg
-import roscopter.srv
-from std_srvs.srv import *
-from sensor_msgs.msg import NavSatFix, NavSatStatus, Imu
-from geodesy import utm
 
 from flight_error import FlightError
 from position_tools import PositionTools
+from waypoint_tools import WaypointTools
+from landing_site import LandingSite
+import quadcopter
 
 
 class QuadcopterBrain(object):
@@ -24,106 +19,97 @@ class QuadcopterBrain(object):
     High-level quadcopter controller.
     '''
     def __init__(self):
-        self.clear_waypoints_service = rospy.ServiceProxy(
-            'clear_waypoints', Empty)
-        self.command_service = rospy.ServiceProxy(
-            'command', roscopter.srv.APMCommand)
-        self.waypoint_service = rospy.ServiceProxy(
-            'waypoint', roscopter.srv.SendWaypoint)
-        self.trigger_auto_service = rospy.ServiceProxy(
-            'trigger_auto', Empty)
-        self.adjust_throttle_service = rospy.ServiceProxy(
-            'adjust_throttle', Empty)
-        self.current_lat = 0.0
-        self.current_long = 0.0
-        self.current_rel_alt = 0.0
-        self.current_alt = 0.0
-        self.heading = 0.0
-        rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
-                         self.position_callback)
+        self.quadcopter = quadcopter.Quadcopter()
+        self.landing_site = LandingSite()
 
     def arm(self):
-        self.command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
-        print('Armed')
+        self.quadcopter.arm()
 
     def launch(self):
-        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAUNCH)
-        print('Launched')
-        time.sleep(5)
+        self.quadcopter.launch()
 
-    def go_to_waypoints(self, waypoint_data):
-        waypoints = [build_waypoint(datum) for datum in waypoint_data]
+    def go_to_waypoints(self, waypoint_data, time_to_sleep=15):
+        waypoints = [
+            WaypointTools.build_waypoint(datum) for datum in waypoint_data]
         for waypoint in waypoints:
-            self.send_waypoint(waypoint)
+            if self.quadcopter.send_waypoint(waypoint):
+                # print("Waypoint sent, sleeping %d seconds for arrival"
+                #      % time_to_sleep)
+                # rospy.sleep(time_to_sleep)
+                # print("%s seconds passed, moving on" % time_to_sleep)
+                print("Waypoint sent.")
+                print self.check_reached_waypoint(waypoint)
 
     def land(self):
-        self.command_service(roscopter.srv.APMCommandRequest.CMD_LAND)
-        print('Landing')
+        self.quadcopter.land()
+
+    def fly_path(self, waypoint_data):
+        self.quadcopter.launch()
+        self.go_to_waypoints(waypoint_data)
+        self.quadcopter.land()
 
     def hover_in_place(self):
-        lat = mavlink_to_gps(self.current_lat)
-        lon = mavlink_to_gps(self.current_long)
-        alt = mavlink_to_gps(self.current_rel_alt)
-        self.go_to_waypoints([{"latitude": lat,
-                               "longitude": lon,
-                               "altitude": alt}])
+        waypoint_data = [{"latitude": self.quadcopter.current_lat,
+                          "longitude": self.quadcopter.current_long,
+                          "altitude": self.quadcopter.current_rel_alt}]
+        print("Sending hover command...")
+        self.go_to_waypoints(waypoint_data)
+        print("Hover command sent")
 
-    def send_waypoint(self, waypoint):
-        self.trigger_auto_service()
-        self.adjust_throttle_service()
-        successfully_sent_waypoint = False
-        tries = 0
-        while not successfully_sent_waypoint and tries < 5:
-            res = self.waypoint_service(waypoint)
-            successfully_sent_waypoint = res.result
-            tries += 1
-            if successfully_sent_waypoint:
-                print('Sent waypoint %d, %d' % (waypoint.latitude,
-                                                waypoint.longitude))
-                print self.check_reached_waypoint(waypoint, max_wait_time=10)
-            else:
-                print("Failed to send waypoint %d, %d" % (waypoint.latitude,
-                                                          waypoint.longitude))
-                time.sleep(0.1)
-                if tries == 5:
-                    print("Tried %d times and giving up" % (tries))
-                else:
-                    print("Retrying. Tries: %d" % (tries))
+    def go_to_waypoint_given_metered_offset(self, delta_east, delta_north,
+                                            dAlt=0, time_to_sleep=15):
+        '''
+        Given a displacement in meters, this function calculates the desired
+        waypoint and tells the quadcopter to go there
+        '''
+        wp_lat, wp_long = \
+            PositionTools.metered_offset(self.quadcopter.current_lat,
+                                         self.quadcopter.current_long,
+                                         delta_east, delta_north)
+        waypoint_data = [{"latitude": wp_lat, "longitude": wp_long,
+                          "altitude": self.quadcopter.current_rel_alt + dAlt}]
+        print("Sending relative waypoint...")
+        self.go_to_waypoints(waypoint_data, time_to_sleep)
+        print("Relative waypoint sent")
 
-    def check_reached_waypoint(self, waypoint, max_wait_time=50, wait_time=0):
-        rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
-                         self.position_callback)
+    def check_reached_waypoint(self, waypoint, max_wait_time=60, wait_time=0):
+        '''
+        Checks if the quadcopter reaches the waypoint within the specified
+        max_wait_time (seconds)
+        '''
         while (not self.has_reached_waypoint(waypoint)) and \
-            wait_time < max_wait_time:
+                wait_time < max_wait_time:
             time.sleep(5)
             wait_time += 5
             print "--> Traveling to waypoint for %d seconds" % (wait_time)
-            print "--> Current position is %f, %f" % (self.current_lat,
-                                                      self.current_long)
+            print "--> Current pos: %f, %f" % (self.quadcopter.current_lat,
+                                               self.quadcopter.current_long)
         if wait_time < max_wait_time:  # successfully reached
             time.sleep(5)  # stay at waypoint for a few seconds
             return "Reached waypoint"
         else:
-            return self.waypoint_timeout_choice(waypoint, wait_time)
+            return "failed to reach waypoint"
+            #return self.waypoint_timeout_choice(waypoint, wait_time)
 
     def waypoint_timeout_choice(self, waypoint, curr_wait_time):
         print "TIMEOUT: Traveling to waypoint for %d sec." % (curr_wait_time)
-        opt1 = "\t 1 - Continue traveling to waypoint\n" 
+        opt1 = "\t 1 - Continue traveling to waypoint\n"
         opt2 = "\t 2 - Continue to next command \n"
         opt3 = "\t 3 - Terminate \n"
-        options = "\t Choose an option number:\n%s%s%s>>> " % (opt1,opt2,opt3)
-        msg = options
-        while True:  # I'm sorry.
-            rospy.sleep(0.1)  # there's some weird not getting input thing
+        msg = "\t Choose an option number:\n%s%s%s>>> " % (opt1, opt2, opt3)
+        while not rospy.is_shutdown():
+            time.sleep(0.1)  # there's some weird not getting input thing
             try:
                 choice = raw_input(msg)
                 if choice == '1':
                     print "Continuing toward waypoint."
-                    return self.check_reached_waypoint(waypoint,
-                        max_wait_time=curr_wait_time*2, wait_time=curr_wait_time)
+                    return self.check_reached_waypoint(
+                        waypoint,
+                        max_wait_time=curr_wait_time*2,
+                        wait_time=curr_wait_time)
                 elif choice == '2':
-                    return "Failed to reach waypoint. " \
-                            "Continuing to next command"
+                    return "Failed to reach waypoint. \
+                        Continuing to next command"
                 elif choice == '3':
                     raise FlightError("Timeout going to waypoint", self)
                 else:
@@ -139,92 +125,54 @@ class QuadcopterBrain(object):
 
             returns boolean of whether position is within error margins"""
         try:
-            waypoint_lat = mavlink_to_gps(waypoint.latitude)
-            waypoint_long = mavlink_to_gps(waypoint.longitude)
+            waypoint_lat = PositionTools.mavlink_to_gps(waypoint.latitude)
+            waypoint_long = PositionTools.mavlink_to_gps(waypoint.longitude)
             waypoint_alt = waypoint.altitude / 1000.0  # mm to m
-            _, _, dist = PositionTools.lat_lon_diff(self.current_lat,
-                                                    self.current_long,
-                                                    waypoint_lat,
-                                                    waypoint_long)
-            alt_diff = math.fabs(self.current_rel_alt - waypoint_alt)
-            print "REL ALT", self.current_rel_alt
-            print "WAYPT ALT", waypoint_alt
+            _, _, dist = PositionTools.lat_long_diff(
+                self.quadcopter.current_lat,
+                self.quadcopter.current_long,
+                waypoint_lat,
+                waypoint_long)
+            alt_diff = math.fabs(self.quadcopter.current_rel_alt - waypoint_alt)
             res = dist < xy_error_margin and alt_diff < alt_error_margin
-            print "Close enough? DIST:", dist, "ALT", alt_diff, res
+            print "Distance away: lat/long: %.2f, alt: %.2f" % (dist, alt_diff)
             return res
         except AttributeError:  # if haven't gotten current position data
             return False
 
-    def position_callback(self, data):
-        self.current_lat = mavlink_to_gps(data.latitude)
-        self.current_long = mavlink_to_gps(data.longitude)
-        self.current_rel_alt = data.relative_altitude / 1000.0  # From mm to m
-        self.current_alt = data.altitude / 1000.0  # From mm to m
-        self.heading = data.heading
-
     def fly_path(self, waypoint_data):
         self.launch()
         self.go_to_waypoints(waypoint_data)
-        # self.land()
+        self.land()
 
+    def find_landing_site(self):
+        '''
+        Executes a search behavior for the fiducial, return its placement of
+        the fiducial it has, in (latitude, longitude) form
+        TODO: Make a behavior that takes more data to place the site
+        '''
+        time_limit = datetime.timedelta(minutes=1)
+        time_end = datetime.datetime.now() + time_limit
+        seen = False
+        print "Searching for landing site..."
+        while not seen and datetime.datetime.now() < time_end and \
+                not rospy.is_shutdown():
+            site = deepcopy(self.landing_site)
+            seen = site.in_view
+            rospy.sleep(0.1)
+        if seen:
+            print "Landing site FOUND: ", site.center
+            return (True,) + \
+                site.lat_long(self.quadcopter)  # Returns (bool, int, int)
+        else:
+            print "Landing site was NOT FOUND"
+            return False, 0, 0  # Returns (bool, int, int)
 
-def build_waypoint(data):
-    '''
-    data: dictionary with latitude and longitude
-          (altitude and hold_time optional)
-    '''
-    latitude = data['latitude']
-    longitude = data['longitude']
-    altitude = data.get('altitude', 8)
-    hold_time = data.get('hold_time', 3.0)
-
-    waypoint = roscopter.msg.Waypoint()
-    waypoint.latitude = gps_to_mavlink(latitude)
-    waypoint.longitude = gps_to_mavlink(longitude)
-    waypoint.altitude = int(altitude * 1000)
-    waypoint.hold_time = int(hold_time * 1000)  # in ms
-    waypoint.waypoint_type = roscopter.msg.Waypoint.TYPE_NAV
-    return waypoint
-
-
-def gps_to_mavlink(coordinate):
-    '''
-    coordinate: decimal degrees
-    '''
-    return int(coordinate * 1e7)
-
-def mavlink_to_gps(coordinate):
-    '''
-    coordinate: integer representation of degrees
-    '''
-    return coordinate / 1e7
-
-
-def open_waypoint_file(filename):
-    rospack = rospkg.RosPack()
-    quadcopter_brain_path = rospack.get_path("quadcopter_brain")
-    source_path = "src"
-    file_path = os.path.join(quadcopter_brain_path, source_path, filename)
-    with open(file_path, "r") as f:
-        waypoints = json.load(f)
-    return waypoints
-
-
-def main():
-    rospy.init_node("quadcopter_brain")
-    # In order to set the outside parameter, add _outside:=True to rosrun call
-    outside = rospy.get_param("quadcopter_brain/outside", False)
-    print "Outside = ", outside
-    carl = QuadcopterBrain()
-    carl.clear_waypoints_service()
-    print "Sleeping for 3 seconds to prepare system..."
-    rospy.sleep(3)
-    great_lawn_waypoints = open_waypoint_file(
-        "waypoint_data/great_lawn_waypoints.json")
-    if outside:
-        carl.arm()
-    carl.fly_path([great_lawn_waypoints["B"], great_lawn_waypoints["G"]])
-
-
-if __name__ == '__main__':
-    main()
+    def land_on_fiducial_simple(self):
+        found, goal_lat, goal_long = self.find_landing_site()
+        if found:
+            waypt = {'latitude': goal_lat,
+                     'longitude': goal_long,
+                     'altitude': 1.0}
+            self.go_to_waypoints([waypt])
+        self.land()

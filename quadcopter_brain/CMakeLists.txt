@@ -6,8 +6,10 @@ project(quadcopter_brain)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   rospy
+  roscpp
   std_msgs
   tf
+  roscopter
 )
 
 ## System dependencies are found with CMake's conventions
@@ -49,6 +51,12 @@ catkin_python_setup()
 #   Message1.msg
 #   Message2.msg
 # )
+add_message_files(
+  FILES
+  Waypoint.msg
+  WaypointList.msg
+  FilteredPosition.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -104,6 +112,7 @@ include_directories(
 
 ## Declare a cpp executable
 # add_executable(quadcopter_brain_node src/quadcopter_brain_node.cpp)
+add_executable(reached_waypoint src/quadcopter_brain/reached_waypoint.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -113,6 +122,9 @@ include_directories(
 # target_link_libraries(quadcopter_brain_node
 #   ${catkin_LIBRARIES}
 # )
+target_link_libraries(reached_waypoint
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
