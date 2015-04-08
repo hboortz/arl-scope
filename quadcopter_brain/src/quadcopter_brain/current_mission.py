@@ -31,10 +31,10 @@ def throttle_up(q):
     q.send_rc_command(rc_command)
 
 def throttle_down(q):
-    rc_command = RCCommand({"throttle": 0.1})
+    rc_command = RCCommand({"throttle": 0.2})
     q.send_rc_command(rc_command)
 
-def main():
+def rc_square_dance():
     import time
 
     q = Quadcopter()
@@ -43,43 +43,40 @@ def main():
         q.arm()
     #q.launch()
 
-    r = rospy.Rate(0.5)
+    # r = rospy.Rate(0.5)
 
     print "forward"
     backward(q)
-    # r.sleep()
-    # print "still"
-    # still(q)
-    time.sleep(3)
+    time.sleep(2)
+    print "still"
+    still(q)
+    time.sleep(2)
 
     print "right"
     right(q)
-    # r.sleep()
-    # print "still"
-    # still(q)
-    time.sleep(3)
+    time.sleep(2)
+    print "still"
+    still(q)
+    time.sleep(2)
 
     print "backward"
     forward(q)
-    # r.sleep()
-    # print "still"
-    # still(q)
-    time.sleep(3)
+    time.sleep(2)
+    print "still"
+    still(q)
+    time.sleep(2)
 
     print "left"
     left(q)
-    # r.sleep()
-    # print "still"
-    # still(q)
-    time.sleep(3)
-
+    time.sleep(2)
     print "still"
     still(q)
-    time.sleep(3)
-   
+    time.sleep(2)
 
-    q.return_rc_control()
 
+    # q.return_rc_control()
+    throttle_down(q)
+    time.sleep(20)
 
 def print_position_data(quadcopter):
     print("Position data:")
@@ -88,6 +85,9 @@ def print_position_data(quadcopter):
     print("\tRelative Altitude: %.2f" % quadcopter.current_rel_alt)
     print("\tAltitude: %.2f" % quadcopter.current_alt)
     print("\tHeading: %.2f" % quadcopter.heading)
+
+def main():
+    pass
 
 
 if __name__ == '__main__':
