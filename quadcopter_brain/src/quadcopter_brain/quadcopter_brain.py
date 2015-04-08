@@ -76,8 +76,8 @@ class QuadcopterBrain(object):
             self.go_to_waypoints([waypoint])
             found, goal_lat, goal_long = self.find_landing_site(15)
             if found:
-                break
-        return found, goal_lat, goal_long
+                return True, goal_lat, goal_long
+        return False, 0, 0
 
     def find_landing_site(self, wait_seconds=60):
         '''
