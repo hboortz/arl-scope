@@ -97,13 +97,14 @@ class TestQuadcopterBrain(unittest.TestCase):
         self.assertEqual(res, (False, 0, 0))
 
         # Test what happens when seen after a few tries
-        # in_view_mock = mock.PropertyMock(side_effect=[False, False, True])
-        # type(self.landing_site_mock).in_view = in_view_mock
-        # self.landing_site_mock.lat_long.return_value = (-42, 71)
-        # res = self.quadcopter_brain.find_landing_site()
-        # expected_sleep_calls = [mock.call(0.1), mock.call(0.1)]
-        # self.assertEqual(sleep_mock.call_args_list, expected_sleep_calls)
-        # self.assertEqual(res, (True, -42, 71))
+        in_view_mock = mock.PropertyMock(side_effect=[False, False, True])
+        type(self.landing_site_mock).in_view = in_view_mock
+        self.landing_site_mock.lat_long.return_value = (-42, 71)
+        sleep_mock.call_args_list = []
+        res = self.quadcopter_brain.find_landing_site()
+        expected_sleep_calls = [mock.call(0.1), mock.call(0.1), mock.call(0.1)]
+        self.assertEqual(sleep_mock.call_args_list, expected_sleep_calls)
+        self.assertEqual(res, (True, -42, 71))
 
     @mock.patch('quadcopter_brain.QuadcopterBrain.go_to_waypoints')
     @mock.patch('quadcopter_brain.QuadcopterBrain.find_landing_site')
