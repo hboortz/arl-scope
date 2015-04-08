@@ -2,9 +2,10 @@
 
 from copy import deepcopy
 import datetime
-import time 
+import time
 
 import rospy
+import numpy
 
 from position_tools import PositionTools
 from waypoint_tools import WaypointTools
@@ -40,81 +41,49 @@ class QuadcopterBrain(object):
     def land(self):
         self.quadcopter.land()
 
-
-    def backward(self):
-        rc_command = RCCommand({'pitch': 0.9})
-        self.quadcopter.send_rc_command(rc_command)
-
-
-    def forward(self):
-        rc_command = RCCommand({'pitch': 0.1})
-        self.quadcopter.send_rc_command(rc_command)
-
-    def right(self):
-        rc_command = RCCommand({'roll': 0.9})
-        self.quadcopter.send_rc_command(rc_command)
-
-
-    def left(self):
-        rc_command = RCCommand({'roll': 0.1})
-        self.quadcopter.send_rc_command(rc_command)
-
     def rc_proportional_command(x_diff, y_diff, z_diff):
         #Diff must be a value between 0 and 1
-        rc_command = RCCommand({'roll': x_diff, 
-                                'pitch': y_diff, 
+        rc_command = RCCommand({'roll': x_diff,
+                                'pitch': y_diff,
                                 'throttle': z_diff})
         self.quadcopter.send_rc_command(rc_command)
 
-
-    def still(self):
-        rc_command = RCCommand()
-        self.quadcopter.send_rc_command(rc_command)
-
-
-    def throttle_up(self):
-        rc_command = RCCommand({"throttle": 0.8})
-        self.quadcopter.send_rc_command(rc_command)
-
-
-    def throttle_down(self):
-        rc_command = RCCommand({"throttle": 0.2})
-        self.quadcopter.send_rc_command(rc_command)
-        # Currently enters RTL mode after script ends
-        # Wait 20 seconds to ensure landing
-        # TODO: change to a smarter land check
-        time.sleep(20)
-
     def rc_square_dance(self):
-
         rospy.loginfo("forward")
-        self.forward()
+        rc_command = RCCommand({'pitch': 0.9})
+        self.quadcopter.send_rc_command(rc_command)
         time.sleep(2)
         rospy.loginfo("still")
-        self.still()
+        rc_command = RCCommand()
+        self.quadcopter.send_rc_command(rc_command)
         time.sleep(2)
 
         rospy.loginfo("right")
-        self.right()
+        rc_command = RCCommand({'roll': 0.9})
+        self.quadcopter.send_rc_command(rc_command)
         time.sleep(2)
         rospy.loginfo("still")
-        self.still()
+        rc_command = RCCommand()
+        self.quadcopter.send_rc_command(rc_command)
         time.sleep(2)
 
         rospy.loginfo("backward")
-        self.backward()
+        rc_command = RCCommand({'pitch': 0.1})
+        self.quadcopter.send_rc_command(rc_command)
         time.sleep(2)
         rospy.loginfo("still")
-        self.still()
+        rc_command = RCCommand()
+        self.quadcopter.send_rc_command(rc_command)
         time.sleep(2)
 
         rospy.loginfo("left")
-        self.left()
+        rc_command = RCCommand({'roll': 0.1})
+        self.quadcopter.send_rc_command(rc_command)
         time.sleep(2)
         rospy.loginfo("still")
-        self.still()
+        rc_command = RCCommand()
+        self.quadcopter.send_rc_command(rc_command)
         time.sleep(2)
-
 
     def rc_land_on_fiducial(self):
         found, _, _ = self.find_landing_site()
@@ -126,18 +95,30 @@ class QuadcopterBrain(object):
                 dy = self.landing_site.center.position.y
                 rc_proportionally_navigate(dx, dy, dz)
 
-            self.throttle_down()
+            rc_command = RCCommand({"throttle": 0.25})
+            self.quadcopter.send_rc_command(rc_command)
+            # Currently enters RTL mode after script ends
+            # Wait 20 seconds to ensure landing
+            # TODO: change to a smarter land check
+            time.sleep(20)
 
-    def rc_conversion(spread, current):
-        return (((current + spread) * 0.4) / spread) + 0.1
+    def rc_conversion(self, pos):
+        return (0.8 / (1 + numpy.exp(-0.5 * pos))) + 0.1
+
+    def descent_rc_conversion(self, dx, dy):
+        max_throttle = 0.5
+        min_throttle = 0.25
+        tolerance = 0.5
+        distance = numpy.linalg.norm([dx, dy])
+        return max_throttle - min_throttle * exp(-tolerance * (distance ^ 2))
 
     def rc_proportionally_navigate(dx, dy, dz):
         x_range = 10
         y_range = 7
 
-        x_diff =  rc_conversion(x_range, dx)
-        y_diff = rc_conversion(y_range, -dy)
-        z_diff = .25
+        x_diff = self.rc_conversion(dx)
+        y_diff = self.rc_conversion(-dy)
+        z_diff = descent_rc_conversion(dx, -dy)
 
         rc_proportional_command(x_diff, y_diff, z_diff)
 
