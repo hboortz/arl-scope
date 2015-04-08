@@ -44,8 +44,8 @@ class QuadcopterBrain(object):
     def send_rc_command(self, x_diff, y_diff, z_diff):
         #Diff must be a value between 0 and 1
         command = rc_command.RCCommand({'roll': x_diff,
-                                'pitch': y_diff,
-                                'throttle': z_diff})
+                                        'pitch': y_diff,
+                                        'throttle': z_diff})
         self.quadcopter.send_rc_command(command)
 
     def rc_square_dance(self):
@@ -94,7 +94,7 @@ class QuadcopterBrain(object):
                 dz = self.landing_site.center.position.z
                 dx = self.landing_site.center.position.x
                 dy = self.landing_site.center.position.y
-                print("dx: ", dx, "\tdy: ", dy, "\tdz: ", dz)
+
                 self.proportional_position(dx, dy, dz)
 
             self.send_rc_command(0.5, 0.5, 0.25)
@@ -107,7 +107,8 @@ class QuadcopterBrain(object):
         max_speed = 0.9
         min_speed = 0.1
         tolerance = 0.5
-        return ((max_speed - min_speed) / (1 + numpy.exp(-tolerance * pos))) + min_speed
+        return ((max_speed - min_speed) / (1 + numpy.exp(-tolerance * pos)))\
+            + min_speed
 
     def get_rate_of_descent(self, dx, dy):
         max_throttle = 0.5
@@ -115,13 +116,12 @@ class QuadcopterBrain(object):
         tolerance = 0.5
         distance = numpy.linalg.norm([dx, dy])
         return max_throttle - \
-               min_throttle * numpy.exp(-tolerance * (distance ** 2))
+            min_throttle * numpy.exp(-tolerance * (distance ** 2))
 
     def proportional_position(self, dx, dy, dz):
         x_diff = self.get_planar_speed(dx)
         y_diff = self.get_planar_speed(dy)
         z_diff = self.get_rate_of_descent(dx, dy)
-
         self.send_rc_command(x_diff, y_diff, z_diff)
 
     def fly_path(self, waypoint_data):

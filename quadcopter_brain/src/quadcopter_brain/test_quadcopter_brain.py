@@ -171,7 +171,8 @@ class TestQuadcopterBrain(unittest.TestCase):
     @mock.patch('quadcopter_brain.QuadcopterBrain.get_planar_speed')
     @mock.patch('quadcopter_brain.QuadcopterBrain.get_rate_of_descent')
     @mock.patch('quadcopter_brain.QuadcopterBrain.send_rc_command')
-    def test_proportional_position(self, command_mock, descent_mock, planar_mock):
+    def test_proportional_position(self, command_mock, descent_mock,
+                                   planar_mock):
         planar_mock.side_effect = [0.1, 0.9]
         descent_mock.return_value = 0.3
         self.quadcopter_brain.proportional_position(1, 1, 1)
@@ -181,7 +182,8 @@ class TestQuadcopterBrain(unittest.TestCase):
     @mock.patch('quadcopter_brain.QuadcopterBrain.send_rc_command')
     @mock.patch('quadcopter_brain.QuadcopterBrain.proportional_position')
     @mock.patch('quadcopter_brain.QuadcopterBrain.find_landing_site')
-    def test_rc_land_on_fiducial(self, site_mock, position_mock, command_mock, sleep_mock):
+    def test_rc_land_on_fiducial(self, site_mock, position_mock, command_mock,
+                                 sleep_mock):
         self.landing_site_mock.in_view = True
         self.landing_site_mock.center.position.x = 10
         self.landing_site_mock.center.position.y = 10
@@ -195,9 +197,6 @@ class TestQuadcopterBrain(unittest.TestCase):
         self.assertEqual(position_calls, position_mock.call_args_list)
         command_mock.assert_called_once_with(0.5, 0.5, 0.25)
         sleep_mock.assert_called_once_with(20)
-
-
-
 
 
 if __name__ == '__main__':
