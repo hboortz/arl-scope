@@ -67,6 +67,18 @@ class QuadcopterBrain(object):
         self.go_to_waypoints(waypoint_data, time_to_sleep)
         rospy.loginfo("Relative waypoint sent")
 
+    def find_landing_site_at_waypoints(self, waypoint_data):
+        '''
+        Takes a list of waypoint ditionaries, goes to each waypoint, and
+        tries to find_landing_site at each waypoint
+        '''
+        for waypoint in waypoint_data:
+            self.go_to_waypoints([waypoint])
+            found, goal_lat, goal_long = self.find_landing_site(15)
+            if found:
+                return True, goal_lat, goal_long
+        return False, 0, 0
+
     def find_landing_site(self, wait_seconds=60):
         '''
         Executes a search behavior for the fiducial, return its placement of
@@ -91,6 +103,10 @@ class QuadcopterBrain(object):
             return False, 0, 0
 
     def land_on_fiducial_simple(self):
+        '''
+        Looks for the fiducial. When the fiducial is seen a position estimate
+        is immediately made and a 1m waypoint is sent at that spot
+        '''
         found, goal_lat, goal_long = self.find_landing_site()
         if found:
             waypt = {'latitude': goal_lat,
@@ -100,6 +116,10 @@ class QuadcopterBrain(object):
         self.land()
 
     def land_on_fiducial_incremental(self):
+        '''
+        Averages the position of the fiducial, goes to that spot and steps
+        down altitude in discrete steps until low enough, then lands
+        '''
         found, _, _ = self.find_landing_site()
         alt = -1.0
         if found:
