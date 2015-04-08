@@ -1,7 +1,6 @@
-#!/usr/bin/env python
-
 import numpy as np
 import geodesy.utm
+import datetime
 import roslib
 import rospy
 roslib.load_manifest('ar_pose')
@@ -16,7 +15,7 @@ class LandingSite(object):
         # TODO: Variables to implement: orientation, is_upright
         self.center = Pose()
         self.timestamp = -1
-        in_view = False
+        self.in_view = False
         update_sub = rospy.Subscriber('/ar_pose_marker', ARMarkers,
                                       self.on_fiducial_update)
         self.fiducial_delay = fiducial_delay
@@ -54,7 +53,8 @@ class LandingSite(object):
                                    y=np.mean(y_coords),
                                    z=np.mean(z_coords)))
 
-    def lat_lon(self, copter):
+
+    def lat_long(self, copter):
         '''
         Latitude, longitude of the landing site
         Note: we use (-y) data from the camera because
@@ -73,6 +73,39 @@ class LandingSite(object):
                                             location.longitude,
                                             absolute_site[0][0],
                                             absolute_site[1][0])
+
+    def get_average_lat_long(self, copter, total_time=5.0, time_step=0.1):
+        '''
+        Waits for 'time' seconds and samples landing site position
+        every 'time_step' seconds. Returns the average gps position
+        and vertical distance to the fiducial over that time period.
+        Returns None if fiducial never seen
+        '''
+        landing_site_lat = []
+        landing_site_long = []
+        landing_site_altitude = []
+        time_limit = datetime.timedelta(seconds=total_time)
+        time_end = datetime.datetime.now() + time_limit
+        counter = 0
+        num_tries = total_time / time_step
+        while datetime.datetime.now() < time_end:
+            if self.in_view:
+                current_lat, current_long = self.lat_long(copter)
+                landing_site_lat.append(current_lat)
+                landing_site_long.append(current_long)
+                landing_site_altitude.append(self.center.position.z)
+                rospy.loginfo("Fiducial seen, appending to list")
+            else:
+                rospy.loginfo("Average land site GPS, couldn't see fiducial")
+            rospy.loginfo("\tTries: %d / %d", counter, num_tries)
+            counter += 1
+            rospy.sleep(time_step)
+        if len(landing_site_lat) > 0:
+            return (np.mean(landing_site_lat),
+                    np.mean(landing_site_long),
+                    np.mean(landing_site_altitude))
+        else:
+            return None, None, None
 
 
 def switch_CW_and_CCW(aircraft_heading):
