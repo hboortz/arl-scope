@@ -35,10 +35,12 @@ class TemporalBuffer(object):
         '''
         Query the buffer at a given timestamp.
         '''
-        # Check for out of temporal range
-        if timestamp < self.samples[0][0]:
+        if not self.samples:
             raise IndexError(timestamp)
-        if timestamp > self.samples[-1][0]:
+        # Check for out of temporal range
+        elif timestamp < self.samples[0][0]:
+            raise IndexError(timestamp)
+        elif timestamp > self.samples[-1][0]:
             if not extrapolate:
                 raise IndexError(timestamp)
 

@@ -2,9 +2,11 @@
 
 import unittest
 
+import time
 import mock
 
 from quadcopter_brain import QuadcopterBrain
+from position_tools import QuadcopterPose
 
 
 class TestQuadcopterBrain(unittest.TestCase):
@@ -41,9 +43,9 @@ class TestQuadcopterBrain(unittest.TestCase):
     def test_go_to_waypoint_given_metered_offset(self, go_to_waypoint_mock):
         delta_east = 10  # Meters
         delta_north = -10  # Meters
-        self.quadcopter_brain.quadcopter.current_lat = 42.0
-        self.quadcopter_brain.quadcopter.current_long = -71.0
-        self.quadcopter_brain.quadcopter.current_rel_alt = 4.5
+
+        location = QuadcopterPose(42.0, -71.0, 4.5, 4.5, 0)
+        self.quadcopter_brain.quadcopter.pose_at = mock.MagicMock(return_value=location)
         self.quadcopter_brain.go_to_waypoint_given_metered_offset(delta_east,
                                                                   delta_north)
         called_waypoint = go_to_waypoint_mock.call_args[0][0][0]
