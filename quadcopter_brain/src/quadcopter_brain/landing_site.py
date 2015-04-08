@@ -84,7 +84,7 @@ class LandingSite(object):
         counter = 0
         num_tries = total_time / time_step
         print "averaging landing site GPS"
-        while datetime.datetime.now() < time_end:
+        while datetime.datetime.now() < time_end and not rospy.is_shutdown():
             if self.in_view:
                 current_lat, current_long = self.lat_long(copter)
                 landing_site_lat.append(current_lat)

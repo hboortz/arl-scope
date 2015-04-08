@@ -86,10 +86,11 @@ class QuadcopterBrain(object):
         the fiducial it has, in (latitude, longitude) form
         TODO: Make a behavior that takes more data to place the site
         '''
-        time_limit = datetime.timedelta(minutes=wait_seconds)
+        time_limit = datetime.timedelta(seconds=wait_seconds)
         time_end = datetime.datetime.now() + time_limit
         seen = False
-        rospy.loginfo("Searching for landing site, 1 min...")
+        rospy.loginfo("Searching for landing site, %d seconds..." %
+                      (wait_seconds))
         while not seen and datetime.datetime.now() < time_end \
                 and not rospy.is_shutdown():
             site = deepcopy(self.landing_site)
@@ -128,17 +129,20 @@ class QuadcopterBrain(object):
                 self.landing_site.get_average_lat_long(self.quadcopter)
             seen = goal_lat != None
             alt = self.quadcopter.current_rel_alt
-            while seen and alt > 1.5:
+            while seen and alt > 2.5:
                 if alt > 6.0:
                     next_alt = 5.0
-                elif alt > 3.5:
-                    next_alt = 2.5
+                    wait_seconds = 10
+                # elif alt > 3.5:
                 else:
-                    next_alt = 1.0
+                    next_alt = 2
+                    wait_seconds = 5
+                # else:
+                #     next_alt = 1.0
                 waypt = {'latitude': goal_lat,
                          'longitude': goal_long,
                          'altitude': next_alt}
-                self.go_to_waypoints([waypt])
+                self.go_to_waypoints([waypt], wait_seconds)
                 goal_lat, goal_long, goal_vertical_dist = \
                     self.landing_site.get_average_lat_long(self.quadcopter)
                 seen = goal_lat != None

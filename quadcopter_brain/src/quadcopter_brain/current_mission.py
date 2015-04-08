@@ -24,9 +24,17 @@ def main():
     if outside:
         carl.arm()
     carl.launch()
-    carl.go_to_waypoints([great_lawn_waypoints['A'],
-                          great_lawn_waypoints['B5'],
-                          great_lawn_waypoints['C10']])
+    carl.go_to_waypoints([great_lawn_waypoints['B5'],
+                          great_lawn_waypoints['C5'],
+                          great_lawn_waypoints['A5']])
+    # found, _, _ = \
+    #     carl.find_landing_site_at_waypoints([great_lawn_waypoints['A5'],
+    #                                         great_lawn_waypoints['B5'],
+    #                                         great_lawn_waypoints['C5'],
+    #                                         great_lawn_waypoints['A5']])
+    # if found:
+    # carl.land_on_fiducial_incremental()
+    # else:
     carl.land()
 
 
