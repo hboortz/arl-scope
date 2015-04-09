@@ -74,8 +74,8 @@ class QuadcopterBrain(object):
         tries to find_landing_site at each waypoint
         '''
         for waypoint in waypoint_data:
-            self.go_to_waypoints([waypoint])
-            found, goal_lat, goal_long = self.find_landing_site(15)
+            self.go_to_waypoints([waypoint], 5)
+            found, goal_lat, goal_long = self.find_landing_site(10)
             if found:
                 return True, goal_lat, goal_long
         return False, 0, 0
@@ -117,12 +117,12 @@ class QuadcopterBrain(object):
             self.go_to_waypoints([waypt])
         self.land()
 
-    def land_on_fiducial_incremental(self):
+    def land_on_fiducial_incremental(self, wait_seconds=15):
         '''
         Averages the position of the fiducial, goes to that spot and steps
         down altitude in discrete steps until low enough, then lands
         '''
-        found, _, _ = self.find_landing_site()
+        found, _, _ = self.find_landing_site(wait_seconds)
         alt = -1.0
         if found:
             goal_lat, goal_long, goal_vertical_dist = \
