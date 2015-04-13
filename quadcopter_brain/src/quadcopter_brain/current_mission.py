@@ -29,14 +29,16 @@ def main():
     rospy.loginfo("Sleeping for 3 seconds...")
     rospy.sleep(3)
 
-    great_lawn_waypoints = WaypointTools.open_waypoint_file(
-        "great_lawn_waypoints.json")
+    # great_lawn_waypoints = WaypointTools.open_waypoint_file(
+    #     "great_lawn_waypoints.json")
 
-    # if outside:
-    #     carl.arm()
-    # carl.launch()
-    # carl.rc_square_dance()
+    if outside:
+        carl.arm()
+    carl.launch()
+    #carl.rc_square_dance()
+
     carl.rc_land_on_fiducial()
+    carl.quadcopter.return_rc_control()
     # carl.go_to_waypoints([great_lawn_waypoints['A'],
     #                       great_lawn_waypoints['B5'],
     #                       great_lawn_waypoints['C10']])

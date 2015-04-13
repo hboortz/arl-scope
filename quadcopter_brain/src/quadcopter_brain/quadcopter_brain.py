@@ -50,40 +50,40 @@ class QuadcopterBrain(object):
 
     def rc_square_dance(self):
         rospy.loginfo("forward")
-        rc_command = rc_command.RCCommand({'pitch': 0.9})
-        self.quadcopter.send_rc_command(rc_command)
+        command = rc_command.RCCommand({'pitch': 0.9})
+        self.quadcopter.send_rc_command(command)
         time.sleep(2)
         rospy.loginfo("still")
-        rc_command = rc_command.RCCommand()
-        self.quadcopter.send_rc_command(rc_command)
+        command = rc_command.RCCommand()
+        self.quadcopter.send_rc_command(command)
         time.sleep(2)
 
-        rospy.loginfo("right")
-        rc_command = rc_command.RCCommand({'roll': 0.9})
-        self.quadcopter.send_rc_command(rc_command)
-        time.sleep(2)
-        rospy.loginfo("still")
-        rc_command = rc_command.RCCommand()
-        self.quadcopter.send_rc_command(rc_command)
-        time.sleep(2)
+        # rospy.loginfo("right")
+        # command = rc_command.RCCommand({'roll': 0.9})
+        # self.quadcopter.send_rc_command(command)
+        # time.sleep(2)
+        # rospy.loginfo("still")
+        # command = rc_command.RCCommand()
+        # self.quadcopter.send_rc_command(command)
+        # time.sleep(2)
 
-        rospy.loginfo("backward")
-        rc_command = rc_command.RCCommand({'pitch': 0.1})
-        self.quadcopter.send_rc_command(rc_command)
-        time.sleep(2)
-        rospy.loginfo("still")
-        rc_command = rc_command.RCCommand()
-        self.quadcopter.send_rc_command(rc_command)
-        time.sleep(2)
+        # rospy.loginfo("backward")
+        # command = rc_command.RCCommand({'pitch': 0.1})
+        # self.quadcopter.send_rc_command(command)
+        # time.sleep(2)
+        # rospy.loginfo("still")
+        # command = rc_command.RCCommand()
+        # self.quadcopter.send_rc_command(command)
+        # time.sleep(2)
 
-        rospy.loginfo("left")
-        rc_command = rc_command.RCCommand({'roll': 0.1})
-        self.quadcopter.send_rc_command(rc_command)
-        time.sleep(2)
-        rospy.loginfo("still")
-        rc_command = rc_command.RCCommand()
-        self.quadcopter.send_rc_command(rc_command)
-        time.sleep(2)
+        # rospy.loginfo("left")
+        # command = rc_command.RCCommand({'roll': 0.1})
+        # self.quadcopter.send_rc_command(command)
+        # time.sleep(2)
+        # rospy.loginfo("still")
+        # command = rc_command.RCCommand()
+        # self.quadcopter.send_rc_command(command)
+        # time.sleep(2)
 
     def rc_land_on_fiducial(self):
         found, _, _ = self.find_landing_site()
@@ -96,12 +96,13 @@ class QuadcopterBrain(object):
                 dy = self.landing_site.center.position.y
 
                 self.proportional_position(dx, dy, dz)
+                time.sleep(0.1)
 
-            self.send_rc_command(0.5, 0.5, 0.25)
-            # Currently enters RTL mode after script ends
-            # Wait 20 seconds to ensure landing
-            # TODO: change to a smarter land check
-            time.sleep(20)
+            for i in range(0, 4):
+                rospy.loginfo("Descending")
+                self.send_rc_command(0.5, 0.5, 0.25)
+                time.sleep(1)
+        rospy.loginfo("Finished landing")
 
     def get_planar_speed(self, pos):
         max_speed = 0.9
