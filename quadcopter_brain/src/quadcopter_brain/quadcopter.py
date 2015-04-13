@@ -60,7 +60,8 @@ class Quadcopter(object):
 
     def return_rc_control(self):
         print('Returning RC Control...')
-        self._command_service(roscopter.srv.APMCommandRequest.CMD_SET_LOITER)
+        self._command_service(
+            roscopter.srv.APMCommandRequest.RETURN_RC_CONTROL)
         print('RC in control')
 
     def launch(self, max_num_tries=5):
