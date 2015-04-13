@@ -40,8 +40,8 @@ class TestLandingSite(unittest.TestCase):
             lat, lon = self.landing_site.lat_long(self.quadcopter)
             xErr, yErr, dist =\
                 PositionTools.lat_long_diff(self.quadcopter.current_lat,
-                                           self.quadcopter.current_long,
-                                           lat, lon)
+                                            self.quadcopter.current_long,
+                                            lat, lon)
             # 1 mm (3 decimals) is a reasonable margin of error
             self.assertAlmostEqual(xErr, test[3], 3)
             self.assertAlmostEqual(yErr, test[4], 3)

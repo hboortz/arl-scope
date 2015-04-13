@@ -47,6 +47,6 @@ class RCCommand(object):
         return int(numpy.interp(percent, [0, 1.0], [minimum, maximum]))
 
     def to_roscopter(self):
-        return [self._roll, self._pitch, self._throttle, 
+        return [self._roll, self._pitch, self._throttle,
                 self._yaw, self._apm_mode, self._gimbal_yaw,
                 self._gimbal_tilt, self._gimbal_roll]
