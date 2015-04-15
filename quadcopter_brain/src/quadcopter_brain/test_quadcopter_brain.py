@@ -130,13 +130,13 @@ class TestQuadcopterBrain(unittest.TestCase):
     @mock.patch('quadcopter_brain.QuadcopterBrain.find_landing_site')
     @mock.patch('quadcopter_brain.QuadcopterBrain.go_to_waypoints')
     def test_find_landing_site_at_waypoints(self, go_to_mock, find_site_mock):
-        waypoint_data = [0, 1]
+        waypoint_data = ['waypoint_data_1', 'waypoint_data_2']
         find_site_mock.return_value = False, 0, 0
         res = \
             self.quadcopter_brain.find_landing_site_at_waypoints(waypoint_data)
-        go_to_expected = [mock.call([pt]) for pt in waypoint_data]
+        go_to_expected = [mock.call([pt], 5) for pt in waypoint_data]
         self.assertEqual(go_to_mock.call_args_list, go_to_expected)
-        find_site_expected = [mock.call(15) for point in waypoint_data]
+        find_site_expected = [mock.call(10) for point in waypoint_data]
         self.assertEqual(find_site_mock.call_args_list, find_site_expected)
         self.assertEqual(res, (False, 0, 0))
 
@@ -146,8 +146,8 @@ class TestQuadcopterBrain(unittest.TestCase):
         find_site_mock.return_value = True, 42.0, -71.0
         res = \
             self.quadcopter_brain.find_landing_site_at_waypoints(waypoint_data)
-        go_to_mock.assert_called_once_with([0])
-        find_site_mock.assert_called_once_with(15)
+        go_to_mock.assert_called_once_with(['waypoint_data_1'], 5)
+        find_site_mock.assert_called_once_with(10)
         self.assertEqual(res, (True, 42.0, -71.0))
 
     def test_send_rc_command(self):
@@ -188,6 +188,7 @@ class TestQuadcopterBrain(unittest.TestCase):
         self.landing_site_mock.in_view = True
         self.landing_site_mock.center.position.x = 10
         self.landing_site_mock.center.position.y = 10
+        self.quadcopter_mock.current_rel_alt = 500
         dz_mock = mock.PropertyMock(side_effect=[5, 5, 2, 0.5])
         type(self.landing_site_mock.center.position).z = dz_mock
 

@@ -101,11 +101,13 @@ class QuadcopterBrain(object):
                 self.proportional_position(dx, dy, dz)
                 rospy.sleep(0.1)
 
-            for i in range(5):
-                rospy.loginfo("Descending")
+            descent_time = int(self.quadcopter.current_rel_alt / 100)
+            for i in range(descent_time):
+                rospy.loginfo("Descending for %d seconds" % (descent_time))
                 self.send_rc_command(0.5, 0.5, 0.25)
                 rospy.sleep(1)
-        rospy.loginfo("Finished landing")
+
+        self.quadcopter.return_rc_control()
 
     def calculate_planar_speed(self, pos):
         max_speed = 0.9
