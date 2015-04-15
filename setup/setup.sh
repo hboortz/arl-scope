@@ -79,15 +79,6 @@ if [ ! -f ~/Downloads/cpplint.py ]; then
 	wget http://google-styleguide.googlecode.com/svn/trunk/cpplint/cpplint.py
 fi
 
-
-# Set up APM Mission Planner
-cd ~/Downloads
-wget http://ardupilot.com/wp-content/plugins/download-monitor/download.php?id=111 -O apmplanner2.deb
-sudo dpkg -i apmplanner2.deb
-sudo apt-get -f install
-sudo dpkg -i apmplanner2.deb
-rm -f apmplanner2.deb
-
 # Various useful installs
 sudo apt-get install -y clang
 sudo apt-get install -y xclip
