@@ -29,20 +29,27 @@ def main():
     rospy.loginfo("Sleeping for 3 seconds...")
     rospy.sleep(3)
 
-    # great_lawn_waypoints = WaypointTools.open_waypoint_file(
-    #     "great_lawn_waypoints.json")
+    great_lawn_waypoints = WaypointTools.open_waypoint_file(
+        "great_lawn_waypoints.json")
 
     if outside:
         carl.arm()
     carl.launch()
-    #carl.rc_square_dance()
 
-    carl.rc_land_on_fiducial()
-    carl.quadcopter.return_rc_control()
-    # carl.go_to_waypoints([great_lawn_waypoints['A'],
-    #                       great_lawn_waypoints['B5'],
-    #                       great_lawn_waypoints['C10']])
-    # carl.land()
+    # APP Landing Test
+    # carl.rc_land_on_fiducial()
+    # carl.quadcopter.return_rc_control()
+
+    # GPS Landing Test
+    found, _, _ = \
+        carl.find_landing_site_at_waypoints([great_lawn_waypoints['C5'],
+                                             great_lawn_waypoints['B5'],
+                                             great_lawn_waypoints['A5']])
+    if found:
+        carl.land_on_fiducial_incremental()
+    else:
+        carl.land()
+
 
 
 if __name__ == '__main__':
