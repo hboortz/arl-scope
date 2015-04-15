@@ -99,6 +99,7 @@ sudo apt-get install -y libqt5serialport5
 sudo apt-get install -y ipython
 sudo apt-get install -y python-pip
 sudo apt-get install -y ros-indigo-geodesy
+
 sudo apt-get update
 sudo apt-get upgrade
 
