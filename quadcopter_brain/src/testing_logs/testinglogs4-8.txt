@@ -1,0 +1,18 @@
+testing 4/7
+Eric on the Great Lawn with Malificent, testing final demo
+
+1. Did not require toggle on launch. Tried to run A-B-C pattern with GPS landing where the fiducial was at B. Got a false positive at A once, so tried to land there, but couldn't see it again so landed prematurely.
+
+2. Gorgeous failure. Didn't see the fiducial at B (not sure why) and so checked A, B, C, landed.
+
+3. Jesus. Took off straight at WH, fast. Took ALT_HLD mode but the quadcopter still crashed into a lightpost. No visible damage, surprisingly. Nothing changed on the terminal.
+
+4. Launched correctly, went to A, went to B, clearly wasn't identifying the fiducial even though it was in view, so I landed. I think the fiducial may be too creased/bent right now (small fiducial).
+STRAIGHTENED OUT FIDUCIAL, retrying
+
+5. Same as before, went to C-A-B and failed to identify B fiducial. This time I let auto-land at A. Maybe a lighting thing?
+TRYING LOWER WAYPOINTS (5m)
+
+6. System launched sideways and up (very sideways) and then, when sent C waypoint, didn't go to C. Might have been because I switched into AUTO at last minute before launch? Not sure
+
+7. Simply cannot see the fiducial at B, even at 5m. Heading in

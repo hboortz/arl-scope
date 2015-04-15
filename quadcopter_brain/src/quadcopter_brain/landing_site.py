@@ -84,16 +84,17 @@ class LandingSite(object):
         time_end = datetime.datetime.now() + time_limit
         counter = 0
         num_tries = total_time / time_step
-        while datetime.datetime.now() < time_end:
+        print "averaging landing site GPS"
+        while datetime.datetime.now() < time_end and not rospy.is_shutdown():
             if self.in_view:
                 current_lat, current_long = self.lat_long(copter)
                 landing_site_lat.append(current_lat)
                 landing_site_long.append(current_long)
                 landing_site_altitude.append(self.center.position.z)
-                rospy.loginfo("Fiducial seen, appending to list")
-            else:
-                rospy.loginfo("Average land site GPS, couldn't see fiducial")
-            rospy.loginfo("\tTries: %d / %d", counter, num_tries)
+            #     rospy.loginfo("Fiducial seen, appending to list")
+            # else:
+            #     rospy.loginfo("Average land site GPS, couldn't see fiducial")
+            # rospy.loginfo("\tTries: %d / %d", counter, num_tries)
             counter += 1
             rospy.sleep(time_step)
         if len(landing_site_lat) > 0:

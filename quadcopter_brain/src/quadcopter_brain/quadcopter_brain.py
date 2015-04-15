@@ -1,6 +1,7 @@
 # Suggested filename change - base_station.py or mission_controller.py
 
 from copy import deepcopy
+from math import ceil
 import datetime
 
 import rospy
@@ -85,8 +86,8 @@ class QuadcopterBrain(object):
         tries to find_landing_site at each waypoint
         '''
         for waypoint in waypoint_data:
-            self.go_to_waypoints([waypoint])
-            found, goal_lat, goal_long = self.find_landing_site(15)
+            self.go_to_waypoints([waypoint], 5)
+            found, goal_lat, goal_long = self.find_landing_site(10)
             if found:
                 return True, goal_lat, goal_long
         return False, 0, 0
@@ -97,10 +98,11 @@ class QuadcopterBrain(object):
         the fiducial it has, in (latitude, longitude) form
         TODO: Make a behavior that takes more data to place the site
         '''
-        time_limit = datetime.timedelta(minutes=wait_seconds)
+        time_limit = datetime.timedelta(seconds=wait_seconds)
         time_end = datetime.datetime.now() + time_limit
         seen = False
-        rospy.loginfo("Searching for landing site, 1 min...")
+        rospy.loginfo("Searching for landing site, %d seconds..." %
+                      (wait_seconds))
         while not seen and datetime.datetime.now() < time_end \
                 and not rospy.is_shutdown():
             site = deepcopy(self.landing_site)
@@ -127,23 +129,35 @@ class QuadcopterBrain(object):
             self.go_to_waypoints([waypt])
         self.land()
 
-    def land_on_fiducial_incremental(self):
+    def land_on_fiducial_incremental(self, wait_seconds=15):
         '''
         Averages the position of the fiducial, goes to that spot and steps
         down altitude in discrete steps until low enough, then lands
         '''
-        found, _, _ = self.find_landing_site()
+        found, _, _ = self.find_landing_site(wait_seconds)
         alt = -1.0
         if found:
+            goal_lat, goal_long, goal_vertical_dist = \
+                self.landing_site.get_average_lat_long(self.quadcopter)
+            seen = goal_lat != None
             alt = self.quadcopter.current_rel_alt
-            seen = True
-            while seen and alt > 4.0:
-                goal_lat, goal_long, goal_vertical_dist = \
-                    self.landing_site.get_average_lat_long(self.quadcopter)
+            while seen and alt > 2.5:
+                if alt > 6.0:
+                    next_alt = 5.0
+                    wait_seconds = 10
+                # elif alt > 3.5:
+                else:
+                    next_alt = 2
+                    wait_seconds = 5
+                # else:
+                #     next_alt = 1.0
                 waypt = {'latitude': goal_lat,
                          'longitude': goal_long,
-                         'altitude': alt - 2.0}
-                self.go_to_waypoints([waypt], time_to_sleep=8)
+                         'altitude': next_alt}
+                self.go_to_waypoints([waypt], wait_seconds)
+                goal_lat, goal_long, goal_vertical_dist = \
+                    self.landing_site.get_average_lat_long(self.quadcopter)
+                seen = goal_lat != None
                 alt = self.quadcopter.current_rel_alt
                 seen = goal_lat is not None
         rospy.loginfo("Fiducial found: %s, altitude %f", found, alt)
