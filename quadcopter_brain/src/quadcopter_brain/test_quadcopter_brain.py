@@ -155,21 +155,22 @@ class TestQuadcopterBrain(unittest.TestCase):
         self.assertEqual(
             len(self.quadcopter_mock.send_rc_command.call_args_list), 1)
 
-    def test_get_planar_speed(self):
-        self.assertAlmostEqual(self.quadcopter_brain.get_planar_speed(0), 0.5)
-        self.assertAlmostEqual(
-            self.quadcopter_brain.get_planar_speed(10), 0.9, delta=0.01)
-        self.assertAlmostEqual(
-            self.quadcopter_brain.get_planar_speed(-10), 0.1, delta=0.01)
+    def test_calculate_planar_speed(self):
+        speed = self.quadcopter_brain.calculate_planar_speed(0)
+        self.assertAlmostEqual(speed, 0.5)
+        speed = self.quadcopter_brain.calculate_planar_speed(10)
+        self.assertAlmostEqual(speed, 0.9, delta=0.01)
+        speed = self.quadcopter_brain.calculate_planar_speed(-10)
+        self.assertAlmostEqual(speed, 0.1, delta=0.01)
 
-    def test_get_rate_of_descent(self):
-        self.assertAlmostEqual(
-            self.quadcopter_brain.get_rate_of_descent(10, 10), 0.5, delta=0.01)
-        self.assertAlmostEqual(
-            self.quadcopter_brain.get_rate_of_descent(0, 0), 0.25, delta=0.01)
+    def test_calculate_rate_of_descent(self):
+        descent_rate = self.quadcopter_brain.calculate_rate_of_descent(10, 10)
+        self.assertAlmostEqual(descent_rate, 0.5, delta=0.01)
+        descent_rate = self.quadcopter_brain.calculate_rate_of_descent(0, 0)
+        self.assertAlmostEqual(descent_rate, 0.25, delta=0.01)
 
-    @mock.patch('quadcopter_brain.QuadcopterBrain.get_planar_speed')
-    @mock.patch('quadcopter_brain.QuadcopterBrain.get_rate_of_descent')
+    @mock.patch('quadcopter_brain.QuadcopterBrain.calculate_planar_speed')
+    @mock.patch('quadcopter_brain.QuadcopterBrain.calculate_rate_of_descent')
     @mock.patch('quadcopter_brain.QuadcopterBrain.send_rc_command')
     def test_proportional_position(self, command_mock, descent_mock,
                                    planar_mock):

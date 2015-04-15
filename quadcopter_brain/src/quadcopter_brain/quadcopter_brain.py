@@ -107,14 +107,14 @@ class QuadcopterBrain(object):
                 rospy.sleep(1)
         rospy.loginfo("Finished landing")
 
-    def get_planar_speed(self, pos):
+    def calculate_planar_speed(self, pos):
         max_speed = 0.9
         min_speed = 0.1
         tolerance = 0.5
         return ((max_speed - min_speed) / (1 + numpy.exp(-tolerance * pos)))\
             + min_speed
 
-    def get_rate_of_descent(self, dx, dy):
+    def calculate_rate_of_descent(self, dx, dy):
         max_throttle = 0.5
         min_throttle = 0.25
         tolerance = 0.5
@@ -123,9 +123,9 @@ class QuadcopterBrain(object):
             min_throttle * numpy.exp(-tolerance * (distance ** 2))
 
     def proportional_position(self, dx, dy, dz):
-        x_diff = self.get_planar_speed(dx)
-        y_diff = self.get_planar_speed(dy)
-        z_diff = self.get_rate_of_descent(dx, dy)
+        x_diff = self.calculate_planar_speed(dx)
+        y_diff = self.calculate_planar_speed(dy)
+        z_diff = self.calculate_rate_of_descent(dx, dy)
         self.send_rc_command(x_diff, y_diff, z_diff)
 
     def fly_path(self, waypoint_data):
