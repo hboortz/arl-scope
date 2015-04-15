@@ -178,7 +178,7 @@ class TestQuadcopterBrain(unittest.TestCase):
         self.quadcopter_brain.proportional_position(1, 1, 1)
         command_mock.assert_called_once_with(0.1, 0.9, 0.3)
 
-    @mock.patch('time.sleep')
+    @mock.patch('rospy.sleep')
     @mock.patch('quadcopter_brain.QuadcopterBrain.send_rc_command')
     @mock.patch('quadcopter_brain.QuadcopterBrain.proportional_position')
     @mock.patch('quadcopter_brain.QuadcopterBrain.find_landing_site')

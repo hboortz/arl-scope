@@ -2,7 +2,6 @@
 
 from copy import deepcopy
 import datetime
-import time
 
 import rospy
 import numpy
@@ -52,38 +51,38 @@ class QuadcopterBrain(object):
         rospy.loginfo("forward")
         command = rc_command.RCCommand({'pitch': 0.9})
         self.quadcopter.send_rc_command(command)
-        time.sleep(2)
+        rospy.sleep(2)
         rospy.loginfo("still")
         command = rc_command.RCCommand()
         self.quadcopter.send_rc_command(command)
-        time.sleep(2)
+        rospy.sleep(2)
 
         # rospy.loginfo("right")
         # command = rc_command.RCCommand({'roll': 0.9})
         # self.quadcopter.send_rc_command(command)
-        # time.sleep(2)
+        # rospy.sleep(2)
         # rospy.loginfo("still")
         # command = rc_command.RCCommand()
         # self.quadcopter.send_rc_command(command)
-        # time.sleep(2)
+        # rospy.sleep(2)
 
         # rospy.loginfo("backward")
         # command = rc_command.RCCommand({'pitch': 0.1})
         # self.quadcopter.send_rc_command(command)
-        # time.sleep(2)
+        # rospy.sleep(2)
         # rospy.loginfo("still")
         # command = rc_command.RCCommand()
         # self.quadcopter.send_rc_command(command)
-        # time.sleep(2)
+        # rospy.sleep(2)
 
         # rospy.loginfo("left")
         # command = rc_command.RCCommand({'roll': 0.1})
         # self.quadcopter.send_rc_command(command)
-        # time.sleep(2)
+        # rospy.sleep(2)
         # rospy.loginfo("still")
         # command = rc_command.RCCommand()
         # self.quadcopter.send_rc_command(command)
-        # time.sleep(2)
+        # rospy.sleep(2)
 
     def rc_land_on_fiducial(self):
         found, _, _ = self.find_landing_site()
@@ -96,12 +95,12 @@ class QuadcopterBrain(object):
                 dy = self.landing_site.center.position.y
 
                 self.proportional_position(dx, dy, dz)
-                time.sleep(0.1)
+                rospy.sleep(0.1)
 
             for i in range(5):
                 rospy.loginfo("Descending")
                 self.send_rc_command(0.5, 0.5, 0.25)
-                time.sleep(1)
+                rospy.sleep(1)
         rospy.loginfo("Finished landing")
 
     def get_planar_speed(self, pos):
