@@ -38,7 +38,6 @@ def main():
 
     # APP Landing Test
     # carl.rc_land_on_fiducial()
-    # carl.quadcopter.return_rc_control()
 
     # GPS Landing Test
     found, _, _ = \
