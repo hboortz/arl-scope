@@ -188,7 +188,7 @@ class TestQuadcopterBrain(unittest.TestCase):
         self.landing_site_mock.in_view = True
         self.landing_site_mock.center.position.x = 10
         self.landing_site_mock.center.position.y = 10
-        self.quadcopter_mock.current_rel_alt = 500
+        self.quadcopter_mock.current_rel_alt = 1
         dz_mock = mock.PropertyMock(side_effect=[5, 5, 2, 0.5])
         type(self.landing_site_mock.center.position).z = dz_mock
 
@@ -197,7 +197,7 @@ class TestQuadcopterBrain(unittest.TestCase):
         position_calls = [
             mock.call(10, 10, 5), mock.call(10, 10, 2), mock.call(10, 10, 0.5)]
         self.assertEqual(position_calls, position_mock.call_args_list)
-        command_calls = [mock.call(0.5, 0.5, 0.25)] * 5
+        command_calls = [mock.call(0.5, 0.5, 0.25)] * 6
         self.assertEqual(command_calls, command_mock.call_args_list)
         sleep_calls = [
             mock.call(0.1), mock.call(0.1), mock.call(0.1), mock.call(1),

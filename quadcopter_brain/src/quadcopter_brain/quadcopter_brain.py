@@ -101,7 +101,7 @@ class QuadcopterBrain(object):
                 self.proportional_position(dx, dy, dz)
                 rospy.sleep(0.1)
 
-            descent_time = int(self.quadcopter.current_rel_alt / 100)
+            descent_time = int(self.quadcopter.current_rel_alt * 5) + 1
             for i in range(descent_time):
                 rospy.loginfo("Descending for %d seconds" % (descent_time))
                 self.send_rc_command(0.5, 0.5, 0.25)
