@@ -5,9 +5,11 @@ from math import ceil
 import datetime
 
 import rospy
+import numpy
 
 from position_tools import PositionTools
 from waypoint_tools import WaypointTools
+import rc_command
 import quadcopter
 import landing_site
 
@@ -39,17 +41,97 @@ class QuadcopterBrain(object):
     def land(self):
         self.quadcopter.land()
 
+    def send_rc_command(self, x_velocity, y_velocity, z_velocity):
+        '''
+        x_velocity, y_velocity, and z_velocity are percentages of the maximum
+        velocity of the quadcopter in the given axis. Must be floats between 0
+        and 1
+        '''
+        command = rc_command.RCCommand({'roll': x_velocity,
+                                        'pitch': y_velocity,
+                                        'throttle': z_velocity})
+        self.quadcopter.send_rc_command(command)
+
+    def rc_square_dance(self):
+        rospy.loginfo("forward")
+        command = rc_command.RCCommand({'pitch': 0.9})
+        self.quadcopter.send_rc_command(command)
+        rospy.sleep(2)
+        rospy.loginfo("still")
+        command = rc_command.RCCommand()
+        self.quadcopter.send_rc_command(command)
+        rospy.sleep(2)
+
+        # rospy.loginfo("right")
+        # command = rc_command.RCCommand({'roll': 0.9})
+        # self.quadcopter.send_rc_command(command)
+        # rospy.sleep(2)
+        # rospy.loginfo("still")
+        # command = rc_command.RCCommand()
+        # self.quadcopter.send_rc_command(command)
+        # rospy.sleep(2)
+
+        # rospy.loginfo("backward")
+        # command = rc_command.RCCommand({'pitch': 0.1})
+        # self.quadcopter.send_rc_command(command)
+        # rospy.sleep(2)
+        # rospy.loginfo("still")
+        # command = rc_command.RCCommand()
+        # self.quadcopter.send_rc_command(command)
+        # rospy.sleep(2)
+
+        # rospy.loginfo("left")
+        # command = rc_command.RCCommand({'roll': 0.1})
+        # self.quadcopter.send_rc_command(command)
+        # rospy.sleep(2)
+        # rospy.loginfo("still")
+        # command = rc_command.RCCommand()
+        # self.quadcopter.send_rc_command(command)
+        # rospy.sleep(2)
+
     def rc_land_on_fiducial(self):
-        dz = self.landing_site.center.position.z
-        while dz > 1:
-            dx = self.landing_site.center.position.x
-            dy = self.landing_site.center.position.y
-            rc_proportionally_navigate(dx, dy, dz)
+        found, _, _ = self.find_landing_site()
+        if found:
+            dz = self.landing_site.center.position.z
+            while dz > 1 and not rospy.is_shutdown():
+                dz = self.landing_site.center.position.z
+                dx = self.landing_site.center.position.x
+                dy = self.landing_site.center.position.y
 
-        self.land()
+                self.proportional_position(dx, dy, dz)
+                rospy.sleep(0.1)
 
-    def rc_proportionally_navigate(dx, dy, dz):
-        pass
+            for i in range(5):
+                rospy.loginfo("Descending")
+                self.send_rc_command(0.5, 0.5, 0.25)
+                rospy.sleep(1)
+        rospy.loginfo("Finished landing")
+
+    def calculate_planar_speed(self, pos):
+        max_speed = 0.9
+        min_speed = 0.1
+        tolerance = 0.5
+        return ((max_speed - min_speed) / (1 + numpy.exp(-tolerance * pos)))\
+            + min_speed
+
+    def calculate_rate_of_descent(self, dx, dy):
+        max_throttle = 0.5
+        min_throttle = 0.25
+        tolerance = 0.5
+        distance = numpy.linalg.norm([dx, dy])
+        return max_throttle - \
+            min_throttle * numpy.exp(-tolerance * (distance ** 2))
+
+    def proportional_position(self, dx, dy, dz):
+        '''
+        Receives the relative position of the fiducial and navigates towards it
+        using a proportional controller. The rate of descent increases the more
+        centered the quadcopter is over the fiducial.
+        '''
+        x_diff = self.calculate_planar_speed(dx)
+        y_diff = self.calculate_planar_speed(dy)
+        z_diff = self.calculate_rate_of_descent(dx, dy)
+        self.send_rc_command(x_diff, y_diff, z_diff)
 
     def fly_path(self, waypoint_data):
         self.quadcopter.launch()
@@ -108,6 +190,7 @@ class QuadcopterBrain(object):
             site = deepcopy(self.landing_site)
             seen = site.in_view
             rospy.sleep(0.1)
+
         if seen:
             rospy.loginfo("Landing site FOUND: %s", str(site.center))
             return (True, ) + \

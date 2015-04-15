@@ -60,21 +60,24 @@ class Quadcopter(object):
 
     def return_rc_control(self):
         print('Returning RC Control...')
-        self._command_service(roscopter.srv.APMCommandRequest.CMD_SET_LOITER)
+        self._command_service(
+            roscopter.srv.APMCommandRequest.RETURN_RC_CONTROL)
         print('RC in control')
 
     def launch(self, max_num_tries=5):
         rospy.loginfo('Sending launch command...')
-        self._send_cmd_and_check_for_success("Launch",
-                                    roscopter.srv.APMCommandRequest.CMD_LAUNCH,
-                                    max_num_tries=max_num_tries)
+        self._send_cmd_and_check_for_success(
+            "Launch",
+            roscopter.srv.APMCommandRequest.CMD_LAUNCH,
+            max_num_tries=max_num_tries)
         rospy.loginfo('Launched')
 
     def land(self, max_num_tries=5):
         rospy.loginfo('Sending land command...')
-        self._send_cmd_and_check_for_success("Land",
-                                    roscopter.srv.APMCommandRequest.CMD_LAND,
-                                    max_num_tries=max_num_tries)
+        self._send_cmd_and_check_for_success(
+            "Land",
+            roscopter.srv.APMCommandRequest.CMD_LAND,
+            max_num_tries=max_num_tries)
         rospy.loginfo('Landing')
 
     def _send_cmd_and_check_for_success(self, name_of_cmd, cmd_to_send,
@@ -123,11 +126,13 @@ class Quadcopter(object):
     def _print_send_waypoint_status(self, waypoint, sent_waypoint,
                                     tries, max_num_tries):
         if sent_waypoint:
-            rospy.loginfo('Sent waypoint\n\tlat: %d\n\tlon: %d\n\talt: %d',
-                  waypoint.latitude, waypoint.longitude, waypoint.altitude)
+            rospy.loginfo(
+                'Sent waypoint\n\tlat: %d\n\tlon: %d\n\talt: %d',
+                waypoint.latitude, waypoint.longitude, waypoint.altitude)
         else:
-            rospy.loginfo('Failed to send waypt\n\tlat:%d\n\tlon:%d\n\talt:%d',
-                  waypoint.latitude, waypoint.longitude, waypoint.altitude)
+            rospy.loginfo(
+                'Failed to send waypt\n\tlat:%d\n\tlon:%d\n\talt:%d',
+                waypoint.latitude, waypoint.longitude, waypoint.altitude)
             if tries == max_num_tries:
                 rospy.loginfo("Tried %d times and giving up", tries)
             else:
