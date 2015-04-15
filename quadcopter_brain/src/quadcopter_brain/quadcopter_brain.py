@@ -42,9 +42,9 @@ class QuadcopterBrain(object):
 
     def send_rc_command(self, x_velocity, y_velocity, z_velocity):
         '''
-            x_velocity, y_velocity, and z_velocity are percentages of the
-            maximum velocity of the quadcopter in the given axis. Must be
-            floats between 0 and 1
+        x_velocity, y_velocity, and z_velocity are percentages of the maximum
+        velocity of the quadcopter in the given axis. Must be floats between 0
+        and 1
         '''
         command = rc_command.RCCommand({'roll': x_velocity,
                                         'pitch': y_velocity,
@@ -123,6 +123,11 @@ class QuadcopterBrain(object):
             min_throttle * numpy.exp(-tolerance * (distance ** 2))
 
     def proportional_position(self, dx, dy, dz):
+        '''
+        Receives the relative position of the fiducial and navigates towards it
+        using a proportional controller. The rate of descent increases the more
+        centered the quadcopter is over the fiducial.
+        '''
         x_diff = self.calculate_planar_speed(dx)
         y_diff = self.calculate_planar_speed(dy)
         z_diff = self.calculate_rate_of_descent(dx, dy)
