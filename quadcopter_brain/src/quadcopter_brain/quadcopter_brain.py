@@ -98,7 +98,7 @@ class QuadcopterBrain(object):
                 self.proportional_position(dx, dy, dz)
                 time.sleep(0.1)
 
-            for i in range(0, 4):
+            for i in range(5):
                 rospy.loginfo("Descending")
                 self.send_rc_command(0.5, 0.5, 0.25)
                 time.sleep(1)

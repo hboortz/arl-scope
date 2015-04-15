@@ -195,8 +195,11 @@ class TestQuadcopterBrain(unittest.TestCase):
         position_calls = [
             mock.call(10, 10, 5), mock.call(10, 10, 2), mock.call(10, 10, 0.5)]
         self.assertEqual(position_calls, position_mock.call_args_list)
-        command_mock.assert_called_once_with(0.5, 0.5, 0.25)
-        sleep_mock.assert_called_once_with(20)
+        command_calls = [mock.call(0.5, 0.5, 0.25)] * 5
+        self.assertEqual(command_calls, command_mock.call_args_list)
+        sleep_calls = [
+            mock.call(0.1), mock.call(0.1), mock.call(0.1), mock.call(1),
+            mock.call(1), mock.call(1), mock.call(1), mock.call(1)]
 
 
 if __name__ == '__main__':
