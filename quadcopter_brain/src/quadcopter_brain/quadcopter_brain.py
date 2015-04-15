@@ -92,7 +92,6 @@ class QuadcopterBrain(object):
         found, _, _ = self.find_landing_site()
         if found:
             dz = self.landing_site.center.position.z
-            print dz
             while dz > 1 and not rospy.is_shutdown():
                 dz = self.landing_site.center.position.z
                 dx = self.landing_site.center.position.x
