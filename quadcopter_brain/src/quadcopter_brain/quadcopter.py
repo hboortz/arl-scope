@@ -59,10 +59,10 @@ class Quadcopter(object):
         rospy.loginfo('Armed')
 
     def return_rc_control(self):
-        print('Returning RC Control...')
+        rospy.loginfo('Returning RC Control...')
         self._command_service(
             roscopter.srv.APMCommandRequest.RETURN_RC_CONTROL)
-        print('RC in control')
+        rospy.loginfo('RC in control')
 
     def launch(self, max_num_tries=5):
         rospy.loginfo('Sending launch command...')
