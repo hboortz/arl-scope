@@ -40,11 +40,15 @@ class QuadcopterBrain(object):
     def land(self):
         self.quadcopter.land()
 
-    def send_rc_command(self, x_diff, y_diff, z_diff):
-        #Diff must be a value between 0 and 1
-        command = rc_command.RCCommand({'roll': x_diff,
-                                        'pitch': y_diff,
-                                        'throttle': z_diff})
+    def send_rc_command(self, x_velocity, y_velocity, z_velocity):
+        '''
+            x_velocity, y_velocity, and z_velocity are percentages of the
+            maximum velocity of the quadcopter in the given axis. Must be
+            floats between 0 and 1
+        '''
+        command = rc_command.RCCommand({'roll': x_velocity,
+                                        'pitch': y_velocity,
+                                        'throttle': z_velocity})
         self.quadcopter.send_rc_command(command)
 
     def rc_square_dance(self):
