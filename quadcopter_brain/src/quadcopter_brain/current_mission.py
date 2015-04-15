@@ -3,9 +3,9 @@
 import rospy
 
 from quadcopter import Quadcopter
+from quadcopter_brain import QuadcopterBrain
 from rc_command import RCCommand
 from waypoint_tools import WaypointTools
-from quadcopter_brain import QuadcopterBrain
 
 
 def print_position_data(quadcopter):
@@ -35,6 +35,12 @@ def main():
     if outside:
         carl.arm()
     carl.launch()
+
+    # APP Landing Test
+    # carl.rc_land_on_fiducial()
+    # carl.quadcopter.return_rc_control()
+
+    # GPS Landing Test
     found, _, _ = \
         carl.find_landing_site_at_waypoints([great_lawn_waypoints['C'],
                                              great_lawn_waypoints['B'],
@@ -43,6 +49,7 @@ def main():
         carl.land_on_fiducial_incremental()
     else:
         carl.land()
+
 
 
 if __name__ == '__main__':
