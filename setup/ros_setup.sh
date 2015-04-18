@@ -12,6 +12,7 @@ rosdep update
 sudo apt-get install -y python-rosinstall
 sudo apt-get install -y ros-indigo-mavlink
 sudo apt-get install -y ros-indigo-mavros
+sudo apt-get install -y ros-indigo-geodesy
 
 # Libraries necessary for camera usage (including freeglut)
 sudo apt-get install -y ros-indigo-uvc-camera
