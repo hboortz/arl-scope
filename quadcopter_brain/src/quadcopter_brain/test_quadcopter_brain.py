@@ -5,13 +5,16 @@ import unittest
 import mock
 
 from quadcopter_brain import QuadcopterBrain
+import rc_command
 
 
 class TestQuadcopterBrain(unittest.TestCase):
+    @mock.patch('landing_site.LandingSite')
     @mock.patch('quadcopter.Quadcopter')
-    def setUp(self, quadcopter_mock):
+    def setUp(self, quadcopter_mock, landing_site_mock):
         self.quadcopter_brain = QuadcopterBrain()
         self.quadcopter_mock = self.quadcopter_brain.quadcopter
+        self.landing_site_mock = self.quadcopter_brain.landing_site
 
     @mock.patch('rospy.sleep')
     @mock.patch('waypoint_tools.WaypointTools.build_waypoint')
@@ -79,6 +82,144 @@ class TestQuadcopterBrain(unittest.TestCase):
 
         wait_time = go_to_waypoint_mock.call_args[0][1]
         self.assertAlmostEqual(wait_time, 10)
+
+    @mock.patch('rospy.sleep')
+    def test_find_landing_site(self, sleep_mock):
+        # Test what happens when seen
+        self.landing_site_mock.in_view = True
+        self.landing_site_mock.lat_long.return_value = (-42, 71)
+        res = self.quadcopter_brain.find_landing_site()
+        self.assertEqual(res, (True, -42, 71))
+
+        # Test what happens when not seen
+        self.landing_site_mock.in_view = False
+        self.landing_site_mock.lat_long.return_value = (-42, 71)
+        res = self.quadcopter_brain.find_landing_site(1)
+        self.assertEqual(res, (False, 0, 0))
+
+        # Test what happens when seen after a few tries
+        in_view_mock = mock.PropertyMock(side_effect=[False, False, True])
+        type(self.landing_site_mock).in_view = in_view_mock
+        self.landing_site_mock.lat_long.return_value = (-42, 71)
+        sleep_mock.call_args_list = []
+        res = self.quadcopter_brain.find_landing_site()
+        expected_sleep_calls = [mock.call(0.1), mock.call(0.1), mock.call(0.1)]
+        self.assertEqual(sleep_mock.call_args_list, expected_sleep_calls)
+        self.assertEqual(res, (True, -42, 71))
+
+    @mock.patch('quadcopter_brain.QuadcopterBrain.go_to_waypoints')
+    @mock.patch('quadcopter_brain.QuadcopterBrain.find_landing_site')
+    def test_land_on_fiducial_simple(self, find_mock, go_to_mock):
+        # Fiducial found during landing
+        find_mock.return_value = True, 42, 71
+        self.quadcopter_brain.land_on_fiducial_simple()
+        wpt = {'latitude': 42,
+               'longitude': 71,
+               'altitude': 1.0}
+        go_to_mock.assert_called_once_with([wpt])
+        self.quadcopter_mock.land.assert_called_once_with()
+
+        # Fiducial not found during landing
+        go_to_mock.reset_mock()
+        self.quadcopter_mock.land.reset_mock()
+        find_mock.return_value = False, 0, 0
+        self.quadcopter_brain.land_on_fiducial_simple()
+        assert not go_to_mock.called
+        self.quadcopter_mock.land.assert_called_once_with()
+
+    @mock.patch('quadcopter_brain.QuadcopterBrain.find_landing_site')
+    @mock.patch('quadcopter_brain.QuadcopterBrain.go_to_waypoints')
+    def test_find_landing_site_at_waypoints(self, go_to_mock, find_site_mock):
+        waypoint_data = [0, 1]
+        find_site_mock.return_value = False, 0, 0
+        res = \
+            self.quadcopter_brain.find_landing_site_at_waypoints(waypoint_data)
+        go_to_expected = [mock.call([pt]) for pt in waypoint_data]
+        self.assertEqual(go_to_mock.call_args_list, go_to_expected)
+        find_site_expected = [mock.call(15) for point in waypoint_data]
+        self.assertEqual(find_site_mock.call_args_list, find_site_expected)
+        self.assertEqual(res, (False, 0, 0))
+
+        go_to_mock.reset_mock()
+        find_site_mock.reset_mock()
+
+        find_site_mock.return_value = True, 42.0, -71.0
+        res = \
+            self.quadcopter_brain.find_landing_site_at_waypoints(waypoint_data)
+        go_to_mock.assert_called_once_with([0])
+        find_site_mock.assert_called_once_with(15)
+        self.assertEqual(res, (True, 42.0, -71.0))
+
+    def test_send_rc_command(self):
+        self.quadcopter_brain.send_rc_command(0.5, 0.5, 0.5)
+        self.assertEqual(
+            len(self.quadcopter_mock.send_rc_command.call_args_list), 1)
+
+    def test_calculate_planar_speed(self):
+        speed = self.quadcopter_brain.calculate_planar_speed(0)
+        self.assertAlmostEqual(speed, 0.5)
+        speed = self.quadcopter_brain.calculate_planar_speed(10)
+        self.assertAlmostEqual(speed, 0.9, delta=0.01)
+        speed = self.quadcopter_brain.calculate_planar_speed(-10)
+        self.assertAlmostEqual(speed, 0.1, delta=0.01)
+
+    def test_calculate_rate_of_descent(self):
+        descent_rate = self.quadcopter_brain.calculate_rate_of_descent(10, 10)
+        self.assertAlmostEqual(descent_rate, 0.5, delta=0.01)
+        descent_rate = self.quadcopter_brain.calculate_rate_of_descent(0, 0)
+        self.assertAlmostEqual(descent_rate, 0.25, delta=0.01)
+
+    @mock.patch('quadcopter_brain.QuadcopterBrain.calculate_planar_speed')
+    @mock.patch('quadcopter_brain.QuadcopterBrain.calculate_rate_of_descent')
+    @mock.patch('quadcopter_brain.QuadcopterBrain.send_rc_command')
+    def test_proportional_position(self, command_mock, descent_mock,
+                                   planar_mock):
+        planar_mock.side_effect = [0.1, 0.9]
+        descent_mock.return_value = 0.3
+        self.quadcopter_brain.proportional_position(1, 1, 1)
+        command_mock.assert_called_once_with(0.1, 0.9, 0.3)
+
+    @mock.patch('rospy.sleep')
+    @mock.patch('quadcopter_brain.QuadcopterBrain.send_rc_command')
+    @mock.patch('quadcopter_brain.QuadcopterBrain.proportional_position')
+    @mock.patch('quadcopter_brain.QuadcopterBrain.find_landing_site')
+    def test_rc_land_on_fiducial(self, site_mock, position_mock, command_mock,
+                                 sleep_mock):
+        self.landing_site_mock.in_view = True
+        self.landing_site_mock.center.position.x = 10
+        self.landing_site_mock.center.position.y = 10
+        dz_mock = mock.PropertyMock(side_effect=[5, 5, 2, 0.5])
+        type(self.landing_site_mock.center.position).z = dz_mock
+
+        site_mock.return_value = (True, None, None)
+        self.quadcopter_brain.rc_land_on_fiducial()
+        position_calls = [
+            mock.call(10, 10, 5), mock.call(10, 10, 2), mock.call(10, 10, 0.5)]
+        self.assertEqual(position_calls, position_mock.call_args_list)
+        command_calls = [mock.call(0.5, 0.5, 0.25)] * 5
+        self.assertEqual(command_calls, command_mock.call_args_list)
+        sleep_calls = [
+            mock.call(0.1), mock.call(0.1), mock.call(0.1), mock.call(1),
+            mock.call(1), mock.call(1), mock.call(1), mock.call(1)]
+
+
+    @mock.patch('quadcopter_brain.QuadcopterBrain.go_to_waypoints')
+    @mock.patch('quadcopter_brain.QuadcopterBrain.find_landing_site')
+    def test_land_on_fiducial_incremental(self, find_mock, go_to_mock):
+        pass
+        # Tests not found case
+        find_mock.return_value = False, 0, 0
+        self.quadcopter_brain.land_on_fiducial_incremental()
+        assert not self.landing_site_mock.get_average_lat_long.called
+        self.quadcopter_mock.land.assert_called_once_with()
+
+        # Tests found, not seen AND too high case
+
+        # Tests found, not seen AND low enough case
+
+        # Tests a successful run
+
+        # Tests an unsuccessful run
 
 
 if __name__ == '__main__':

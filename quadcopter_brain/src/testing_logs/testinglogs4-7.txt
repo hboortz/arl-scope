@@ -1,0 +1,12 @@
+testing 4/7
+Eric on the Great Lawn with Malificent, testing final demo
+
+1. Required toggle on launch. The quadcopter seemed to step down well from 10 to 5 to 3.5 meters, then went into RTL, blinked yellow, and complained about pre-arm mag field check
+RESTARTED QUADCOPTER
+2. Required toggle on  launch, got low battery
+RESTARTED QUADCOPTER WITH NEW BATTERY
+3. Required toggle on. Controller got unplugged, copter went into RTL. Went downn once, was way off, landed. Blinking yellow light, complained about prearm mag field check in APM Planner.
+REDID COMPASS CALIBRATION
+4. Blinking yellow the whole time, ran mission without incident. Drifted sideways in LAND and crashed
+5. Blinking yellow the whole time. Launched, found the fiducial at 10m and went to 5m, then fiducial was squarely in the GoPro dead zone and so it landed. Drifted forward on land, I stabilized it and the land went fine
+6. 

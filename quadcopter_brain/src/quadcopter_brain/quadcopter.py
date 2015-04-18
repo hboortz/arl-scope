@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import rospy
 import roscopter.msg
 import roscopter.srv
@@ -20,13 +22,20 @@ class Quadcopter(object):
         self._adjust_throttle_service = rospy.ServiceProxy(
             'adjust_throttle', std_srvs.srv.Empty)
 
+        rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
+                         self._position_callback)
+        rospy.Subscriber("/send_rc", roscopter.msg.RC,
+                         self._send_rc_callback)
+        self.rc_pub = rospy.Publisher('/send_rc', roscopter.msg.RC,
+                                      queue_size=10, latch=True)
+
         self.current_lat = 0.0
         self.current_long = 0.0
         self.current_rel_alt = 0.0
         self.current_alt = 0.0
         self.heading = 0.0
-        rospy.Subscriber("/filtered_pos", roscopter.msg.FilteredPosition,
-                         self._position_callback)
+        # [side tilt, front tilt, throttle, spin, SOMETHING]
+        self.rc_cmd = [1800 for i in range(8)]
 
     def _position_callback(self, data):
         self.current_lat = PositionTools.mavlink_to_gps(data.latitude)
@@ -36,29 +45,40 @@ class Quadcopter(object):
         self.current_rel_alt =\
             PositionTools.mavlink_to_altitude(data.relative_altitude)
 
+    def _send_rc_callback(self, data):
+        pass
+
     def clear_waypoints(self):
-        print('Sending clear waypoints command...')
+        rospy.loginfo('Sending clear waypoints command...')
         self._clear_waypoints_service()
-        print('Cleared waypoints')
+        rospy.loginfo('Cleared waypoints')
 
     def arm(self):
-        print('Sending arm command...')
+        rospy.loginfo('Sending arm command...')
         self._command_service(roscopter.srv.APMCommandRequest.CMD_ARM)
-        print('Armed')
+        rospy.loginfo('Armed')
+
+    def return_rc_control(self):
+        print('Returning RC Control...')
+        self._command_service(
+            roscopter.srv.APMCommandRequest.RETURN_RC_CONTROL)
+        print('RC in control')
 
     def launch(self, max_num_tries=5):
-        print('Sending launch command...')
-        self._send_cmd_and_check_for_success("Launch",
-                                    roscopter.srv.APMCommandRequest.CMD_LAUNCH,
-                                    max_num_tries=max_num_tries)
-        print('Landing')
+        rospy.loginfo('Sending launch command...')
+        self._send_cmd_and_check_for_success(
+            "Launch",
+            roscopter.srv.APMCommandRequest.CMD_LAUNCH,
+            max_num_tries=max_num_tries)
+        rospy.loginfo('Launched')
 
     def land(self, max_num_tries=5):
-        print('Sending land command...')
-        self._send_cmd_and_check_for_success("Land",
-                                    roscopter.srv.APMCommandRequest.CMD_LAND,
-                                    max_num_tries=max_num_tries)
-        print('Landing')
+        rospy.loginfo('Sending land command...')
+        self._send_cmd_and_check_for_success(
+            "Land",
+            roscopter.srv.APMCommandRequest.CMD_LAND,
+            max_num_tries=max_num_tries)
+        rospy.loginfo('Landing')
 
     def _send_cmd_and_check_for_success(self, name_of_cmd, cmd_to_send,
                                         max_num_tries):
@@ -76,13 +96,13 @@ class Quadcopter(object):
     def _print_cmd_send_status(self, name_of_cmd, successful_cmd_send, tries,
                                max_num_tries):
         if successful_cmd_send:
-            print("Successfully %sed" % (name_of_cmd.lower()))
+            rospy.loginfo("Successfully %sed", name_of_cmd.lower())
         else:
-            print("%s failed" % (name_of_cmd))
+            rospy.loginfo("%s failed", name_of_cmd)
             if tries == max_num_tries:
-                print("Tried %d times and giving up" % (tries))
+                rospy.loginfo("Tried %d times and giving up", tries)
             else:
-                print("Retrying. Tries: %d" % (tries))
+                rospy.loginfo("Retrying. Tries: %d", tries)
 
     def send_waypoint(self, waypoint, max_num_tries=5):
         self._set_auto_mode()
@@ -99,18 +119,24 @@ class Quadcopter(object):
 
         return sent_waypoint
 
+    def send_rc_command(self, rc_command):
+        print "sending rc command"
+        self.rc_pub.publish(rc_command.to_roscopter())
+
     def _print_send_waypoint_status(self, waypoint, sent_waypoint,
                                     tries, max_num_tries):
         if sent_waypoint:
-            print('Sent waypoint\n\tlat: %d\n\tlon: %d\n\talt: %d' %
-                  (waypoint.latitude, waypoint.longitude, waypoint.altitude))
+            rospy.loginfo(
+                'Sent waypoint\n\tlat: %d\n\tlon: %d\n\talt: %d',
+                waypoint.latitude, waypoint.longitude, waypoint.altitude)
         else:
-            print('Failed to send waypoint\n\tlat: %d\n\tlon: %d\n\talt: %d' %
-                  (waypoint.latitude, waypoint.longitude, waypoint.altitude))
+            rospy.loginfo(
+                'Failed to send waypt\n\tlat:%d\n\tlon:%d\n\talt:%d',
+                waypoint.latitude, waypoint.longitude, waypoint.altitude)
             if tries == max_num_tries:
-                print("Tried %d times and giving up" % (tries))
+                rospy.loginfo("Tried %d times and giving up", tries)
             else:
-                print("Retrying. Tries: %d" % (tries))
+                rospy.loginfo("Retrying. Tries: %d", tries)
 
     def _set_auto_mode(self):
         '''
