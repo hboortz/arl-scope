@@ -21,6 +21,9 @@ sudo apt-get install -y freeglut3-dev
 sudo touch /opt/ros/indigo/share/uvc_camera/camera_calibration.yaml
 sudo chown $USER:$USER /opt/ros/indigo/share/uvc_camera/camera_calibration.yaml
 
+echo "source /opt/ros/indigo/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
 catkin_init_workspace
