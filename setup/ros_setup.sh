@@ -26,5 +26,3 @@ cd ~/catkin_ws/src
 catkin_init_workspace
 cd ..
 catkin_make
-
-echo "SET UP SSH KEYS BEFORE RUNNING post_ros_setup.sh"
