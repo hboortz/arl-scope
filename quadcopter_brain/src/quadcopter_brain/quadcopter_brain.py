@@ -97,7 +97,6 @@ class QuadcopterBrain(object):
                 dz = self.landing_site.center.position.z
                 dx = self.landing_site.center.position.x
                 dy = self.landing_site.center.position.y
-
                 self.proportional_position(dx, dy, dz)
                 rospy.sleep(0.1)
 
@@ -115,7 +114,7 @@ class QuadcopterBrain(object):
             + min_speed
 
     def calculate_rate_of_descent(self, dx, dy):
-        max_throttle = 0.5
+        max_throttle = 0.45
         min_throttle = 0.25
         tolerance = 0.5
         distance = numpy.linalg.norm([dx, dy])
@@ -131,6 +130,10 @@ class QuadcopterBrain(object):
         x_diff = self.calculate_planar_speed(dx)
         y_diff = self.calculate_planar_speed(dy)
         z_diff = self.calculate_rate_of_descent(dx, dy)
+        rospy.loginfo("Sending RC Command")
+        rospy.loginfo("\tX: %.2f" % x_diff)
+        rospy.loginfo("\tY: %.2f" % y_diff)
+        rospy.loginfo("\tZ: %.2f" % z_diff)
         self.send_rc_command(x_diff, y_diff, z_diff)
 
     def fly_path(self, waypoint_data):
@@ -168,7 +171,7 @@ class QuadcopterBrain(object):
         tries to find_landing_site at each waypoint
         '''
         for waypoint in waypoint_data:
-            self.go_to_waypoints([waypoint], 5)
+            self.go_to_waypoints([waypoint], 10)
             found, goal_lat, goal_long = self.find_landing_site(10)
             if found:
                 return True, goal_lat, goal_long
