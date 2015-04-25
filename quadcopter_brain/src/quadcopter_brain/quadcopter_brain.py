@@ -52,43 +52,6 @@ class QuadcopterBrain(object):
                                         'throttle': z_velocity})
         self.quadcopter.send_rc_command(command)
 
-    def rc_square_dance(self):
-        rospy.loginfo("forward")
-        command = rc_command.RCCommand({'pitch': 0.9})
-        self.quadcopter.send_rc_command(command)
-        rospy.sleep(2)
-        rospy.loginfo("still")
-        command = rc_command.RCCommand()
-        self.quadcopter.send_rc_command(command)
-        rospy.sleep(2)
-
-        # rospy.loginfo("right")
-        # command = rc_command.RCCommand({'roll': 0.9})
-        # self.quadcopter.send_rc_command(command)
-        # rospy.sleep(2)
-        # rospy.loginfo("still")
-        # command = rc_command.RCCommand()
-        # self.quadcopter.send_rc_command(command)
-        # rospy.sleep(2)
-
-        # rospy.loginfo("backward")
-        # command = rc_command.RCCommand({'pitch': 0.1})
-        # self.quadcopter.send_rc_command(command)
-        # rospy.sleep(2)
-        # rospy.loginfo("still")
-        # command = rc_command.RCCommand()
-        # self.quadcopter.send_rc_command(command)
-        # rospy.sleep(2)
-
-        # rospy.loginfo("left")
-        # command = rc_command.RCCommand({'roll': 0.1})
-        # self.quadcopter.send_rc_command(command)
-        # rospy.sleep(2)
-        # rospy.loginfo("still")
-        # command = rc_command.RCCommand()
-        # self.quadcopter.send_rc_command(command)
-        # rospy.sleep(2)
-
     def rc_land_on_fiducial(self):
         found, _, _ = self.find_landing_site()
         if found:
