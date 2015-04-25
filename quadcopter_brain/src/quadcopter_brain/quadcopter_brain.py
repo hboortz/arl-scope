@@ -73,14 +73,14 @@ class QuadcopterBrain(object):
     def calculate_planar_speed(self, pos):
         max_speed = 0.9
         min_speed = 0.1
-        tolerance = 0.5
+        responsiveness = 0.5
         return ((max_speed - min_speed) / (1 + numpy.exp(-tolerance * pos)))\
             + min_speed
 
     def calculate_rate_of_descent(self, dx, dy):
         max_throttle = 0.5
         min_throttle = 0.25
-        tolerance = 0.5
+        respsonsiveness = 0.5
         distance = numpy.linalg.norm([dx, dy])
         return max_throttle - \
             min_throttle * numpy.exp(-tolerance * (distance ** 2))
