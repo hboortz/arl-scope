@@ -74,8 +74,8 @@ class QuadcopterBrain(object):
         max_speed = 0.9
         min_speed = 0.1
         responsiveness = 0.5
-        return ((max_speed - min_speed) / (1 + numpy.exp(-tolerance * pos)))\
-            + min_speed
+        return ((max_speed - min_speed) /\
+               (1 + numpy.exp(-responsiveness * pos))) + min_speed
 
     def calculate_rate_of_descent(self, dx, dy):
         max_throttle = 0.5
@@ -83,7 +83,7 @@ class QuadcopterBrain(object):
         respsonsiveness = 0.5
         distance = numpy.linalg.norm([dx, dy])
         return max_throttle - \
-            min_throttle * numpy.exp(-tolerance * (distance ** 2))
+               min_throttle * numpy.exp(-respsonsiveness * (distance ** 2))
 
     def proportional_position(self, dx, dy, dz):
         '''
