@@ -1,15 +1,8 @@
 #!/usr/bin/env bash
 
 
-catkin_root() {
-	catkin_ws=$(find ~ -type d -name "catkin_ws")
-	cd $catkin_ws
-}
+source file_utils.sh
 
-catkin_src() {
-	catkin_root
-	cd src
-}
 
 roscopter_dir() {
 	catkin_src
