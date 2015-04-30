@@ -6,7 +6,7 @@ source file_utils.sh
 
 download_arl_scope() {
     if [ ! -d "arl-scope" ]; then
-        git clone git@github.com:hboortz/arl-scope.git
+        git clone https://github.com/arlolinscope/arl-scope
     fi
 }
 
