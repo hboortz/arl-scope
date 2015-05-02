@@ -22,6 +22,7 @@ sudo touch /opt/ros/indigo/share/uvc_camera/camera_calibration.yaml
 sudo chown $USER:$USER /opt/ros/indigo/share/uvc_camera/camera_calibration.yaml
 
 echo "source /opt/ros/indigo/setup.bash" >> ~/.bashrc
+echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 
 mkdir -p ~/catkin_ws/src
