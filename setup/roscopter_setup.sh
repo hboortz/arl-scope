@@ -12,7 +12,7 @@ roscopter_dir() {
 download_roscopter() {
 	if [ ! -d "roscopter" ]
 	then
-		git clone git@github.com:ElizabethDuncan/roscopter.git
+		git clone https://github.com/ElizabethDuncan/roscopter.git
 	fi
 }
 
@@ -30,7 +30,7 @@ setup_pymavlink() {
 setup_roscopter_driver() {
 	roscopter_dir
 	cd scripts
-	chmod 777 driver.py
+	sudo chmod 777 driver.py
 }
 
 catkin_src

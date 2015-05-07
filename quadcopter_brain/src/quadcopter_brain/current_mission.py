@@ -20,35 +20,34 @@ def print_position_data(quadcopter):
 def main():
     carl = QuadcopterBrain()
 
+    #### GPS Landing Test
     # Quadcopter node (carl) must be initialized before get_param will work
-    outside = rospy.get_param("Quadcopter/outside", False)
-    rospy.loginfo("In outside mode: %s.", outside)
-    rospy.loginfo("If incorrect, add _outside:=True to the rosrun call")
+    # outside = rospy.get_param("Quadcopter/outside", False)
+    # rospy.loginfo("In outside mode: %s.", outside)
+    # rospy.loginfo("If incorrect, add _outside:=True to the rosrun call")
 
-    carl.quadcopter.clear_waypoints()
-    rospy.loginfo("Sleeping for 3 seconds...")
-    rospy.sleep(3)
+    # carl.quadcopter.clear_waypoints()
+    # rospy.loginfo("Sleeping for 3 seconds...")
+    # rospy.sleep(3)
 
-    great_lawn_waypoints = WaypointTools.open_waypoint_file(
-        "great_lawn_waypoints.json")
+    # waypoints = WaypointTools.open_waypoint_file(
+    #     "behind_LPB_waypoints.json")
 
-    if outside:
-        carl.arm()
-    carl.launch()
+    # if outside:
+    #     carl.arm()
+    # carl.launch()
 
-    # APP Landing Test
-    # carl.rc_land_on_fiducial()
-    # carl.quadcopter.return_rc_control()
+    # found, _, _ = \
+    #     carl.find_landing_site_at_waypoints([waypoints['A'],
+				# 	     waypoints['B']])
+    # if found:
+    #     carl.land_on_fiducial_incremental()
+    # else:
+    #     carl.land()
 
-    # GPS Landing Test
-    found, _, _ = \
-        carl.find_landing_site_at_waypoints([great_lawn_waypoints['C'],
-                                             great_lawn_waypoints['B'],
-                                             great_lawn_waypoints['C']])
-    if found:
-        carl.land_on_fiducial_incremental()
-    else:
-        carl.land()
+    #### APP Landing Test
+    carl.rc_land_on_fiducial()
+    carl.quadcopter.return_rc_control()
 
 
 
