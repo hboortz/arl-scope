@@ -31,7 +31,7 @@ def main():
     # rospy.sleep(3)
 
     # waypoints = WaypointTools.open_waypoint_file(
-    #     "behind_LPB_waypoints.json")
+    #     "soccer_field_waypoints.json")
 
     # if outside:
     #     carl.arm()
@@ -39,16 +39,18 @@ def main():
 
     # found, _, _ = \
     #     carl.find_landing_site_at_waypoints([waypoints['A'],
-				# 	     waypoints['B']])
+    #                                          waypoints['B'],
+    #                                          waypoints['C']])
     # if found:
     #     carl.land_on_fiducial_incremental()
     # else:
     #     carl.land()
 
     #### APP Landing Test
+    #### APP cannot be run in conjunction with waypoints
+    rospy.loginfo("Starting rc land")
     carl.rc_land_on_fiducial()
     carl.quadcopter.return_rc_control()
-
 
 
 if __name__ == '__main__':

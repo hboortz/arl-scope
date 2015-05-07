@@ -52,43 +52,6 @@ class QuadcopterBrain(object):
                                         'throttle': z_velocity})
         self.quadcopter.send_rc_command(command)
 
-    def rc_square_dance(self):
-        rospy.loginfo("forward")
-        command = rc_command.RCCommand({'pitch': 0.9})
-        self.quadcopter.send_rc_command(command)
-        rospy.sleep(2)
-        rospy.loginfo("still")
-        command = rc_command.RCCommand()
-        self.quadcopter.send_rc_command(command)
-        rospy.sleep(2)
-
-        # rospy.loginfo("right")
-        # command = rc_command.RCCommand({'roll': 0.9})
-        # self.quadcopter.send_rc_command(command)
-        # rospy.sleep(2)
-        # rospy.loginfo("still")
-        # command = rc_command.RCCommand()
-        # self.quadcopter.send_rc_command(command)
-        # rospy.sleep(2)
-
-        # rospy.loginfo("backward")
-        # command = rc_command.RCCommand({'pitch': 0.1})
-        # self.quadcopter.send_rc_command(command)
-        # rospy.sleep(2)
-        # rospy.loginfo("still")
-        # command = rc_command.RCCommand()
-        # self.quadcopter.send_rc_command(command)
-        # rospy.sleep(2)
-
-        # rospy.loginfo("left")
-        # command = rc_command.RCCommand({'roll': 0.1})
-        # self.quadcopter.send_rc_command(command)
-        # rospy.sleep(2)
-        # rospy.loginfo("still")
-        # command = rc_command.RCCommand()
-        # self.quadcopter.send_rc_command(command)
-        # rospy.sleep(2)
-
     def rc_land_on_fiducial(self):
         found, _, _ = self.find_landing_site()
         if found:
@@ -97,7 +60,6 @@ class QuadcopterBrain(object):
                 dz = self.landing_site.center.position.z
                 dx = self.landing_site.center.position.x
                 dy = self.landing_site.center.position.y
-
                 self.proportional_position(dx, dy, dz)
                 rospy.sleep(0.1)
 
@@ -110,17 +72,17 @@ class QuadcopterBrain(object):
     def calculate_planar_speed(self, pos):
         max_speed = 0.9
         min_speed = 0.1
-        tolerance = 0.5
-        return ((max_speed - min_speed) / (1 + numpy.exp(-tolerance * pos)))\
-            + min_speed
+        responsiveness = 0.5
+        return ((max_speed - min_speed) /\
+               (1 + numpy.exp(-responsiveness * pos))) + min_speed
 
     def calculate_rate_of_descent(self, dx, dy):
-        max_throttle = 0.5
+        max_throttle = 0.45
         min_throttle = 0.25
-        tolerance = 0.5
+        respsonsiveness = 0.5
         distance = numpy.linalg.norm([dx, dy])
         return max_throttle - \
-            min_throttle * numpy.exp(-tolerance * (distance ** 2))
+               min_throttle * numpy.exp(-respsonsiveness * (distance ** 2))
 
     def proportional_position(self, dx, dy, dz):
         '''
@@ -131,6 +93,10 @@ class QuadcopterBrain(object):
         x_diff = self.calculate_planar_speed(dx)
         y_diff = self.calculate_planar_speed(dy)
         z_diff = self.calculate_rate_of_descent(dx, dy)
+        rospy.loginfo("Sending RC Command")
+        rospy.loginfo("\tX: %.2f" % x_diff)
+        rospy.loginfo("\tY: %.2f" % y_diff)
+        rospy.loginfo("\tZ: %.2f" % z_diff)
         self.send_rc_command(x_diff, y_diff, z_diff)
 
     def fly_path(self, waypoint_data):
@@ -168,7 +134,7 @@ class QuadcopterBrain(object):
         tries to find_landing_site at each waypoint
         '''
         for waypoint in waypoint_data:
-            self.go_to_waypoints([waypoint], 5)
+            self.go_to_waypoints([waypoint], 10)
             found, goal_lat, goal_long = self.find_landing_site(10)
             if found:
                 return True, goal_lat, goal_long
